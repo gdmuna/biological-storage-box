@@ -10,6 +10,16 @@ const routes = [
         path: '/demo',
         name: 'demo',
         component: () => import('@/pages/demo/demo.vue')
+    },
+    {
+        path: '/auth/login',
+        name: 'login',
+        component: () => import('@/pages/auth/login.vue')
+    },
+    {
+        path: '/box/manage',
+        name: 'box-manage',
+        component: () => import('@/pages/box/manage.vue')
     }
 ];
 
