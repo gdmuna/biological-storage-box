@@ -1,8 +1,8 @@
 <template>
     <div class="main-container">
         <div class="w-full max-w-screen-sm h-full mx-auto px-10 py-10 flex-1">
-            <v-img class="mx-auto my-10 bg-white" width="200" aspect-ratio="1/1" cover src="/RhineLab.svg"></v-img>
-            <v-form @submit.prevent="login">
+            <v-img class="w-1/2 max-w-48 mx-auto my-10 bg-white rounded-lg" cover src="/RhineLab.svg"></v-img>
+            <v-form class="w-full max-w-sm mx-auto" @submit.prevent="login">
                 <v-text-field v-model="user.username" label="用户名"></v-text-field>
                 <v-text-field v-model="user.password" label="密码"></v-text-field>
                 <v-btn class="mt-2" text="登录" type="submit" block></v-btn>
