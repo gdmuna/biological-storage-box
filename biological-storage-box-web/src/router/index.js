@@ -4,7 +4,7 @@ const routes = [
     {
         path: '/',
         name: '',
-        redirect: '/demo'
+        redirect: '/auth/login'
     },
     {
         path: '/demo',
@@ -24,7 +24,7 @@ const routes = [
         }
     },
     {
-        path: '/box/manage',
+        path: '/box',
         name: 'box-manage',
         component: () => import('@/pages/box/manage.vue'),
         meta: {

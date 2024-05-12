@@ -1,12 +1,12 @@
 <template>
     <v-bottom-navigation v-model="navBarValue" color="light-green-lighten-1" grow horizontal>
-        <v-btn>
+        <v-btn @click="$router.push('/box')">
             <v-icon class="fa-duotone fa-vial"></v-icon>
         </v-btn>
-        <v-btn>
+        <v-btn @click="$router.push('/gird')">
             <v-icon class="fa-duotone fa-grid-2"></v-icon>
         </v-btn>
-        <v-btn>
+        <v-btn @click="$router.push('/user')">
             <v-icon class="fa-duotone fa-user"></v-icon>
         </v-btn>
     </v-bottom-navigation>

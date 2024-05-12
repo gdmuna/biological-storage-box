@@ -30,7 +30,7 @@ export default {
         async login() {
             const result = await this.$api.auth.login({ phoneNumber: this.user.username, password: this.user.password });
             if (result) {
-                this.$router.push('/box/manage');
+                this.$router.push('/box');
             }
         }
     }
