@@ -9,14 +9,14 @@
                     <v-icon icon="fa-solid fa-bars" />
                 </v-app-bar-nav-icon>
             </template>
-            <v-app-bar-title>Bio</v-app-bar-title>
+            <v-app-bar-title>{{ $route.meta.title || 'Biological Storage Box' }}</v-app-bar-title>
         </v-app-bar>
         <!-- 主要内容区域 -->
         <v-main style="height: calc(100vh - 64px - 56px)">
             <router-view></router-view>
         </v-main>
         <!-- 底部导航栏 -->
-        <NavBar></NavBar>
+        <NavBar v-if="$route.meta.showNavBar"></NavBar>
     </v-app>
 </template>
 

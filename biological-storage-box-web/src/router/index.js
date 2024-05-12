@@ -9,17 +9,28 @@ const routes = [
     {
         path: '/demo',
         name: 'demo',
-        component: () => import('@/pages/demo/demo.vue')
+        component: () => import('@/pages/demo/demo.vue'),
+        meta: {
+            title: '示例页面',
+            showNavBar: true
+        }
     },
     {
         path: '/auth/login',
         name: 'login',
-        component: () => import('@/pages/auth/login.vue')
+        component: () => import('@/pages/auth/login.vue'),
+        meta: {
+            title: '用户登录'
+        }
     },
     {
         path: '/box/manage',
         name: 'box-manage',
-        component: () => import('@/pages/box/manage.vue')
+        component: () => import('@/pages/box/manage.vue'),
+        meta: {
+            title: '试剂盒管理',
+            showNavBar: true
+        }
     }
 ];
 
