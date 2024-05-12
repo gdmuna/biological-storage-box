@@ -7,6 +7,7 @@ import router from '@/router';
 // Pinia
 import { createPinia } from 'pinia';
 const pinia = createPinia();
+import store from '@/stores/store';
 
 // Vuetify
 import { createVuetify } from 'vuetify';
@@ -27,4 +28,4 @@ import api from '@/api/api';
 // App Entry
 import App from '@/App.vue';
 
-const app = createApp(App).use(router).use(pinia).use(vuetify).use(api).mount('#app');
+const app = createApp(App).use(router).use(pinia).use(store).use(vuetify).use(api).mount('#app');
