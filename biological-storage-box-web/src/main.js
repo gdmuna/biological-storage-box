@@ -19,13 +19,13 @@ const vuetify = createVuetify({
     }
 });
 
+// App Entry
+import App from '@/App.vue';
+
 // global styles
 import '@/style.css';
 
 // api
 import api from '@/api/api';
-
-// App Entry
-import App from '@/App.vue';
 
 const app = createApp(App).use(router).use(pinia).use(store).use(vuetify).use(api).mount('#app');
