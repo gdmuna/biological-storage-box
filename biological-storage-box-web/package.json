@@ -34,6 +34,7 @@
         "vuetify": "^3.6.4"
     },
     "devDependencies": {
+        "@mdi/font": "^7.4.47",
         "@vitejs/plugin-vue": "^5.0.4",
         "autoprefixer": "^10.4.19",
         "daisyui": "^4.9.0",
