@@ -3,11 +3,11 @@ import request from '@/utils/request';
 const moduleUrl = '/org/box';
 // 组织 = 课题组
 const orgBox = {
-    // 组织创建组织
+    // 组织创建盒子
     add(data) {
         return request.post(`${moduleUrl}/add`, data);
     },
-    // 组织删除组织
+    // 组织删除盒子
     del(data) {
         return request.delete(`${moduleUrl}/del`, data);
     },
