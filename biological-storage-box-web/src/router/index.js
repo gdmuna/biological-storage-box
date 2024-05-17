@@ -31,6 +31,14 @@ const routes = [
             title: '试剂盒管理',
             showNavBar: true
         }
+    },
+    {
+        path: '/box/create',
+        name: 'box-create',
+        component: () => import('@/pages/box/create.vue'),
+        meta: {
+            title: '试剂盒创建'
+        }
     }
 ];
 
