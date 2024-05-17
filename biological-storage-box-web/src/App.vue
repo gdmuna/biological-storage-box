@@ -5,8 +5,11 @@
         <!-- 应用栏 -->
         <v-app-bar color="light-green-lighten-1" :elevation="2">
             <template #prepend>
-                <v-btn icon="" @click="drawer = true">
+                <v-btn v-if="$route.meta.showNavBar" icon="" @click="drawer = true">
                     <v-icon class="fa-solid fa-bars"></v-icon>
+                </v-btn>
+                <v-btn v-if="!$route.meta.showNavBar" icon="" @click="goBack()">
+                    <v-icon class="fa-solid fa-chevron-left"></v-icon>
                 </v-btn>
             </template>
             <v-app-bar-title>{{ $route.meta.title || 'Biological Storage Box' }}</v-app-bar-title>
