@@ -39,6 +39,22 @@ const routes = [
         meta: {
             title: '试剂盒创建'
         }
+    },
+    {
+        path: '/reagent',
+        name: 'reagent-manage',
+        component: () => import('@/pages/reagent/manage.vue'),
+        meta: {
+            title: '试剂管理'
+        }
+    },
+    {
+        path: '/reagent/operate',
+        name: 'reagent-operate',
+        component: () => import('@/pages/reagent/operate.vue'),
+        meta: {
+            title: '试剂操作'
+        }
     }
 ];
 
