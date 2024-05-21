@@ -55,6 +55,15 @@ const routes = [
         meta: {
             title: '试剂操作'
         }
+    },
+    {
+        path: '/user',
+        name: 'user',
+        component: () => import('@/pages/user/user.vue'),
+        meta: {
+            title: '我的',
+            showNavBar: true
+        }
     }
 ];
 
