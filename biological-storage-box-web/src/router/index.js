@@ -74,7 +74,7 @@ const routes = [
         }
     },
     {
-        path: '/gird',
+        path: '/grid',
         name: 'work',
         component: () => import('@/pages/work/work.vue'),
         meta: {
