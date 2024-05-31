@@ -57,11 +57,28 @@ const routes = [
         }
     },
     {
+        path: '/reagent/log',
+        name: 'reagent-log',
+        component: () => import('@/pages/reagent/log.vue'),
+        meta: {
+            title: '日志'
+        }
+    },
+    {
         path: '/user',
         name: 'user',
         component: () => import('@/pages/user/user.vue'),
         meta: {
             title: '我的',
+            showNavBar: true
+        }
+    },
+    {
+        path: '/gird',
+        name: 'work',
+        component: () => import('@/pages/work/work.vue'),
+        meta: {
+            title: '工作台',
             showNavBar: true
         }
     }

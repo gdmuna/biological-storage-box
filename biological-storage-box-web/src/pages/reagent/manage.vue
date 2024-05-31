@@ -20,7 +20,7 @@
                 <div class="flex justify-around">
                     <div>
                         <v-btn variant="flat" color="teal-lighten-1" :disabled="!(selectedCount == 1)">详情</v-btn>
-                        <v-btn class="ml-2" variant="flat" color="teal-lighten-1" :disabled="!(selectedCount == 1)">日志</v-btn>
+                        <v-btn class="ml-2" variant="flat" color="teal-lighten-1" :disabled="!(selectedCount == 1)" @click="handleLog()">日志</v-btn>
                     </div>
                     <v-btn variant="flat" color="teal-darken-2" :disabled="!(selectedCount > 0)" @click="handleOperation()">操作</v-btn>
                 </div>
@@ -108,6 +108,16 @@ export default {
             this.$store.reagent.selection = selectedReagentList;
             // 跳转到试剂操作页面
             this.$router.push({ path: '/reagent/operate' });
+        },
+        // 日志按钮
+        async handleLog() {
+            // 根据 selection 从 reagentList 中获取选中的试剂网格的信息
+            // selection 中的元素就是 reagentList 的索引
+            const selectedReagentList = this.selection.map((index) => this.reagentList[index]);
+            // 将选中的试剂网格的信息传递给 store
+            this.$store.reagent.selection = selectedReagentList;
+            // 跳转到试剂日志页面
+            this.$router.push({ path: '/reagent/log' });
         }
     }
 };
