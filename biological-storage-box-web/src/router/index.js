@@ -97,6 +97,14 @@ const routes = [
             title: '工作台',
             showNavBar: true
         }
+    },
+    {
+        path: '/org/create',
+        name: 'org-create',
+        component: () => import('@/pages/org/create.vue'),
+        meta: {
+            title: '课题组创建'
+        }
     }
 ];
 

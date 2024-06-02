@@ -58,7 +58,7 @@ export default {
                 yaxis: this.yaxis,
                 introduce: this.introduce
             });
-            if (result && result.code === 200) {
+            if (result === '操作完成') {
                 this.$router.push('/box');
             }
         }
