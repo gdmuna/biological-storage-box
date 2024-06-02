@@ -3,7 +3,7 @@
         <v-btn @click="$router.push('/box')">
             <v-icon class="fa-duotone fa-vial"></v-icon>
         </v-btn>
-        <v-btn @click="$router.push('/gird')">
+        <v-btn @click="$router.push('/grid')">
             <v-icon class="fa-duotone fa-grid-2"></v-icon>
         </v-btn>
         <v-btn @click="$router.push('/user')">

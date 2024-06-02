@@ -65,6 +65,22 @@ const routes = [
         }
     },
     {
+        path: '/reagent/detail',
+        name: 'reagent-detail',
+        component: () => import('@/pages/reagent/detail.vue'),
+        meta: {
+            title: '试剂详情'
+        }
+    },
+    {
+        path: '/box/detail',
+        name: 'box-detail',
+        component: () => import('@/pages/box/detail.vue'),
+        meta: {
+            title: '试剂盒详情'
+        }
+    },
+    {
         path: '/user',
         name: 'user',
         component: () => import('@/pages/user/user.vue'),

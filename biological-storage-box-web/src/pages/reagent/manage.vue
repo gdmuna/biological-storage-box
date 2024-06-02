@@ -19,8 +19,8 @@
             <v-sheet class="mt-3 p-3" elevation="2" rounded>
                 <div class="flex justify-around">
                     <div>
-                        <v-btn variant="flat" color="teal-lighten-1" :disabled="!(selectedCount == 1)" @click="routeToDetailReagent()">详情</v-btn>
-                        <v-btn class="ml-2" variant="flat" color="teal-lighten-1" :disabled="!(selectedCount == 1)" @click="routeToLogReagent()">日志</v-btn>
+                        <v-btn variant="flat" color="teal-lighten-1" :disabled="!(selectedCount <= 1)" @click="routeToDetailReagent()">详情</v-btn>
+                        <v-btn class="ml-2" variant="flat" color="teal-lighten-1" :disabled="!(selectedCount <= 1)" @click="routeToLogReagent()">日志</v-btn>
                     </div>
                     <v-btn variant="flat" color="teal-darken-2" :disabled="!(selectedCount > 0)" @click="handleOperation()">操作</v-btn>
                 </div>
@@ -116,8 +116,13 @@ export default {
         },
         // 跳转到试剂详情页面
         async routeToDetailReagent() {
-            let boxId = this.boxId;
-            this.$router.push({ path: '/reagent/detail', query: { boxId } });
+            if (this.selectedCount == 0) {
+                let boxId = this.boxId;
+                this.$router.push({ path: '/box/detail', query: { boxId } });
+            } else if (this.selectedCount == 1) {
+                let boxId = this.boxId;
+                this.$router.push({ path: '/reagent/detail', query: { boxId } });
+            }
         }
     }
 };

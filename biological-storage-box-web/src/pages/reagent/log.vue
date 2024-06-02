@@ -61,6 +61,7 @@ export default {
             const result = await this.$api.reagentLog.Box({ boxId, pageNum: 1, pageSize: 10 });
             this.boxList = result;
         },
+        // 操作类型判断
         statusJudgment(operationType) {
             if (operationType === 1) {
                 return '取';
