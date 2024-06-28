@@ -60,6 +60,16 @@ const request = {
             },
             body: JSON.stringify(data)
         });
+    },
+    // 封装 upload 请求
+    upload: (url, formData) => {
+        return request.fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Authorization': localStorage.getItem('token')
+            },
+            body: formData
+        });
     }
 };
 
