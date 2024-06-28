@@ -3,6 +3,12 @@
         <v-list>
             <v-list-item title="我的课题组"></v-list-item>
         </v-list>
+        <v-divider class="border-opacity-75"></v-divider>
+        <v-list :items="items"></v-list>
+        <v-divider class="border-opacity-75"></v-divider>
+        <v-list-item append-icon="mdi-chevron-right" lines="two" subtitle="创建或加入课题组/组织" link></v-list-item>
+        <v-list-item append-icon="mdi-chevron-right" lines="two" subtitle="退出或管理已有课题组/组织" link></v-list-item>
+        <v-divider class="border-opacity-75"></v-divider>
     </v-navigation-drawer>
 </template>
 
@@ -18,7 +24,26 @@ export default {
     },
     emits: ['update:value'],
     data() {
-        return {};
+        return {
+            items: [
+                {
+                    title: 'Foo',
+                    value: 'foo'
+                },
+                {
+                    title: 'Bar',
+                    value: 'bar'
+                },
+                {
+                    title: 'Fizz',
+                    value: 'fizz'
+                },
+                {
+                    title: 'Buzz',
+                    value: 'buzz'
+                }
+            ]
+        };
     },
     computed: {
         _drawer: {
