@@ -2,7 +2,7 @@ import request from '@/utils/request';
 
 const moduleUrl = '/org/user';
 // 组织 = 课题组
-const orgBox = {
+const orgUser = {
     // 将成员踢出组织
     del(data) {
         return request.delete(`${moduleUrl}/del`, data);
@@ -25,4 +25,4 @@ const orgBox = {
     }
 };
 
-export default orgBox;
+export default orgUser;
