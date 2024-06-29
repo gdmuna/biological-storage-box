@@ -6,8 +6,18 @@
         <v-divider class="border-opacity-75"></v-divider>
         <v-list :items="items"></v-list>
         <v-divider class="border-opacity-75"></v-divider>
-        <v-list-item append-icon="mdi-chevron-right" lines="two" subtitle="创建或加入课题组/组织" link></v-list-item>
-        <v-list-item append-icon="mdi-chevron-right" lines="two" subtitle="退出或管理已有课题组/组织" link></v-list-item>
+        <v-list>
+            <v-list-group>
+                <template #activator="{ props }">
+                    <v-list-item v-bind="props" subtitle="创建或加入课题组/组织"></v-list-item>
+                </template>
+                <v-list>
+                    <v-list-item append-icon="mdi-chevron-right" subtitle="创建课题组/组织" link></v-list-item>
+                    <v-list-item append-icon="mdi-chevron-right" subtitle="加入课题组/组织" link></v-list-item>
+                </v-list>
+            </v-list-group>
+            <v-list-item append-icon="mdi-chevron-right" lines="two" subtitle="退出已有课题组/组织" link></v-list-item>
+        </v-list>
         <v-divider class="border-opacity-75"></v-divider>
     </v-navigation-drawer>
 </template>

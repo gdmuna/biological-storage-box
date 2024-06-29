@@ -13,7 +13,9 @@
                 </v-btn>
             </template>
             <v-app-bar-title>{{ $route.meta.title || 'Biological Storage Box' }}</v-app-bar-title>
-            <v-btn v-if="$route.meta.showNavBar" icon="mdi-magnify" @click="goSearch()"></v-btn>
+            <template #append>
+                <v-btn v-if="$route.meta.showNavBar" icon="mdi-magnify" @click="goSearch()"></v-btn>
+            </template>
         </v-app-bar>
         <!-- 主要内容区域 -->
         <v-main style="height: calc(100vh - 64px - 56px)">

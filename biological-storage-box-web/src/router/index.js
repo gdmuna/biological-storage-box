@@ -105,6 +105,14 @@ const routes = [
         meta: {
             title: '课题组创建'
         }
+    },
+    {
+        path: '/search/search',
+        name: 'search',
+        component: () => import('@/pages/search/search.vue'),
+        meta: {
+            title: '搜索'
+        }
     }
 ];
 
