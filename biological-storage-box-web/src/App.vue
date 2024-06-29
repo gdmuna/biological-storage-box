@@ -13,6 +13,9 @@
                 </v-btn>
             </template>
             <v-app-bar-title>{{ $route.meta.title || 'Biological Storage Box' }}</v-app-bar-title>
+            <template #append>
+                <v-btn v-if="$route.meta.showNavBar" icon="mdi-magnify" @click="goSearch()"></v-btn>
+            </template>
         </v-app-bar>
         <!-- 主要内容区域 -->
         <v-main style="height: calc(100vh - 64px - 56px)">
@@ -50,6 +53,10 @@ export default {
         // 用户在移动端设备点击后退按钮时，返回上一条路由
         goBack() {
             this.$router.go(-1);
+        },
+        // 用户在移动端设备点击搜索按钮时，跳转到搜索页面
+        goSearch() {
+            this.$router.push('/search/search');
         }
     }
 };
