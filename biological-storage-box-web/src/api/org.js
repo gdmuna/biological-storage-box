@@ -1,5 +1,4 @@
 import request from '@/utils/request';
-import { list } from 'postcss';
 
 const moduleUrl = '/org';
 // 组织 = 课题组
