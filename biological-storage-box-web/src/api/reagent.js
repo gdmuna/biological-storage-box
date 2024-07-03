@@ -3,7 +3,7 @@ import request from '@/utils/request';
 const moduleUrl = '/reagent';
 
 const reagent = {
-    // 查找盒子的所以试剂
+    // 查找盒子的所有试剂
     list(data) {
         return request.get(`${moduleUrl}/list`, data);
     },
