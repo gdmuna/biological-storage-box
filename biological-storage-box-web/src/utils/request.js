@@ -23,7 +23,7 @@ const request = {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': localStorage.getItem('token')
+                'token': localStorage.getItem('token')
             },
             query: JSON.stringify(data)
         });
@@ -34,7 +34,7 @@ const request = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('token')
+                'token': localStorage.getItem('token')
             },
             body: JSON.stringify(data)
         });
@@ -45,7 +45,7 @@ const request = {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('token')
+                'token': localStorage.getItem('token')
             },
             body: JSON.stringify(data)
         });
@@ -56,7 +56,7 @@ const request = {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('token')
+                'token': localStorage.getItem('token')
             },
             body: JSON.stringify(data)
         });
@@ -66,7 +66,7 @@ const request = {
         return request.fetch(url, {
             method: 'PUT',
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'token': localStorage.getItem('token')
             },
             body: formData
         });
