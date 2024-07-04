@@ -41,6 +41,9 @@ export default {
             boxList: []
         };
     },
+    watch: {
+        '$store.user.currentOrg': 'getBox'
+    },
     created() {},
     mounted() {
         this.getBox();
@@ -49,7 +52,8 @@ export default {
     methods: {
         // 获取试剂盒列表
         async getBox() {
-            const result = await this.$api.box.org({ pageNum: 1, pageSize: 10 });
+            const orgID = this.$store.user.currentOrg;
+            const result = await this.$api.box.list({ orgID: orgID, pageNum: 1, pageSize: 10 });
             this.boxList = result;
         },
         // 跳转到管理试剂页面
