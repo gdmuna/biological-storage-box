@@ -28,10 +28,12 @@ export default {
     mounted() {},
     updated() {},
     methods: {
+        // 获取组织列表
         async fetchOrgList() {
             const orgList = await this.$api.org.list();
             return orgList;
         },
+        // 登录
         async login() {
             const result = await this.$api.auth.login({ account: this.user.account, password: this.user.password });
             if (result) {
