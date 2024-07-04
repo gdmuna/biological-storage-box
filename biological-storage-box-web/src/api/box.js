@@ -15,6 +15,10 @@ const box = {
     list(data) {
         return request.get(`${moduleUrl}/list`, data);
     },
+    // 获取用户盒子信息
+    one(data) {
+        return request.get(`${moduleUrl}/one`, data);
+    },
     // 用户更改盒子信息
     update(data) {
         return request.put(`${moduleUrl}/update`, data);

@@ -28,10 +28,16 @@ export default {
     mounted() {},
     updated() {},
     methods: {
+        async fetchOrgList() {
+            const orgList = await this.$api.org.list();
+            return orgList;
+        },
         async login() {
             const result = await this.$api.auth.login({ account: this.user.account, password: this.user.password });
             if (result) {
-                this.$router.push('/box');
+                const orgList = await this.fetchOrgList();
+                this.$store.user.currentOrgID = orgList[0].id;
+                this.$router.push({ path: '/box' });
             }
         }
     }

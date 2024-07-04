@@ -4,21 +4,17 @@
             <v-card>
                 <v-list-item class="pt-4" append-icon="mdi-chevron-right" lines="two" subtitle="试剂盒名称" link>{{ box.name }}</v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
-                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="试剂盒位置" link>{{ box.access }}</v-list-item>
+                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="试剂盒位置" link>{{ box.introduce }}</v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
-                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="创建人员" link>{{ box.createBy }}</v-list-item>
+                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="创建组织" link>{{ box.createBy }}</v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
                 <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="创建时间" link>{{ box.createTime }}</v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
                 <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="更新时间" link>{{ box.updateTime }}</v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
-                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="长度x" link>{{ box.xaxis }}</v-list-item>
+                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="长度x" link>{{ box.x }}</v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
-                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="长度y" link>{{ box.yaxis }}</v-list-item>
-                <v-divider class="border-opacity-75"></v-divider>
-                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="图片" link><v-img alt="John" src="/images/reagent.png"></v-img></v-list-item>
-                <v-divider class="border-opacity-75"></v-divider>
-                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="简介" link>{{ box.introduce }}</v-list-item>
+                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="长度y" link>{{ box.y }}</v-list-item>
             </v-card>
         </div>
     </div>
@@ -45,8 +41,9 @@ export default {
     methods: {
         // 获取试剂盒详情
         async getDetail() {
-            let id = this.boxId;
-            const result = await this.$api.box.one({ id });
+            let boxId = this.boxId;
+            const orgId = this.$store.user.currentOrgID;
+            const result = await this.$api.box.one({ boxID: boxId, orgID: orgId });
             this.box = result;
         }
     }

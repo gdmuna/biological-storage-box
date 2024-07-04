@@ -27,6 +27,7 @@
                         <v-btn variant="flat" color="light-green-lighten-4">删除</v-btn>
                     </v-card-actions>
                 </v-card>
+                <v-fab icon="mdi-plus" class="mb-6" location="bottom end" size="60" absolute app appear @click="routeToCreateBox()"></v-fab>
             </div>
         </div>
     </div>
@@ -49,12 +50,17 @@ export default {
     methods: {
         // 获取试剂盒列表
         async getBox() {
-            const result = await this.$api.box.org({ pageNum: 1, pageSize: 10 });
+            const orgID = this.$store.user.currentOrgID;
+            const result = await this.$api.box.list({ orgID: orgID, pageNum: 1, pageSize: 10 });
             this.boxList = result;
         },
         // 跳转到管理试剂页面
         async routeToManageReagent(boxId) {
             this.$router.push({ path: '/reagent', query: { boxId } });
+        },
+        // 跳转到创建试剂盒页面
+        async routeToCreateBox() {
+            this.$router.push({ path: '/box/create' });
         }
     }
 };
