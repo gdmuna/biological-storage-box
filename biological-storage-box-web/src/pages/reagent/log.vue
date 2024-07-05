@@ -4,7 +4,7 @@
             <div v-for="(item, index) in boxList" :key="item.id" :class="index === 0 ? '' : 'mt-5'">
                 <v-card class="pb-2">
                     <v-card-item>
-                        <v-card-title>{{ item.tag }}</v-card-title>
+                        <v-card-title>{{ item.reagentLocationID }}</v-card-title>
                         <template #append>
                             <v-avatar size="24">
                                 <v-img>{{ statusJudgment(item.operationType) }}</v-img>
@@ -20,7 +20,7 @@
                     </v-card-item>
                     <v-card-text class="py-1">
                         操作位置：
-                        <v-chip size="small" color="purple-lighten-1">[{{ item.xaxis }},{{ item.yaxis }}]</v-chip>
+                        <v-chip size="small" color="purple-lighten-1">[{{ item.x }},{{ item.y }}]</v-chip>
                     </v-card-text>
                     <v-card-text class="py-1">
                         操作时间：
@@ -58,7 +58,8 @@ export default {
         // 获取试剂盒操作日志
         async getLog() {
             let boxId = this.boxId;
-            const result = await this.$api.reagentLog.Box({ boxId, pageNum: 1, pageSize: 10 });
+            const orgId = this.$store.user.currentOrg;
+            const result = await this.$api.boxLog.list({ boxID: boxId, orgID: orgId, pageNum: 1, pageSize: 10 });
             this.boxList = result;
         },
         // 操作类型判断

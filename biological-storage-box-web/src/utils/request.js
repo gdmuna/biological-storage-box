@@ -66,7 +66,7 @@ const request = {
         return request.fetch(url, {
             method: 'PUT',
             headers: {
-                'token': localStorage.getItem('token')
+                token: localStorage.getItem('token')
             },
             body: formData
         });
