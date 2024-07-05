@@ -1,7 +1,7 @@
 <template>
     <v-app>
         <!-- 组织切换菜单栏 -->
-        <OrgDrawer v-model="drawer"></OrgDrawer>
+        <OrgDrawer v-model="drawer" @drawer-stop="drawer = false"></OrgDrawer>
         <!-- 应用栏 -->
         <v-app-bar color="light-green-lighten-1" :elevation="2">
             <template #prepend>
