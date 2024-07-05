@@ -6,23 +6,26 @@
         <v-divider class="border-opacity-75"></v-divider>
         <v-list v-if="!loading">
             <template v-if="filteredItems.length > 0">
-                <v-list-item v-for="(item, index) in filteredItems" :key="item.id" :class="index === 0 ? '' : 'mt-5'">
-                    <v-btn class="flex justify-start items-center p-0 border border-gray-400 shadow-none w-full" style="background-color: #c8e6c9; transition: background-color 0.3s ease" @mouseover="(e) => (e.currentTarget.style.backgroundColor = '#e0e0e0')" @mouseleave="(e) => (e.currentTarget.style.backgroundColor = '#f5f5f5')" @click="readOrgID(item.id)">
-                        <div class="w-full text-left p-4">
-                            <div class="font-bold">{{ item.name }}</div>
-                            <div class="text-gray-600">{{ item.introduce }}</div>
+                <v-list-item v-for="item in filteredItems" :key="item.id" class="pl-0">
+                    <v-card class="p-0 rounded-e-pill" variant="flat" color="light-green-lighten-3" block @click="readOrgID(item.id)">
+                        <div class="flex flex-row justify-start items-center">
+                            <v-icon class="fa-duotone fa-user-group rounded-lg bg-green-50 m-2 p-4" color="light-green-lighten-3" size="x-small"></v-icon>
+                            <div class="w-full text-left pl-1">
+                                <div>{{ item.name }}</div>
+                                <div class="text-gray-600 text-xs">{{ item.introduce }}</div>
+                            </div>
                         </div>
-                    </v-btn>
+                    </v-card>
                 </v-list-item>
             </template>
             <template v-else>
                 <v-list-item>
-                    <v-btn class="text-left p-0 border border-gray-400 shadow-none" width="100%">
-                        <div class="w-full p-4">
-                            <div class="font-bold mb-4">暂无课题组</div>
-                            <div class="text-gray-600">请创建或加入课题组</div>
+                    <v-card variant="flat" color="light-green-lighten-4" block>
+                        <div class="flex flex-col justify-center items-center p-2">
+                            <div>暂无课题组</div>
+                            <div class="text-gray-600 text-sm">请创建或加入课题组</div>
                         </div>
-                    </v-btn>
+                    </v-card>
                 </v-list-item>
             </template>
         </v-list>
