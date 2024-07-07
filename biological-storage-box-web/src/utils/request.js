@@ -19,7 +19,7 @@ const request = {
     // 封装 GET 请求
     get: (url, data) => {
         const queryString = new URLSearchParams(data);
-        return request.fetch(`${url}?${queryString.toString()}`, {
+        return request.fetch(`${url}${data ? '?' : ''}${queryString.toString()}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -29,8 +29,9 @@ const request = {
         });
     },
     // 封装 POST 请求
-    post: (url, data) => {
-        return request.fetch(url, {
+    post: (url, data, query = null) => {
+        const queryString = query ? new URLSearchParams(query) : null;
+        return request.fetch(`${url}${query ? '?' + queryString.toString() : ''}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
