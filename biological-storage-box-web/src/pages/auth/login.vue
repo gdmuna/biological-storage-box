@@ -28,19 +28,33 @@ export default {
     mounted() {},
     updated() {},
     methods: {
-        // 获取组织列表
         async fetchOrgList() {
             const orgList = await this.$api.org.list();
             return orgList;
         },
-        // 登录
         async login() {
             const result = await this.$api.auth.login({ account: this.user.account, password: this.user.password });
-            if (result) {
-                const orgList = await this.fetchOrgList();
-                this.$store.user.currentOrgID = orgList[0].id;
-                this.$router.push({ path: '/box' });
+            // 登录失败
+            if (!result) {
+                return;
             }
+            const orgList = await this.fetchOrgList();
+            // 如果没有课题组则跳转到试剂盒管理页面
+            if (orgList.length === 0) {
+                this.$router.push('/box');
+                return;
+            }
+            // 从本地存储获取当前课题组ID并检测其是否有效
+            const localOrgID = localStorage.getItem('orgID');
+            const isOrgIDValid = orgList.some((org) => org.id === parseInt(localOrgID));
+            // 如果有效则使用本地存储的课题组ID，否则使用第一个课题组ID
+            if (isOrgIDValid) {
+                this.$store.user.currentOrg = localOrgID;
+            } else {
+                this.$store.user.currentOrg = orgList[0].id;
+                localStorage.setItem('orgID', orgList[0].id);
+            }
+            this.$router.push('/box');
         }
     }
 };

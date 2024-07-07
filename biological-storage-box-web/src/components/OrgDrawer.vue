@@ -90,6 +90,7 @@ export default {
         },
         async readOrgID(orgID) {
             this.$store.user.currentOrg = orgID;
+            localStorage.setItem('orgID', orgID);
             console.log(this.$store.user.currentOrg); // 调试当前组织的orgID信息是否存入全局变量
             await this.$nextTick();
             this.$router.push('/box');
