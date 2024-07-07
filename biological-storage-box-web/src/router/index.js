@@ -41,6 +41,14 @@ const routes = [
         }
     },
     {
+        path: '/box/update',
+        name: 'box-update',
+        component: () => import('@/pages/box/update.vue'),
+        meta: {
+            title: '更改试剂盒信息'
+        }
+    },
+    {
         path: '/reagent',
         name: 'reagent-manage',
         component: () => import('@/pages/reagent/manage.vue'),

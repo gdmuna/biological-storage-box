@@ -4,10 +4,9 @@
             <v-card class="w-full mx-auto px-10">
                 <v-form class="w-full max-w-sm mx-auto py-16" @submit.prevent="boxAdd">
                     <v-text-field v-model="name" label="试剂盒名称" :rules="[rules.notNull]"></v-text-field>
-                    <v-text-field v-model="access" label="试剂盒位置" :rules="[rules.notNull]"></v-text-field>
-                    <v-text-field v-model="xaxis" label="长度x" :rules="[rules.notNull, rules.isNumber]"></v-text-field>
-                    <v-text-field v-model="yaxis" label="宽度y" :rules="[rules.notNull, rules.isNumber]"></v-text-field>
-                    <v-textarea v-model="introduce" label="简介"></v-textarea>
+                    <v-text-field v-model="x" label="长度x" :rules="[rules.notNull, rules.isNumber]"></v-text-field>
+                    <v-text-field v-model="y" label="宽度y" :rules="[rules.notNull, rules.isNumber]"></v-text-field>
+                    <v-textarea v-model="introduce" label="试剂盒位置" :rules="[rules.notNull]"></v-textarea>
                     <v-btn class="mt-4" type="submit" block :disabled="!btnAllowClick">创建</v-btn>
                 </v-form>
             </v-card>
@@ -22,10 +21,9 @@ export default {
     data() {
         return {
             name: null,
-            access: null,
-            xaxis: null,
-            yaxis: null,
             introduce: null,
+            x: null,
+            y: null,
             rules: {
                 notNull: (value) => {
                     if (value) return true;
@@ -41,8 +39,13 @@ export default {
     computed: {
         // 创建按钮是否可点击
         btnAllowClick() {
-            const value = this.rules.notNull(this.name) && this.rules.notNull(this.access) && this.rules.notNull(this.xaxis) && this.rules.notNull(this.yaxis) && (this.rules.isNumber(this.xaxis) === true ? true : false) && (this.rules.isNumber(this.yaxis) === true ? true : false);
-            return value === true ? true : false;
+            const firstValue = this.rules.notNull(this.x) && this.rules.notNull(this.y) && (this.rules.isNumber(this.x) === true ? true : false) && (this.rules.isNumber(this.y) === true ? true : false);
+            const secondeValue = this.rules.notNull(this.name) && this.rules.notNull(this.introduce);
+            if (firstValue && secondeValue === true) {
+                return true;
+            } else {
+                return false;
+            }
         }
     },
     created() {},
@@ -54,16 +57,15 @@ export default {
             const result = await this.$api.box.add(
                 {
                     name: this.name,
-                    access: this.access,
-                    xaxis: this.xaxis,
-                    yaxis: this.yaxis,
-                    introduce: this.introduce
+                    introduce: this.introduce,
+                    x: this.x,
+                    y: this.y
                 },
                 {
-                    orgID: this.$store.user.currentOrg
+                    orgID: currentOrg
                 }
             );
-            if (result === '操作完成') {
+            if (result === 1) {
                 this.$router.push('/box');
             }
         }

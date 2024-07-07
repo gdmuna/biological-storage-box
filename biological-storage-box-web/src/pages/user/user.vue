@@ -11,6 +11,8 @@
             <v-card class="mt-5">
                 <v-list-item prepend-icon="mdi-message" append-icon="mdi-chevron-right" lines="two" subtitle="消息" link></v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
+                <v-list-item prepend-icon="mdi-message-alert" append-icon="mdi-chevron-right" lines="two" subtitle="反馈意见" link></v-list-item>
+                <v-divider class="border-opacity-75"></v-divider>
                 <v-list-item prepend-icon="mdi-cog" append-icon="mdi-chevron-right" lines="two" subtitle="设置" link></v-list-item>
             </v-card>
         </div>

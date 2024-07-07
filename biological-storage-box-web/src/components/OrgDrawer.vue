@@ -36,7 +36,7 @@
                     <v-list-item v-bind="props" subtitle="创建或加入课题组/组织"></v-list-item>
                 </template>
                 <v-list>
-                    <v-list-item append-icon="mdi-chevron-right" subtitle="创建课题组/组织" link></v-list-item>
+                    <v-list-item append-icon="mdi-chevron-right" subtitle="创建课题组/组织" link @click="createOrg()"></v-list-item>
                     <v-list-item append-icon="mdi-chevron-right" subtitle="加入课题组/组织" link></v-list-item>
                 </v-list>
             </v-list-group>
@@ -94,6 +94,10 @@ export default {
             await this.$nextTick();
             this.$router.push('/box');
             this.$emit('drawerStop', false);
+        },
+        // 跳转到创建课题组页面
+        async createOrg() {
+            this.$router.push({ path: '/org/create' });
         }
     }
 };
