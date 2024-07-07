@@ -27,8 +27,8 @@
                         <v-btn variant="flat" color="light-green-lighten-4" @click="deleteBox(item.id)">删除</v-btn>
                     </v-card-actions>
                 </v-card>
-                <v-fab icon="mdi-plus" class="mb-6" location="bottom end" size="60" absolute app appear @click="routeToCreateBox()"></v-fab>
             </div>
+            <v-fab icon="mdi-plus" class="mb-6" location="bottom end" size="60" absolute app appear @click="routeToCreateBox()"></v-fab>
         </div>
     </div>
 </template>
