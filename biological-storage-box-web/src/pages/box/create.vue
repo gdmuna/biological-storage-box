@@ -51,13 +51,18 @@ export default {
     methods: {
         async boxAdd() {
             const currentOrg = this.$store.user.currentOrg;
-            const result = await this.$api.box.add({
-                name: this.name,
-                access: this.access,
-                xaxis: this.xaxis,
-                yaxis: this.yaxis,
-                introduce: this.introduce
-            });
+            const result = await this.$api.box.add(
+                {
+                    name: this.name,
+                    access: this.access,
+                    xaxis: this.xaxis,
+                    yaxis: this.yaxis,
+                    introduce: this.introduce
+                },
+                {
+                    orgID: this.$store.user.currentOrg
+                }
+            );
             if (result === '操作完成') {
                 this.$router.push('/box');
             }

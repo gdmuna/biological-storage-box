@@ -4,8 +4,8 @@ const moduleUrl = '/box';
 
 const box = {
     // 用户创建盒子
-    add(data) {
-        return request.post(`${moduleUrl}/add`, data);
+    add(data, query) {
+        return request.post(`${moduleUrl}/add`, data, query);
     },
     // 用户删除盒子
     del(data) {
