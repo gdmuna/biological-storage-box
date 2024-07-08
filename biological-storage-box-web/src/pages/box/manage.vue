@@ -23,12 +23,12 @@
                     </v-card-text>
                     <v-card-actions>
                         <v-btn variant="flat" color="light-green-lighten-4" @click="routeToManageReagent(item.id)">管理试剂</v-btn>
-                        <v-btn variant="flat" color="light-green-lighten-4">编辑信息</v-btn>
-                        <v-btn variant="flat" color="light-green-lighten-4">删除</v-btn>
+                        <v-btn variant="flat" color="light-green-lighten-4" @click="routeToEditBox(item.id)">编辑信息</v-btn>
+                        <v-btn variant="flat" color="light-green-lighten-4" @click="deleteBox(item.id)">删除</v-btn>
                     </v-card-actions>
                 </v-card>
-                <v-fab icon="mdi-plus" class="mb-6" location="bottom end" size="60" absolute app appear @click="routeToCreateBox()"></v-fab>
             </div>
+            <v-fab icon="mdi-plus" class="mb-6" location="bottom end" size="60" absolute app appear @click="routeToCreateBox()"></v-fab>
         </div>
     </div>
 </template>
@@ -54,13 +54,43 @@ export default {
         // 获取试剂盒列表
         async getBox() {
             const orgID = this.$store.user.currentOrg;
-
             const result = await this.$api.box.list({ orgID: orgID, pageNum: 1, pageSize: 10 });
             this.boxList = result;
         },
         // 跳转到管理试剂页面
         async routeToManageReagent(boxId) {
             this.$router.push({ path: '/reagent', query: { boxId } });
+        },
+        // 跳转到编辑试剂盒页面
+        async routeToEditBox(boxId) {
+            this.$router.push({ path: '/box/update', query: { boxId } });
+        },
+        // 获取某个试剂盒的详细信息
+        async getBoxInfo(boxId) {
+            const orgID = this.$store.user.currentOrg;
+            const result = await this.$api.box.one({ boxID: boxId, orgID: orgID });
+            return result;
+        },
+        // 删除试剂盒
+        async deleteBox(boxId) {
+            const orgID = this.$store.user.currentOrg;
+            const orgList = await this.getBoxInfo(boxId);
+            const result = await this.$api.box.del(
+                {
+                    createBy: orgList.createBy,
+                    id: orgList.id,
+                    introduce: orgList.introduce,
+                    name: orgList.name,
+                    x: orgList.x,
+                    y: orgList.y
+                },
+                {
+                    orgID: orgID
+                }
+            );
+            if (result === 1) {
+                this.$router.push({ path: '/box' });
+            }
         },
         // 跳转到创建试剂盒页面
         async routeToCreateBox() {

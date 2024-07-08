@@ -8,8 +8,8 @@ const box = {
         return request.post(`${moduleUrl}/add`, data, query);
     },
     // 用户删除盒子
-    del(data) {
-        return request.delete(`${moduleUrl}/del`, data);
+    del(data, query) {
+        return request.delete(`${moduleUrl}/del`, data, query);
     },
     // 获取用户组织下的盒子列表
     list(data) {
@@ -20,8 +20,8 @@ const box = {
         return request.get(`${moduleUrl}/one`, data);
     },
     // 用户更改盒子信息
-    update(data) {
-        return request.put(`${moduleUrl}/update`, data);
+    update(data, query) {
+        return request.put(`${moduleUrl}/update`, data, query);
     }
 };
 

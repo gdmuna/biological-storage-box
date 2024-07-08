@@ -41,8 +41,9 @@ const request = {
         });
     },
     // 封装 PUT 请求
-    put: (url, data) => {
-        return request.fetch(url, {
+    put: (url, data, query = null) => {
+        const queryString = query ? new URLSearchParams(query) : null;
+        return request.fetch(`${url}${query ? '?' + queryString.toString() : ''}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -52,8 +53,9 @@ const request = {
         });
     },
     // 封装 DELETE 请求
-    delete: (url, data) => {
-        return request.fetch(url, {
+    delete: (url, data, query = null) => {
+        const queryString = query ? new URLSearchParams(query) : null;
+        return request.fetch(`${url}${query ? '?' + queryString.toString() : ''}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
