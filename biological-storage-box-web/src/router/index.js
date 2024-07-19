@@ -145,6 +145,14 @@ const routes = [
         meta: {
             title: '设置'
         }
+    },
+    {
+        path: '/user/feedback',
+        name: 'feedback',
+        component: () => import('@/pages/user/feedback.vue'),
+        meta: {
+            title: '意见反馈'
+        }
     }
 ];
 
