@@ -137,6 +137,14 @@ const routes = [
         meta: {
             title: '申请理由'
         }
+    },
+    {
+        path: '/user/setting',
+        name: 'setting',
+        component: () => import('@/pages/user/setting.vue'),
+        meta: {
+            title: '设置'
+        }
     }
 ];
 
