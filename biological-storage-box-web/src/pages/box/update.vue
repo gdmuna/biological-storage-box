@@ -4,9 +4,7 @@
             <v-card class="w-full mx-auto px-10">
                 <v-form class="w-full max-w-sm mx-auto py-16" @submit.prevent="boxAdd">
                     <v-text-field v-model="boxInfo.name" label="试剂盒名称" :rules="[rules.notNull]"></v-text-field>
-                    <v-text-field v-model="boxInfo.x" label="长度x" :rules="[rules.notNull, rules.isNumber]"></v-text-field>
-                    <v-text-field v-model="boxInfo.y" label="宽度y" :rules="[rules.notNull, rules.isNumber]"></v-text-field>
-                    <v-textarea v-model="boxInfo.introduce" label="试剂盒位置" :rules="[rules.notNull]"></v-textarea>
+                    <v-textarea v-model="boxInfo.introduce" label="试剂盒介绍" :rules="[rules.notNull]"></v-textarea>
                     <v-btn class="mt-4" type="submit" block :disabled="!btnAllowClick">更新</v-btn>
                 </v-form>
             </v-card>
@@ -37,9 +35,8 @@ export default {
     computed: {
         // 创建按钮是否可点击
         btnAllowClick() {
-            const firstValue = this.rules.notNull(this.boxInfo.x) && this.rules.notNull(this.boxInfo.y) && (this.rules.isNumber(this.boxInfo.x) === true ? true : false) && (this.rules.isNumber(this.boxInfo.y) === true ? true : false);
-            const secondeValue = this.rules.notNull(this.boxInfo.name) && this.rules.notNull(this.boxInfo.introduce);
-            if (firstValue && secondeValue === true) {
+            const value = this.rules.notNull(this.boxInfo.name) && this.rules.notNull(this.boxInfo.introduce);
+            if (value) {
                 return true;
             } else {
                 return false;
@@ -67,9 +64,7 @@ export default {
                     createBy: this.boxInfo.createBy,
                     id: this.boxInfo.id,
                     introduce: this.boxInfo.introduce,
-                    name: this.boxInfo.name,
-                    x: this.boxInfo.x,
-                    y: this.boxInfo.y
+                    name: this.boxInfo.name
                 },
                 {
                     orgID: orgID
