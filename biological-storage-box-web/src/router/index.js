@@ -121,6 +121,22 @@ const routes = [
         meta: {
             title: '搜索'
         }
+    },
+    {
+        path: '/org/joinOrg',
+        name: 'joinOrg',
+        component: () => import('@/pages/org/joinOrg.vue'),
+        meta: {
+            title: '搜索加入组织'
+        }
+    },
+    {
+        path: '/org/applyReason',
+        name: 'applyReason',
+        component: () => import('@/pages/org/applyReason.vue'),
+        meta: {
+            title: '申请理由'
+        }
     }
 ];
 
