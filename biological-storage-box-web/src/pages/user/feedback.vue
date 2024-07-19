@@ -103,7 +103,7 @@ export default {
                 // 创建FormData对象并组装图片上传数据
                 let formData = new FormData();
                 formData.append('file', filepond[i].file, 'inspection.png');
-                formData.append('file-name', `${fileName}.${filepond[i].fileExtension}`);
+                formData.append('file_name', `${fileName}.${filepond[i].fileExtension}`);
             }
         },
         // 提交反馈
