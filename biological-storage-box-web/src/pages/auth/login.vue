@@ -7,6 +7,8 @@
                 <v-text-field v-model="user.password" label="密码" :type="showPassword ? 'text' : 'password'" :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'" @click:append-inner="showPassword = !showPassword"></v-text-field>
                 <v-btn class="mt-2" text="登录" type="submit" block></v-btn>
             </v-form>
+            <!-- 添加 v-alert 显示登录失败消息 -->
+            <v-alert v-if="loginError" type="error" dismissible class="rounded-lg p-2 mx-auto mt-8 sm:w-2/3 md:w-1/2 lg:w-1/3">登录失败，请检查用户名和密码</v-alert>
         </div>
     </div>
 </template>
@@ -21,7 +23,8 @@ export default {
                 account: null,
                 password: null
             },
-            showPassword: false
+            showPassword: false,
+            loginError: false // 控制 v-alert 显示的变量
         };
     },
     created() {},
@@ -32,6 +35,10 @@ export default {
             const result = await this.$api.auth.login({ account: this.user.account, password: this.user.password });
             // 如果登录失败则直接结束后续操作
             if (!result) {
+                this.loginError = true; // 设置 loginError 为 true 显示 v-alert
+                setTimeout(() => {
+                    this.loginError = false; // 3秒后隐藏 v-alert
+                }, 3000);
                 return;
             }
             const orgList = await this.$api.org.list();
