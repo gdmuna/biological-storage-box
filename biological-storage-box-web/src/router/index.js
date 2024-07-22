@@ -65,6 +65,14 @@ const routes = [
         }
     },
     {
+        path: '/reagent/upload',
+        name: 'reagent-upload',
+        component: () => import('@/pages/reagent/upload.vue'),
+        meta: {
+            title: '图片上传'
+        }
+    },
+    {
         path: '/reagent/log',
         name: 'reagent-log',
         component: () => import('@/pages/reagent/log.vue'),

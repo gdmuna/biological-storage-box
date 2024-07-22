@@ -3,11 +3,20 @@
         <div class="w-full max-w-screen-sm mx-auto p-6">
             <!-- 基本信息 -->
             <v-sheet class="p-3" elevation="2" rounded>{{ boxInfo.name }}</v-sheet>
+            <div class="diff aspect-[16/9]">
+                <div class="diff-item-1">
+                    <img alt="daisy" :src="imageUrl1" />
+                </div>
+                <div class="diff-item-2">
+                    <img alt="daisy" :src="imageUrl2" />
+                </div>
+                <div class="diff-resizer"></div>
+            </div>
             <!-- 试剂网格 -->
             <v-sheet class="mt-3 p-3 overflow-x-scroll" elevation="2" rounded>
                 <v-item-group v-model="selection" class="w-full inline-grid" multiple>
-                    <div v-for="y in boxInfo.yaxis" :key="y" class="w-full flex justify-center">
-                        <div v-for="x in boxInfo.xaxis" :key="x">
+                    <div v-for="y in boxInfo.y" :key="y" class="w-full flex justify-center">
+                        <div v-for="x in boxInfo.x" :key="x">
                             <v-item v-slot="{ isSelected, toggle }">
                                 <v-card :color="cardColor(y, x, isSelected)" class="m-1" width="25" height="25" @click="toggle"></v-card>
                             </v-item>
@@ -25,6 +34,7 @@
                     <v-btn variant="flat" color="teal-darken-2" :disabled="!(selectedCount > 0)" @click="handleOperation()">操作</v-btn>
                 </div>
             </v-sheet>
+            <v-fab icon="mdi-plus" class="mb-6" location="bottom end" size="60" absolute app appear @click="routeToUploadImage()"></v-fab>
         </div>
     </div>
 </template>
@@ -38,20 +48,22 @@ export default {
             boxId: null,
             boxInfo: {},
             reagentList: [],
-            selection: []
+            selection: [],
+            imageUrl1: '',
+            imageUrl2: ''
         };
     },
     computed: {
         // 试剂网格的颜色
         cardColor() {
             return (y, x, isSelected) => {
-                const index = (y - 1) * this.boxInfo.xaxis + x - 1;
+                const index = (y - 1) * this.boxInfo.x + x - 1;
                 const reagent = this.reagentList[index];
                 // 根据网格是否为空与是否被选中来设置颜色
                 if (isSelected) {
-                    return reagent && reagent.isDelete == 0 ? 'orange-lighten-1' : 'cyan-lighten-1';
+                    return reagent && reagent.isEmpty == 0 ? 'orange-lighten-1' : 'cyan-lighten-1';
                 } else {
-                    return reagent && reagent.isDelete == 0 ? 'light-green-lighten-1' : 'blue-grey-lighten-5';
+                    return reagent && reagent.isEmpty == 0 ? 'light-green-lighten-1' : 'blue-grey-lighten-5';
                 }
             };
         },
@@ -65,37 +77,48 @@ export default {
         this.boxId = this.$route.query.boxId;
         await this.getBoxInfo(this.boxId);
         await this.getReagentList(this.boxId);
+        this.getBoxImageUrl(this.boxId);
     },
     mounted() {},
     updated() {},
     methods: {
         // 获取某个试剂盒的详细信息
         async getBoxInfo(boxId) {
-            const result = await this.$api.box.one({ id: boxId });
+            const orgID = this.$store.user.currentOrg;
+            const result = await this.$api.box.one({ boxID: boxId, orgID: orgID });
             this.boxInfo = result;
+        },
+        // 获取试剂盒两张图片的 URL
+        async getBoxImageUrl(boxId) {
+            const orgID = this.$store.user.currentOrg;
+            const result = await this.$api.boxImage.compare({ boxID: boxId, orgID: orgID });
+            let baseUrl = 'https://picx.gdmuna.com/p/cheng';
+            this.imageUrl1 = baseUrl + result[1].url;
+            this.imageUrl2 = baseUrl + result[0].url;
         },
         // 获取某个试剂盒内的试剂列表
         async getReagentList(boxId) {
             // 初始化试剂列表
             const initialReagentList = [];
-            for (let y = 1; y <= this.boxInfo.yaxis; y++) {
-                for (let x = 1; x <= this.boxInfo.xaxis; x++) {
+            for (let y = 1; y <= this.boxInfo.y; y++) {
+                for (let x = 1; x <= this.boxInfo.x; x++) {
                     initialReagentList.push({
-                        id: (y - 1) * this.boxInfo.xaxis + x,
+                        id: (y - 1) * this.boxInfo.x + x,
                         boxId: Number(boxId),
-                        xaxis: x,
-                        yaxis: y,
-                        isDelete: 1,
-                        tag: null,
+                        name: null,
+                        x: x,
+                        y: y,
                         remark: null,
-                        updateTime: null
+                        updateTime: null,
+                        isEmpty: 1
                     });
                 }
             }
             // 合并试剂列表数据
-            const result = await this.$api.reagent.list({ boxId });
+            const orgId = this.$store.user.currentOrg;
+            const result = await this.$api.reagent.list({ boxID: boxId, orgID: orgId });
             this.reagentList = initialReagentList.map((reagent) => {
-                const item = result.find((item) => item.xaxis === reagent.xaxis && item.yaxis === reagent.yaxis);
+                const item = result.find((item) => item.x === reagent.x && item.y === reagent.y);
                 return item ? item : reagent;
             });
         },
@@ -123,6 +146,11 @@ export default {
                 let boxId = this.boxId;
                 this.$router.push({ path: '/reagent/detail', query: { boxId } });
             }
+        },
+        // 跳转到上传图片页面
+        async routeToUploadImage() {
+            let boxId = this.boxId;
+            this.$router.push({ path: '/reagent/upload', query: { boxId } });
         }
     }
 };

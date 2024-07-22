@@ -8,8 +8,8 @@ const reagent = {
         return request.get(`${moduleUrl}/list`, data);
     },
     // 批量更新试剂
-    update(data) {
-        return request.get(`${moduleUrl}/update`, data);
+    update(data, query) {
+        return request.post(`${moduleUrl}/update`, data, query);
     }
 };
 

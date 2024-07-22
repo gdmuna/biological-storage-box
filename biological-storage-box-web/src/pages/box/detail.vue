@@ -2,19 +2,19 @@
     <div class="main-container">
         <div class="w-full max-w-screen-sm h-full mx-auto px-10 py-10">
             <v-card>
-                <v-list-item class="pt-4" append-icon="mdi-chevron-right" lines="two" subtitle="试剂盒名称" link>{{ box.name }}</v-list-item>
+                <v-list-item class="pt-4" lines="two" subtitle="试剂盒名称" link>{{ box.name }}</v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
-                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="试剂盒位置" link>{{ box.introduce }}</v-list-item>
+                <v-list-item lines="two" subtitle="创建人员" link>{{ box.createBy }}</v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
-                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="创建组织" link>{{ box.createBy }}</v-list-item>
+                <v-list-item lines="two" subtitle="创建时间" link>{{ box.createTime }}</v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
-                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="创建时间" link>{{ box.createTime }}</v-list-item>
+                <v-list-item lines="two" subtitle="更新时间" link>{{ box.updateTime }}</v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
-                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="更新时间" link>{{ box.updateTime }}</v-list-item>
+                <v-list-item lines="two" subtitle="长度x" link>{{ box.x }}</v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
-                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="长度x" link>{{ box.x }}</v-list-item>
+                <v-list-item lines="two" subtitle="长度y" link>{{ box.y }}</v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
-                <v-list-item append-icon="mdi-chevron-right py-4" lines="two" subtitle="长度y" link>{{ box.y }}</v-list-item>
+                <v-list-item lines="two" subtitle="试剂盒介绍" link>{{ box.introduce }}</v-list-item>
             </v-card>
         </div>
     </div>
@@ -22,7 +22,7 @@
 
 <script>
 export default {
-    name: 'DetailPage',
+    name: 'BoxDetailPage',
     components: {},
     data() {
         return {
@@ -42,7 +42,7 @@ export default {
         // 获取试剂盒详情
         async getDetail() {
             let boxId = this.boxId;
-            const orgId = this.$store.user.currentOrgID;
+            const orgId = this.$store.user.currentOrg;
             const result = await this.$api.box.one({ boxID: boxId, orgID: orgId });
             this.box = result;
         }

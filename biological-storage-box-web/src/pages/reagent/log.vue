@@ -4,7 +4,7 @@
             <div v-for="(item, index) in boxList" :key="item.id" :class="index === 0 ? '' : 'mt-5'">
                 <v-card class="pb-2">
                     <v-card-item>
-                        <v-card-title>{{ item.reagentLocationID }}</v-card-title>
+                        <v-card-title>{{ item.id }}</v-card-title>
                         <template #append>
                             <v-avatar size="24">
                                 <v-img>{{ statusJudgment(item.operationType) }}</v-img>
@@ -18,6 +18,10 @@
                             </v-chip>
                         </v-card-subtitle>
                     </v-card-item>
+                    <v-card-text class="py-1">
+                        操作试剂名：
+                        <v-chip size="small" color="deep-purple-lighten-1">{{ item.name }}</v-chip>
+                    </v-card-text>
                     <v-card-text class="py-1">
                         操作位置：
                         <v-chip size="small" color="purple-lighten-1">[{{ item.x }},{{ item.y }}]</v-chip>
@@ -65,9 +69,9 @@ export default {
         // 操作类型判断
         statusJudgment(operationType) {
             if (operationType === 1) {
-                return '取';
-            } else if (operationType === 2) {
                 return '存';
+            } else if (operationType === 2) {
+                return '更';
             } else if (operationType === 3) {
                 return '删';
             }
