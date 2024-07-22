@@ -4,8 +4,8 @@ const moduleUrl = '/box/image';
 
 const boxImage = {
     // 拍照后提交
-    add(data) {
-        return request.post(`${moduleUrl}/add`, data);
+    add(data, query) {
+        return request.post(`${moduleUrl}/add`, data, query);
     },
     // 两对比图片获取
     compare(data) {
