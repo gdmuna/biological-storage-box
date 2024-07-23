@@ -161,6 +161,30 @@ const routes = [
         meta: {
             title: '意见反馈'
         }
+    },
+    {
+        path: '/user/information',
+        name: 'information',
+        component: () => import('@/pages/user/information.vue'),
+        meta: {
+            title: '消息'
+        }
+    },
+    {
+        path: '/user/reviewInformationJoinOrg',
+        name: 'reviewInformationJoinOrg',
+        component: () => import('@/pages/user/reviewInformationJoinOrg.vue'),
+        meta: {
+            title: '审核申请加入组织的消息'
+        }
+    },
+    {
+        path: '/user/reviewInvitedJoinOrg',
+        name: 'reviewInvitedJoinOrg',
+        component: () => import('@/pages/user/reviewInvitedJoinOrg.vue'),
+        meta: {
+            title: '审核被邀请加入组织的消息'
+        }
     }
 ];
 

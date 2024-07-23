@@ -12,7 +12,7 @@
                 </template>
             </v-card>
             <v-card class="mt-5">
-                <v-list-item prepend-icon="mdi-message" append-icon="mdi-chevron-right" lines="two" subtitle="消息" link></v-list-item>
+                <v-list-item prepend-icon="mdi-message" append-icon="mdi-chevron-right" lines="two" subtitle="消息" link @click="goToInformation"></v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
                 <v-list-item prepend-icon="mdi-message" append-icon="mdi-chevron-right" lines="two" subtitle="意见反馈" link @click="goToFeedback"></v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
@@ -40,6 +40,9 @@ export default {
         async fetchUserInfo() {
             const response = await this.$api.user.userInfo();
             this.userInfo = response;
+        },
+        goToInformation() {
+            this.$router.push('/user/information');
         },
         goToFeedback() {
             this.$router.push('/user/feedback');
