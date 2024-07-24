@@ -8,8 +8,8 @@
                 <v-divider class="border-opacity-75"></v-divider>
                 <div class="org-list-container overflow-y-auto flex-1">
                     <v-list v-if="!loading">
-                        <template v-if="filteredItems.length > 0">
-                            <v-list-item v-for="item in filteredItems" :key="item.id" class="pl-0">
+                        <template v-if="items.length > 0">
+                            <v-list-item v-for="item in items" :key="item.id" class="pl-0">
                                 <v-card class="p-0 rounded-e-pill" :class="{ highlighted: $store.user.currentOrg === item.id }" variant="flat" color="light-green-lighten-3" block @click="readOrgID(item.id)">
                                     <div class="flex flex-row justify-start items-center">
                                         <v-icon class="fa-duotone fa-user-group rounded-lg bg-green-50 m-2 p-4" color="light-green-lighten-3" size="x-small"></v-icon>
@@ -44,7 +44,7 @@
                             <v-list-item append-icon="mdi-chevron-right" subtitle="加入课题组/组织" link @click="joinOrg()"></v-list-item>
                         </v-list>
                     </v-list-group>
-                    <v-list-item append-icon="mdi-chevron-right" lines="two" subtitle="退出或编辑已有课题组/组织" link></v-list-item>
+                    <v-list-item append-icon="mdi-chevron-right" lines="two" subtitle="退出或编辑已有课题组/组织" link @click="exitOrg()"></v-list-item>
                 </v-list>
                 <v-divider class="border-opacity-75"></v-divider>
             </div>
@@ -80,11 +80,7 @@ export default {
             loading: true // 增加加载状态
         };
     },
-    computed: {
-        filteredItems() {
-            return this.items.filter((item) => item && item.id); // 过滤掉无效的项目
-        }
-    },
+    computed: {},
     created() {
         this.fetchOrgList();
     },
@@ -118,6 +114,10 @@ export default {
         // 跳转到加入课题组页面
         async joinOrg() {
             this.$router.push({ path: '/org/joinOrg' });
+        },
+        // 跳转到退出或编辑课题组页面
+        async exitOrg() {
+            this.$router.push({ path: '/org/exit' });
         },
         // 跳转登录页面
         async logout() {

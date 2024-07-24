@@ -8,12 +8,16 @@ const org = {
         return request.post(`${moduleUrl}/create`, data);
     },
     // 删除组织
-    del(data) {
-        return request.delete(`${moduleUrl}/del`, data);
+    del(data, query) {
+        return request.delete(`${moduleUrl}/del`, data, query);
     },
     // 用户加入的组织
     list(data) {
         return request.get(`${moduleUrl}/list`, data);
+    },
+    // 单个组织
+    one(data) {
+        return request.get(`${moduleUrl}/one`, data);
     },
     // 搜索组织
     search(data) {

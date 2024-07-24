@@ -123,6 +123,22 @@ const routes = [
         }
     },
     {
+        path: '/org/exit',
+        name: 'org-exit',
+        component: () => import('@/pages/org/exit.vue'),
+        meta: {
+            title: '课题组退出或编辑'
+        }
+    },
+    {
+        path: '/org/update',
+        name: 'org-update',
+        component: () => import('@/pages/org/update.vue'),
+        meta: {
+            title: '课题组编辑'
+        }
+    },
+    {
         path: '/search/search',
         name: 'search',
         component: () => import('@/pages/search/search.vue'),
