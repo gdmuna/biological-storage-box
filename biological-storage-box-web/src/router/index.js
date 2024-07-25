@@ -201,6 +201,14 @@ const routes = [
         meta: {
             title: '审核被邀请加入组织的消息'
         }
+    },
+    {
+        path: '/auth/register',
+        name: 'register',
+        component: () => import('@/pages/auth/register.vue'),
+        meta: {
+            title: '注册页面'
+        }
     }
 ];
 

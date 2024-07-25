@@ -7,6 +7,13 @@
                 <v-text-field v-model="user.password" label="密码" :type="showPassword ? 'text' : 'password'" :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'" @click:append-inner="showPassword = !showPassword"></v-text-field>
                 <v-btn class="mt-2" text="登录" type="submit" block></v-btn>
             </v-form>
+            <!-- 添加注册跳转链接 -->
+            <div class="text-center mt-4">
+                <span>
+                    没有账户？
+                    <a href="#" class="text-blue-500" @click.prevent="goToRegister">去注册</a>
+                </span>
+            </div>
             <!-- 添加 v-alert 显示登录失败消息 -->
             <v-alert v-if="loginError" type="error" dismissible class="rounded-lg p-2 mx-auto mt-8 sm:w-2/3 md:w-1/2 lg:w-1/3">登录失败，请检查用户名和密码</v-alert>
         </div>
@@ -57,6 +64,10 @@ export default {
                 }
             }
             this.$router.push('/box');
+        },
+        //跳转去注册页面
+        goToRegister() {
+            this.$router.push('/auth/register');
         }
     }
 };
