@@ -19,6 +19,10 @@ const box = {
     one(data) {
         return request.get(`${moduleUrl}/one`, data);
     },
+    // 搜索盒子
+    search(data) {
+        return request.get(`${moduleUrl}/search`, data);
+    },
     // 用户更改盒子信息
     update(data, query) {
         return request.put(`${moduleUrl}/update`, data, query);
