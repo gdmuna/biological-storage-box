@@ -6,7 +6,7 @@
                     <v-text-field v-model="name" label="试剂盒名称" :rules="[rules.notNull]"></v-text-field>
                     <v-text-field v-model="x" label="长度x" :rules="[rules.notNull, rules.isNumber]"></v-text-field>
                     <v-text-field v-model="y" label="宽度y" :rules="[rules.notNull, rules.isNumber]"></v-text-field>
-                    <v-textarea v-model="introduce" label="试剂盒介绍" :rules="[rules.notNull]"></v-textarea>
+                    <v-textarea v-model="introduce" label="试剂盒介绍"></v-textarea>
                     <v-btn class="mt-4" type="submit" block :disabled="!btnAllowClick">创建</v-btn>
                 </v-form>
             </v-card>
@@ -39,8 +39,8 @@ export default {
     computed: {
         // 创建按钮是否可点击
         btnAllowClick() {
-            const firstValue = this.rules.notNull(this.x) && this.rules.notNull(this.y) && (this.rules.isNumber(this.x) === true ? true : false) && (this.rules.isNumber(this.y) === true ? true : false);
-            const secondeValue = this.rules.notNull(this.name) && this.rules.notNull(this.introduce);
+            const firstValue = (this.rules.isNumber(this.x) === true ? true : false) && (this.rules.isNumber(this.y) === true ? true : false);
+            const secondeValue = this.rules.notNull(this.name);
             if (firstValue && secondeValue === true) {
                 return true;
             } else {

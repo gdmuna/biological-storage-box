@@ -8,7 +8,7 @@
                     <!-- 反馈内容 -->
                     <v-textarea v-model="content" label="反馈内容" :rules="[rules.notNull]"></v-textarea>
                     <!-- 联系方式 -->
-                    <v-text-field v-model="contact" label="联系方式" :rules="[rules.isNumber]"></v-text-field>
+                    <v-text-field v-model="contact" label="邮箱" :rules="[rules.notNull]"></v-text-field>
                     <!-- 图片上传 -->
                     <file-pond ref="filepond" name="filepond" :allow-multiple="true" label-idle="点击此处选择图片" accepted-file-types="image/jpeg, image/png" instant-upload="false" :files="inspectionFiles" @init="handleFilePondInit" />
                     <!-- 文字注释 -->
@@ -53,10 +53,6 @@ export default {
                 notNull: (value) => {
                     if (value) return true;
                     return '此处不能为空';
-                },
-                isNumber: (value) => {
-                    const pattern = /^\d{11}$/;
-                    return pattern.test(value) || '请输入 11 位的数字';
                 }
             },
             inspectionFiles: []
@@ -65,8 +61,14 @@ export default {
     computed: {
         // 提交按钮是否可点击
         submit() {
-            const value = this.rules.notNull(this.type) && this.rules.notNull(this.content) && this.rules.isNumber(this.contact);
-            return value === true ? true : false;
+            const firstValue = this.rules.notNull(this.type);
+            const secondeValue = this.rules.notNull(this.content);
+            const thirdValue = this.rules.notNull(this.contact);
+            if (firstValue === true && secondeValue === true && thirdValue === true) {
+                return true;
+            } else {
+                return false;
+            }
         }
     },
     created() {
