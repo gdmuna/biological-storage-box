@@ -19,10 +19,6 @@ const vuetify = createVuetify({
     }
 });
 
-//Varlet
-import { Snackbar } from '@varlet/ui';
-import '@varlet/ui/es/snackbar/style/index';
-
 // App Entry
 import App from '@/App.vue';
 
@@ -32,4 +28,4 @@ import '@/style.css';
 // api
 import api from '@/api/api';
 
-const app = createApp(App).use(router).use(pinia).use(store).use(vuetify).use(api).use(Snackbar).mount('#app');
+const app = createApp(App).use(router).use(pinia).use(store).use(vuetify).use(api).mount('#app');
