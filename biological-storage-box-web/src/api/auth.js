@@ -9,7 +9,7 @@ const auth = {
     },
     // 用户注册
     register(data) {
-        return request.post(`/user/register`, data);
+        return authentication.register(data);
     }
 };
 
