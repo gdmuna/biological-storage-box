@@ -33,6 +33,12 @@ const authentication = {
         } else {
             return false;
         }
+    },
+    // 封装 register 请求
+    register: async (data) => {
+        // 调用注册接口，不包括 token
+        const response = await authentication.fetch('/user/register', data, false);
+        return response;
     }
 };
 
