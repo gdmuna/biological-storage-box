@@ -17,7 +17,13 @@ const authentication = {
                 }
                 return res.json();
             })
-            .then((res) => res.data)
+            .then((res) => {
+                if (res.code !== 200) {
+                    console.error('Request error: Code', res.code);
+                    return false;
+                }
+                return res.data;
+            })
             .catch((error) => {
                 console.error('Request error:', error);
             });
