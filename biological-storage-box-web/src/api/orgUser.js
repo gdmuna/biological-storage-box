@@ -3,6 +3,10 @@ import request from '@/utils/request';
 const moduleUrl = '/org/user';
 // 组织 = 课题组
 const orgUser = {
+    // 申请加入组织
+    apply(data) {
+        return request.put(`${moduleUrl}/apply`, data);
+    },
     // 将成员踢出组织
     del(data) {
         return request.delete(`${moduleUrl}/del`, data);
