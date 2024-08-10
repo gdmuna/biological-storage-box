@@ -4,8 +4,8 @@
             <v-img class="w-1/2 max-w-48 mx-auto my-10 bg-white rounded-lg" cover src="/RhineLab.svg"></v-img>
             <v-form class="w-full max-w-sm mx-auto" @submit.prevent="login">
                 <v-text-field v-model="user.account" label="用户名"></v-text-field>
-                <v-text-field v-model="user.password" label="密码" :type="showPassword ? 'text' : 'password'" :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'" @click:append-inner="showPassword = !showPassword"></v-text-field>
-                <v-btn class="mt-2" text="登录" type="submit" block></v-btn>
+                <v-text-field v-model="user.password" label="密码" :type="showPassword ? 'text' : 'password'" :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'" :rules="[rules.minLength]" @click:append-inner="showPassword = !showPassword"></v-text-field>
+                <v-btn :loading="loading" :disabled="!isFormValid || loading" class="mt-2" text="登录" type="submit" block></v-btn>
             </v-form>
             <!-- 添加注册跳转链接 -->
             <div class="text-center mt-4">
@@ -14,8 +14,6 @@
                     <a href="#" class="text-blue-500" @click.prevent="goToRegister">去注册</a>
                 </span>
             </div>
-            <!-- 添加 v-alert 显示登录失败消息 -->
-            <v-alert v-if="loginError" type="error" dismissible class="rounded-lg p-2 mx-auto mt-8 sm:w-2/3 md:w-1/2 lg:w-1/3">登录失败，请检查用户名和密码</v-alert>
         </div>
     </div>
 </template>
@@ -31,21 +29,29 @@ export default {
                 password: null
             },
             showPassword: false,
-            loginError: false // 控制 v-alert 显示的变量
+            loading: false,
+            rules: {
+                minLength: (value) => (value && value.length >= 6) || '密码长度至少为6位'
+            }
         };
+    },
+    computed: {
+        isFormValid() {
+            return this.user.account && this.user.password && this.user.password.length >= 6;
+        }
     },
     created() {},
     mounted() {},
     updated() {},
     methods: {
         async login() {
+            this.loading = true;
             const result = await this.$api.auth.login({ account: this.user.account, password: this.user.password });
+            console.log(result);
             // 如果登录失败则直接结束后续操作
             if (!result) {
-                this.loginError = true; // 设置 loginError 为 true 显示 v-alert
-                setTimeout(() => {
-                    this.loginError = false; // 3秒后隐藏 v-alert
-                }, 3000);
+                this.$api.notify.error('登录失败，请检查用户名和密码');
+                this.loading = false;
                 return;
             }
             const orgList = await this.$api.org.list();
@@ -63,6 +69,7 @@ export default {
                     localStorage.setItem('orgID', orgList[0].id);
                 }
             }
+            this.$api.notify.success('登录成功');
             this.$router.push('/box');
         },
         //跳转去注册页面
