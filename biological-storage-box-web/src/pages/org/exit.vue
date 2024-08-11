@@ -58,11 +58,15 @@ export default {
         async routeToEditOrg(orgId) {
             this.$router.push({ path: '/org/update', query: { orgId } });
         },
-        // 删除试剂盒
+        // 删除组织
         async deleteOrg(orgId) {
             const result = await this.$api.org.del(null, { orgID: orgId });
-            if (result === 1) {
-                console.log('Delete org success:', result);
+            console.log('Delete org result:', result);
+            if (result === '操作成功') {
+                this.$api.notify.success('删除成功');
+                await this.fetchOrgList();
+            } else {
+                this.$api.notify.error('删除失败，请重试');
             }
         }
     }

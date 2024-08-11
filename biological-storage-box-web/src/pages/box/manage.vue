@@ -90,6 +90,10 @@ export default {
             );
             if (result === 1) {
                 this.$router.push({ path: '/box' });
+                this.$api.notify.success('删除成功');
+                await this.getBox();
+            } else {
+                this.$api.notify.error('删除失败，请重试');
             }
         },
         // 跳转到创建试剂盒页面
