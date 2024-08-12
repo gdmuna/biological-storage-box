@@ -16,7 +16,7 @@
                         <small style="color: lightgrey" display:block>由于经费限制，我们使用了成本较低的服务器，这可能导致上传速度较慢。感谢您的理解和支持。</small>
                     </div>
                     <!-- 提交按钮 -->
-                    <v-btn class="mt-4" type="submit" block :disabled="!submit">创建</v-btn>
+                    <v-btn :loading="loading" class="mt-4" type="submit" block :disabled="!submit">创建</v-btn>
                 </v-form>
             </v-card>
         </div>
@@ -55,7 +55,8 @@ export default {
                     return '此处不能为空';
                 }
             },
-            inspectionFiles: []
+            inspectionFiles: [],
+            loading: false
         };
     },
     computed: {
@@ -83,6 +84,8 @@ export default {
         },
         // 提交反馈
         async add() {
+            // 设置加载状态
+            this.loading = true;
             // 从组件中获取图片文件
             const filepond = this.$refs.filepond.getFiles();
             // 遍历图片文件
@@ -99,15 +102,22 @@ export default {
             // 将图片地址数组转换为字符串
             this.imgUrls = this.imgUrls.join(',');
             // 调用接口提交反馈
-            const result = await this.$api.feedback.add({
-                content: this.content,
-                email: this.contact,
-                imageList: this.imgUrls,
-                type: this.type
-            });
-            if (result === '已经收到反馈') {
-                // 上传成功后返回上一页
-                this.$router.go(-1);
+            if (this.imgUrls) {
+                const result = await this.$api.feedback.add({
+                    content: this.content,
+                    email: this.contact,
+                    imageList: this.imgUrls,
+                    type: this.type
+                });
+                if (result === '已经收到反馈') {
+                    // 上传成功后返回上一页
+                    this.$router.go(-1);
+                    this.$api.notify.success('已经收到反馈');
+                } else {
+                    this.$api.notify.error('反馈失败，请重试');
+                }
+            } else {
+                this.$api.notify.error('图片上传失败，请重试');
             }
         }
     }
