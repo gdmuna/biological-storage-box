@@ -47,7 +47,9 @@ export default {
             });
             if (result === '操作成功') {
                 this.$router.push('/box');
-                console.log('创建成功');
+                this.$api.notify.success('创建成功');
+            } else {
+                this.$api.notify.error('创建失败，请重试');
             }
         }
     }

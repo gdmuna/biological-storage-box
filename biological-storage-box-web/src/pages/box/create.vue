@@ -6,8 +6,8 @@
                     <v-text-field v-model="name" label="试剂盒名称" :rules="[rules.notNull]"></v-text-field>
                     <v-text-field v-model="x" label="长度x" :rules="[rules.notNull, rules.isNumber]"></v-text-field>
                     <v-text-field v-model="y" label="宽度y" :rules="[rules.notNull, rules.isNumber]"></v-text-field>
-                    <v-textarea v-model="introduce" label="试剂盒介绍"></v-textarea>
-                    <v-btn class="mt-4" type="submit" block :disabled="!btnAllowClick">创建</v-btn>
+                    <v-textarea v-model="introduce" label="试剂盒介绍" :rules="[rules.notNull]"></v-textarea>
+                    <v-btn class="mt-4" type="submit" block :disabled="!btnAllowClick" :loading="loading">创建</v-btn>
                 </v-form>
             </v-card>
         </div>
@@ -24,6 +24,7 @@ export default {
             introduce: null,
             x: null,
             y: null,
+            loading: false,
             rules: {
                 notNull: (value) => {
                     if (value) return true;
@@ -65,8 +66,13 @@ export default {
                     orgID: currentOrg
                 }
             );
+            this.loading = false;
+            console.log(result);
             if (result === 1) {
+                this.$api.notify.success('创建成功');
                 this.$router.push('/box');
+            } else {
+                this.$api.notify.error('创建失败，请重试');
             }
         }
     }

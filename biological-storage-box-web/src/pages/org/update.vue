@@ -62,6 +62,9 @@ export default {
             if (result === '操作成功') {
                 // 上传成功后返回上一页
                 this.$router.go(-1);
+                this.$api.notify.success('更新成功');
+            } else {
+                this.$api.notify.error('更新失败，请重试');
             }
         }
     }
