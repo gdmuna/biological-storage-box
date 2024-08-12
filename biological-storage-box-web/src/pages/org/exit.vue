@@ -29,7 +29,7 @@
         <v-dialog v-model="deleteDialog" max-width="500px">
             <v-card title="确认删除">
                 <v-card-actions class="ml-2">
-                    <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-1" @click="deleteOrg()">确认</v-btn>
+                    <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-1" :loading="loading" @click="deleteOrg()">确认</v-btn>
                     <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-4" @click="returnOrg()">取消</v-btn>
                 </v-card-actions>
             </v-card>
@@ -45,7 +45,8 @@ export default {
         return {
             items: [],
             deleteDialog: false,
-            deleteOrgId: ''
+            deleteOrgId: '',
+            loading: false
         };
     },
     computed: {},
@@ -80,13 +81,17 @@ export default {
         },
         // 删除组织
         async deleteOrg() {
+            this.loading = true;
             const result = await this.$api.org.del(null, { orgID: this.deleteOrgId });
             console.log('Delete org result:', result);
             if (result === '操作成功') {
                 this.$api.notify.success('删除成功');
                 this.deleteDialog = false;
+                this.loading = false;
                 await this.fetchOrgList();
             } else {
+                this.deleteDialog = false;
+                this.loading = false;
                 this.$api.notify.error('删除失败，请重试');
             }
         }

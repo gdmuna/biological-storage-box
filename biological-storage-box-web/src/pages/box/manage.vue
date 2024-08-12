@@ -34,7 +34,7 @@
         <v-dialog v-model="deleteDialog" max-width="500px">
             <v-card title="确认删除">
                 <v-card-actions class="ml-2">
-                    <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-1" @click="deleteBox()">确认</v-btn>
+                    <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-1" :loading="loading" @click="deleteBox()">确认</v-btn>
                     <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-4" @click="returnBox()">取消</v-btn>
                 </v-card-actions>
             </v-card>
@@ -50,7 +50,8 @@ export default {
         return {
             boxList: [],
             deleteDialog: false,
-            deleteBoxId: ''
+            deleteBoxId: '',
+            loading: false
         };
     },
     watch: {
@@ -93,6 +94,7 @@ export default {
         },
         // 删除试剂盒
         async deleteBox() {
+            this.loading = true;
             const orgID = this.$store.user.currentOrg;
             const orgList = await this.getBoxInfo(this.deleteBoxId);
             const result = await this.$api.box.del(
@@ -112,8 +114,11 @@ export default {
                 this.$router.push({ path: '/box' });
                 this.$api.notify.success('删除成功');
                 this.deleteDialog = false;
+                this.loading = false;
                 await this.getBox();
             } else {
+                this.deleteDialog = false;
+                this.loading = false;
                 this.$api.notify.error('删除失败，请重试');
             }
         },

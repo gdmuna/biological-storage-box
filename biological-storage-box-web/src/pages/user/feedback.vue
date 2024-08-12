@@ -114,9 +114,11 @@ export default {
                     this.$router.go(-1);
                     this.$api.notify.success('已经收到反馈');
                 } else {
+                    this.loading = false;
                     this.$api.notify.error('反馈失败，请重试');
                 }
             } else {
+                this.loading = false;
                 this.$api.notify.error('图片上传失败，请重试');
             }
         }

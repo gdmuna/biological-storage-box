@@ -5,7 +5,7 @@
                 <v-form class="w-full max-w-sm mx-auto py-16" @submit.prevent="orgUpdate">
                     <v-text-field v-model="orgInfo.name" label="课题组名称" :rules="[rules.notNull]"></v-text-field>
                     <v-textarea v-model="orgInfo.introduce" label="课题组介绍"></v-textarea>
-                    <v-btn class="mt-4" type="submit" block :disabled="!btnAllowClick">更新</v-btn>
+                    <v-btn class="mt-4" type="submit" block :loading="loading" :disabled="!btnAllowClick">更新</v-btn>
                 </v-form>
             </v-card>
         </div>
@@ -25,7 +25,8 @@ export default {
                     if (value) return true;
                     return '此处不能为空';
                 }
-            }
+            },
+            loading: false
         };
     },
     computed: {
@@ -53,7 +54,7 @@ export default {
             this.orgInfo = result;
         },
         async orgUpdate() {
-            const orgID = this.$store.user.currentOrg;
+            this.loading = true;
             const result = await this.$api.org.update({
                 id: this.orgInfo.id,
                 introduce: this.orgInfo.introduce,
@@ -64,6 +65,7 @@ export default {
                 this.$router.go(-1);
                 this.$api.notify.success('更新成功');
             } else {
+                this.loading = false;
                 this.$api.notify.error('更新失败，请重试');
             }
         }
