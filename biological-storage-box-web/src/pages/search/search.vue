@@ -117,7 +117,7 @@ export default {
                 this.$api.notify.success('删除成功');
                 this.deleteDialog = false;
                 this.deleteLoading = false;
-                await this.getBox();
+                await this.search();
             } else {
                 this.deleteDialog = false;
                 this.deleteLoading = false;
