@@ -5,7 +5,7 @@
                 <v-form class="w-full max-w-sm mx-auto py-16" @submit.prevent="boxAdd">
                     <v-text-field v-model="boxInfo.name" label="试剂盒名称" :rules="[rules.notNull]"></v-text-field>
                     <v-textarea v-model="boxInfo.introduce" label="试剂盒介绍" :rules="[rules.notNull]"></v-textarea>
-                    <v-btn class="mt-4" type="submit" block :disabled="!btnAllowClick">更新</v-btn>
+                    <v-btn class="mt-4" type="submit" block :loading="loading" :disabled="!btnAllowClick">更新</v-btn>
                 </v-form>
             </v-card>
         </div>
@@ -29,7 +29,8 @@ export default {
                     const pattern = /^(?:[1-9][0-9]?|100)$/;
                     return pattern.test(value) || '请输入 1-100 之间的数字';
                 }
-            }
+            },
+            loading: false
         };
     },
     computed: {
@@ -58,6 +59,7 @@ export default {
             this.boxInfo = result;
         },
         async boxAdd() {
+            this.loading = true;
             const orgID = this.$store.user.currentOrg;
             const result = await this.$api.box.update(
                 {
@@ -74,6 +76,7 @@ export default {
                 this.$router.push('/box');
                 this.$api.notify.success('更新成功');
             } else {
+                this.loading = false;
                 this.$api.notify.error('更新失败，请重试');
             }
         }

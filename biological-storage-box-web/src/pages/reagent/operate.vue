@@ -13,7 +13,7 @@
                     </v-card-text>
                 </v-card>
             </div>
-            <v-btn class="mt-10" block @click="summit()">提交</v-btn>
+            <v-btn class="mt-10" block :loading="loading" @click="summit()">提交</v-btn>
         </div>
     </div>
 </template>
@@ -37,7 +37,9 @@ export default {
                 1: 'teal-lighten-3',
                 2: 'orange-lighten-1'
             },
-            boxId: null
+            boxId: null,
+            result: null,
+            loading: false
         };
     },
     created() {
@@ -53,6 +55,7 @@ export default {
     updated() {},
     methods: {
         async summit() {
+            this.loading = true;
             // 将 sign = 1 的项的 isDelete 置 0
             // 将 sign = 3 的项的 isDelete 置 1，并且将 tag 和 remark 置空
             const reagentList = this.reagentList.map((item) => {
@@ -71,13 +74,20 @@ export default {
             // 循环向后端发送提交请求
             for (let i = 0; i < reagentList.length; i++) {
                 const item = reagentList[i];
-                const result = await this.$api.reagent.update([item], {
+                this.result = await this.$api.reagent.update([item], {
                     boxID: this.boxId,
                     orgID: orgId
                 });
             }
-            // 提交成功后，返回试剂管理页面
-            this.$router.go(-1);
+            // 判断是否提交成功
+            if (this.result === '操作完成') {
+                // 上传成功后返回上一页
+                this.$router.go(-1);
+                this.$api.notify.success('更新成功');
+            } else {
+                this.loading = false;
+                this.$api.notify.error('更新失败，请重试');
+            }
         }
     }
 };

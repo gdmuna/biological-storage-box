@@ -4,7 +4,7 @@
             <v-card title="试剂盒图片上传">
                 <file-pond ref="filepond" class="mx-5" name="filepond" label-idle="点击此处选择图片" accepted-file-types="image/jpeg, image/png" instant-upload="false" :files="inspectionFiles" @init="handleFilePondInit" />
                 <v-card-actions class="mx-3">
-                    <v-btn color="green-lighten-1" class="mt-10" block @click="upload()">上传</v-btn>
+                    <v-btn color="green-lighten-1" class="mt-10" block :loading="loading" @click="upload()">上传</v-btn>
                 </v-card-actions>
             </v-card>
         </div>
@@ -28,6 +28,7 @@ export default {
     data() {
         return {
             imgUrl: '',
+            loading: false,
             boxId: null
         };
     },
@@ -45,6 +46,7 @@ export default {
         },
         // 图片上传
         async upload() {
+            this.loading = true;
             // 从组件中获取图片
             const filepond = this.$refs.filepond.getFiles();
             // 生成图片名称
@@ -60,11 +62,14 @@ export default {
                 if (res === '操作成功') {
                     // 上传成功后返回上一页
                     this.$router.go(-1);
+                    this.$api.notify.success('上传成功');
                 } else {
-                    alert('上传失败，请您再次上传');
+                    this.loading = false;
+                    this.$api.notify.error('上传失败，请重试');
                 }
             } else {
-                alert('上传失败，请您再次上传');
+                this.loading = false;
+                this.$api.notify.error('上传失败，请重试');
             }
         }
     }

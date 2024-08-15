@@ -9,7 +9,7 @@
                         </v-card-item>
                         <v-card-actions class="mr-2">
                             <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-4" @click="routeToEditOrg(item.id)">编辑信息</v-btn>
-                            <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-4" @click="deleteOrg(item.id)">删除</v-btn>
+                            <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-4" @click="showDeleteDialog(item.id)">删除</v-btn>
                         </v-card-actions>
                     </v-card>
                 </div>
@@ -25,6 +25,15 @@
                 </div>
             </template>
         </div>
+        <!-- 删除对话框 -->
+        <v-dialog v-model="deleteDialog" max-width="500px">
+            <v-card title="确认删除">
+                <v-card-actions class="ml-2">
+                    <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-1" :loading="loading" @click="deleteOrg()">确认</v-btn>
+                    <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-4" @click="returnOrg()">取消</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -34,7 +43,10 @@ export default {
     components: {},
     data() {
         return {
-            items: []
+            items: [],
+            deleteDialog: false,
+            deleteOrgId: '',
+            loading: false
         };
     },
     computed: {},
@@ -58,14 +70,28 @@ export default {
         async routeToEditOrg(orgId) {
             this.$router.push({ path: '/org/update', query: { orgId } });
         },
+        // 显示删除对话框
+        async showDeleteDialog(orgId) {
+            this.deleteOrgId = orgId;
+            this.deleteDialog = true;
+        },
+        // 返回组织列表
+        async returnOrg() {
+            this.deleteDialog = false;
+        },
         // 删除组织
-        async deleteOrg(orgId) {
-            const result = await this.$api.org.del(null, { orgID: orgId });
+        async deleteOrg() {
+            this.loading = true;
+            const result = await this.$api.org.del(null, { orgID: this.deleteOrgId });
             console.log('Delete org result:', result);
             if (result === '操作成功') {
                 this.$api.notify.success('删除成功');
+                this.deleteDialog = false;
+                this.loading = false;
                 await this.fetchOrgList();
             } else {
+                this.deleteDialog = false;
+                this.loading = false;
                 this.$api.notify.error('删除失败，请重试');
             }
         }

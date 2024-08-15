@@ -24,12 +24,21 @@
                     <v-card-actions>
                         <v-btn variant="flat" color="light-green-lighten-4" @click="routeToManageReagent(item.id)">管理试剂</v-btn>
                         <v-btn variant="flat" color="light-green-lighten-4" @click="routeToEditBox(item.id)">编辑信息</v-btn>
-                        <v-btn variant="flat" color="light-green-lighten-4" @click="deleteBox(item.id)">删除</v-btn>
+                        <v-btn variant="flat" color="light-green-lighten-4" @click="showDeleteDialog(item.id)">删除</v-btn>
                     </v-card-actions>
                 </v-card>
             </div>
             <v-fab icon="mdi-plus" class="mb-6" location="bottom end" size="60" absolute app appear @click="routeToCreateBox()"></v-fab>
         </div>
+        <!-- 删除对话框 -->
+        <v-dialog v-model="deleteDialog" max-width="500px">
+            <v-card title="确认删除">
+                <v-card-actions class="ml-2">
+                    <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-1" :loading="loading" @click="deleteBox()">确认</v-btn>
+                    <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-4" @click="returnBox()">取消</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -39,7 +48,10 @@ export default {
     components: {},
     data() {
         return {
-            boxList: []
+            boxList: [],
+            deleteDialog: false,
+            deleteBoxId: '',
+            loading: false
         };
     },
     watch: {
@@ -71,10 +83,20 @@ export default {
             const result = await this.$api.box.one({ boxID: boxId, orgID: orgID });
             return result;
         },
+        // 显示删除对话框
+        async showDeleteDialog(boxId) {
+            this.deleteBoxId = boxId;
+            this.deleteDialog = true;
+        },
+        // 返回试剂盒列表
+        async returnBox() {
+            this.deleteDialog = false;
+        },
         // 删除试剂盒
-        async deleteBox(boxId) {
+        async deleteBox() {
+            this.loading = true;
             const orgID = this.$store.user.currentOrg;
-            const orgList = await this.getBoxInfo(boxId);
+            const orgList = await this.getBoxInfo(this.deleteBoxId);
             const result = await this.$api.box.del(
                 {
                     createBy: orgList.createBy,
@@ -91,8 +113,12 @@ export default {
             if (result === 1) {
                 this.$router.push({ path: '/box' });
                 this.$api.notify.success('删除成功');
+                this.deleteDialog = false;
+                this.loading = false;
                 await this.getBox();
             } else {
+                this.deleteDialog = false;
+                this.loading = false;
                 this.$api.notify.error('删除失败，请重试');
             }
         },

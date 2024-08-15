@@ -7,7 +7,7 @@
                     <v-text-field v-model="x" label="长度x" :rules="[rules.notNull, rules.isNumber]"></v-text-field>
                     <v-text-field v-model="y" label="宽度y" :rules="[rules.notNull, rules.isNumber]"></v-text-field>
                     <v-textarea v-model="introduce" label="试剂盒介绍" :rules="[rules.notNull]"></v-textarea>
-                    <v-btn class="mt-4" type="submit" block :disabled="!btnAllowClick" :loading="loading">创建</v-btn>
+                    <v-btn class="mt-4" type="submit" block :loading="loading" :disabled="!btnAllowClick">创建</v-btn>
                 </v-form>
             </v-card>
         </div>
@@ -40,8 +40,8 @@ export default {
     computed: {
         // 创建按钮是否可点击
         btnAllowClick() {
-            const firstValue = this.rules.notNull(this.x) && this.rules.notNull(this.y) && (this.rules.isNumber(this.x) === true ? true : false) && (this.rules.isNumber(this.y) === true ? true : false);
-            const secondeValue = this.rules.notNull(this.name) && this.rules.notNull(this.introduce);
+            const firstValue = (this.rules.isNumber(this.x) === true ? true : false) && (this.rules.isNumber(this.y) === true ? true : false);
+            const secondeValue = this.rules.notNull(this.name);
             if (firstValue && secondeValue === true) {
                 return true;
             } else {
@@ -54,6 +54,7 @@ export default {
     updated() {},
     methods: {
         async boxAdd() {
+            this.loading = true;
             const currentOrg = this.$store.user.currentOrg;
             const result = await this.$api.box.add(
                 {
@@ -66,12 +67,12 @@ export default {
                     orgID: currentOrg
                 }
             );
-            this.loading = false;
             console.log(result);
             if (result === 1) {
                 this.$api.notify.success('创建成功');
                 this.$router.push('/box');
             } else {
+                this.loading = false;
                 this.$api.notify.error('创建失败，请重试');
             }
         }

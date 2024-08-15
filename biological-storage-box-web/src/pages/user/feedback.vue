@@ -8,7 +8,7 @@
                     <!-- 反馈内容 -->
                     <v-textarea v-model="content" label="反馈内容" :rules="[rules.notNull]"></v-textarea>
                     <!-- 联系方式 -->
-                    <v-text-field v-model="contact" label="联系方式" :rules="[rules.isNumber]"></v-text-field>
+                    <v-text-field v-model="contact" label="邮箱" :rules="[rules.notNull]"></v-text-field>
                     <!-- 图片上传 -->
                     <file-pond ref="filepond" name="filepond" :allow-multiple="true" label-idle="点击此处选择图片" accepted-file-types="image/jpeg, image/png" instant-upload="false" :files="inspectionFiles" @init="handleFilePondInit" />
                     <!-- 文字注释 -->
@@ -16,7 +16,7 @@
                         <small style="color: lightgrey" display:block>由于经费限制，我们使用了成本较低的服务器，这可能导致上传速度较慢。感谢您的理解和支持。</small>
                     </div>
                     <!-- 提交按钮 -->
-                    <v-btn class="mt-4" type="submit" block :disabled="!submit">创建</v-btn>
+                    <v-btn :loading="loading" class="mt-4" type="submit" block :disabled="!submit">创建</v-btn>
                 </v-form>
             </v-card>
         </div>
@@ -53,20 +53,23 @@ export default {
                 notNull: (value) => {
                     if (value) return true;
                     return '此处不能为空';
-                },
-                isNumber: (value) => {
-                    const pattern = /^\d{11}$/;
-                    return pattern.test(value) || '请输入 11 位的数字';
                 }
             },
-            inspectionFiles: []
+            inspectionFiles: [],
+            loading: false
         };
     },
     computed: {
         // 提交按钮是否可点击
         submit() {
-            const value = this.rules.notNull(this.type) && this.rules.notNull(this.content) && this.rules.isNumber(this.contact);
-            return value === true ? true : false;
+            const firstValue = this.rules.notNull(this.type);
+            const secondeValue = this.rules.notNull(this.content);
+            const thirdValue = this.rules.notNull(this.contact);
+            if (firstValue === true && secondeValue === true && thirdValue === true) {
+                return true;
+            } else {
+                return false;
+            }
         }
     },
     created() {
@@ -81,6 +84,8 @@ export default {
         },
         // 提交反馈
         async add() {
+            // 设置加载状态
+            this.loading = true;
             // 从组件中获取图片文件
             const filepond = this.$refs.filepond.getFiles();
             // 遍历图片文件
@@ -97,15 +102,24 @@ export default {
             // 将图片地址数组转换为字符串
             this.imgUrls = this.imgUrls.join(',');
             // 调用接口提交反馈
-            const result = await this.$api.feedback.add({
-                content: this.content,
-                email: this.contact,
-                imageList: this.imgUrls,
-                type: this.type
-            });
-            if (result === '已经收到反馈') {
-                // 上传成功后返回上一页
-                this.$router.go(-1);
+            if (this.imgUrls) {
+                const result = await this.$api.feedback.add({
+                    content: this.content,
+                    email: this.contact,
+                    imageList: this.imgUrls,
+                    type: this.type
+                });
+                if (result === '已经收到反馈') {
+                    // 上传成功后返回上一页
+                    this.$router.go(-1);
+                    this.$api.notify.success('已经收到反馈');
+                } else {
+                    this.loading = false;
+                    this.$api.notify.error('反馈失败，请重试');
+                }
+            } else {
+                this.loading = false;
+                this.$api.notify.error('图片上传失败，请重试');
             }
         }
     }
