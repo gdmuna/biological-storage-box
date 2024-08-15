@@ -49,6 +49,12 @@ const authentication = {
         } else {
             return false;
         }
+    },
+    // 封装 logout 请求
+    logout: () => {
+        // 移除 localStorage 中的 token
+        localStorage.removeItem('token');
+        return true;
     }
 };
 
