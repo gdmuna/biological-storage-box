@@ -25,11 +25,20 @@
                     <v-card-actions>
                         <v-btn variant="flat" color="light-green-lighten-4" @click="routeToManageReagent(item.id)">管理试剂</v-btn>
                         <v-btn variant="flat" color="light-green-lighten-4" @click="routeToEditBox(item.id)">编辑信息</v-btn>
-                        <v-btn variant="flat" color="light-green-lighten-4" @click="deleteBox(item.id)">删除</v-btn>
+                        <v-btn variant="flat" color="light-green-lighten-4" @click="showDeleteDialog(item.id)">删除</v-btn>
                     </v-card-actions>
                 </v-card>
             </div>
         </div>
+        <!-- 删除对话框 -->
+        <v-dialog v-model="deleteDialog" max-width="500px">
+            <v-card title="确认删除">
+                <v-card-actions class="ml-2">
+                    <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-1" :loading="deleteLoading" @click="deleteBox()">确认</v-btn>
+                    <v-btn class="basis-1/2" variant="flat" color="light-green-lighten-4" @click="returnBox()">取消</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -42,7 +51,10 @@ export default {
             boxList: [],
             searchBoxName: '',
             loaded: false,
-            loading: false
+            loading: false,
+            deleteDialog: false,
+            deleteBoxId: '',
+            deleteLoading: false
         };
     },
     created() {},
@@ -69,14 +81,25 @@ export default {
         },
         // 获取某个试剂盒的详细信息
         async getBoxInfo(boxId) {
-            const orgID = this.$store.user.currentOrg;
-            const result = await this.$api.box.one({ boxID: boxId, orgID: orgID });
-            return result;
+            for (let i = 0; i < this.boxList.length; i++) {
+                if (this.boxList[i].id === boxId) {
+                    return this.boxList[i];
+                }
+            }
+        },
+        // 显示删除对话框
+        async showDeleteDialog(boxId) {
+            this.deleteBoxId = boxId;
+            this.deleteDialog = true;
+        },
+        // 返回试剂盒列表
+        async returnBox() {
+            this.deleteDialog = false;
         },
         // 删除试剂盒
-        async deleteBox(boxId) {
-            const orgID = this.$store.user.currentOrg;
-            const orgList = await this.getBoxInfo(boxId);
+        async deleteBox() {
+            this.deleteLoading = true;
+            const orgList = await this.getBoxInfo(this.deleteBoxId);
             const result = await this.$api.box.del(
                 {
                     createBy: orgList.createBy,
@@ -87,11 +110,18 @@ export default {
                     y: orgList.y
                 },
                 {
-                    orgID: orgID
+                    orgID: orgList.createBy
                 }
             );
             if (result === 1) {
-                this.$router.push({ path: '/box' });
+                this.$api.notify.success('删除成功');
+                this.deleteDialog = false;
+                this.deleteLoading = false;
+                await this.getBox();
+            } else {
+                this.deleteDialog = false;
+                this.deleteLoading = false;
+                this.$api.notify.error('删除失败，请重试');
             }
         }
     }
