@@ -9,11 +9,11 @@
                         </div>
                         <div class="text-center text-xs pt-2">人员管理</div>
                     </div>
-                    <div class="flex-1">
+                    <div class="flex-1" @click="goToSearchPeople">
                         <div class="w-10 h-10 rounded-lg mx-auto">
-                            <v-icon class="fa-solid fa-hourglass-start w-10 h-10"></v-icon>
+                            <v-icon class="fa-solid fa-search w-10 h-10"></v-icon>
                         </div>
-                        <div class="text-center text-xs pt-2">待拓展</div>
+                        <div class="text-center text-xs pt-2">搜索人员</div>
                     </div>
                     <div class="flex-1">
                         <div class="w-10 h-10 rounded-lg mx-auto">
@@ -37,7 +37,11 @@ export default {
     created() {},
     mounted() {},
     updated() {},
-    methods: {}
+    methods: {
+        goToSearchPeople() {
+            this.$router.push('/work/searchPeople');
+        }
+    }
 };
 </script>
 

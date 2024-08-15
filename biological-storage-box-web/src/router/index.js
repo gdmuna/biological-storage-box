@@ -209,6 +209,14 @@ const routes = [
         meta: {
             title: '注册页面'
         }
+    },
+    {
+        path: '/work/searchPeople',
+        name: 'searchPeople',
+        component: () => import('@/pages/work/searchPeople.vue'),
+        meta: {
+            title: '搜索人员'
+        }
     }
 ];
 
