@@ -10,10 +10,6 @@ const auth = {
     // 用户注册
     register(data) {
         return authentication.register(data);
-    },
-    // 用户退出
-    logout() {
-        return authentication.logout();
     }
 };
 
