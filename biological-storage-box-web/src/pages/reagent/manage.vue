@@ -93,8 +93,18 @@ export default {
             const orgID = this.$store.user.currentOrg;
             const result = await this.$api.boxImage.compare({ boxID: boxId, orgID: orgID });
             let baseUrl = 'https://picx.gdmuna.com/p/cheng';
-            this.imageUrl1 = baseUrl + result[1].url;
-            this.imageUrl2 = baseUrl + result[0].url;
+            const imgUrl = '/temp/boxImg/01916102-29b1-766e-8fbf-bb031ad824b1.jpg';
+            if (result[0].boxId == boxId) {
+                this.imageUrl2 = baseUrl + result[0].url;
+                if (result[1].boxId == boxId) {
+                    this.imageUrl1 = baseUrl + result[1].url;
+                } else {
+                    this.imageUrl1 = baseUrl + imgUrl;
+                }
+            } else {
+                this.imageUrl1 = baseUrl + imgUrl;
+                this.imageUrl2 = baseUrl + imgUrl;
+            }
         },
         // 获取某个试剂盒内的试剂列表
         async getReagentList(boxId) {
