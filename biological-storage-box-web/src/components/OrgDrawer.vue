@@ -102,7 +102,6 @@ export default {
             this.$store.user.currentOrg = orgID;
             localStorage.setItem('orgID', orgID);
             await this.$nextTick();
-            this.$router.push('/box');
             this.$emit('drawerStop', false);
         },
         // 跳转到创建课题组页面
