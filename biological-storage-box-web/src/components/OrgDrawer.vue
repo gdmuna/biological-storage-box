@@ -81,9 +81,7 @@ export default {
         };
     },
     computed: {},
-    created() {
-        this.fetchOrgList();
-    },
+    created() {},
     methods: {
         async fetchOrgList() {
             try {
@@ -104,7 +102,6 @@ export default {
             this.$store.user.currentOrg = orgID;
             localStorage.setItem('orgID', orgID);
             await this.$nextTick();
-            this.$router.push('/box');
             this.$emit('drawerStop', false);
         },
         // 跳转到创建课题组页面
@@ -121,7 +118,6 @@ export default {
         },
         // 跳转登录页面
         async logout() {
-            this.$api.auth.logout();
             this.$router.push('/auth/login');
         },
         // 跳转去设置页面
