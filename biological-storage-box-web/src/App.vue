@@ -1,11 +1,11 @@
 <template>
     <v-app>
         <!-- 组织切换菜单栏 -->
-        <OrgDrawer v-model="drawer" @drawer-stop="drawer = false"></OrgDrawer>
+        <OrgDrawer ref="drawer" v-model="drawer" @drawer-stop="drawer = false"></OrgDrawer>
         <!-- 应用栏 -->
         <v-app-bar color="light-green-lighten-1" :elevation="2">
             <template #prepend>
-                <v-btn v-if="$route.meta.showNavBar" icon="" @click="drawer = true">
+                <v-btn v-if="$route.meta.showNavBar" icon="" @click="drawerStop()">
                     <v-icon class="fa-solid fa-bars"></v-icon>
                 </v-btn>
                 <v-btn v-if="!$route.meta.showNavBar" icon="" @click="goBack()">
@@ -50,6 +50,13 @@ export default {
         document.removeEventListener('backbutton', this.goBack);
     },
     methods: {
+        // 抽屉组件的显示状态改变时触发
+        drawerStop() {
+            // 调用抽屉组件的函数
+            this.$refs.drawer.fetchOrgList();
+            // 设置抽屉组件的显示状态
+            this.drawer = true;
+        },
         // 用户在移动端设备点击后退按钮时，返回上一条路由
         goBack() {
             this.$router.go(-1);
