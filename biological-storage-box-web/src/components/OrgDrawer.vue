@@ -81,9 +81,7 @@ export default {
         };
     },
     computed: {},
-    created() {
-        this.fetchOrgList();
-    },
+    created() {},
     methods: {
         async fetchOrgList() {
             try {
@@ -121,7 +119,6 @@ export default {
         },
         // 跳转登录页面
         async logout() {
-            this.$api.auth.logout();
             this.$router.push('/auth/login');
         },
         // 跳转去设置页面
