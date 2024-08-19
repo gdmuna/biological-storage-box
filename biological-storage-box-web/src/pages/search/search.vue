@@ -50,7 +50,6 @@ export default {
         return {
             boxList: [],
             searchBoxName: '',
-            loaded: false,
             loading: false,
             deleteDialog: false,
             deleteBoxId: '',
@@ -66,10 +65,7 @@ export default {
             this.loading = true;
             const result = await this.$api.box.search({ c: this.searchBoxName, pageNum: 1, pageSize: 10 });
             this.boxList = result;
-            setTimeout(() => {
-                this.loading = false;
-                this.loaded = true;
-            }, 2000);
+            this.loading = false;
         },
         // 跳转到管理试剂页面
         async routeToManageReagent(boxId) {
