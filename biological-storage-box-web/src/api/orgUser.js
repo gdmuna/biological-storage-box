@@ -12,8 +12,8 @@ const orgUser = {
         return request.delete(`${moduleUrl}/del`, data);
     },
     // 邀请用户加入组织
-    invite(data) {
-        return request.put(`${moduleUrl}/invite`, data);
+    invite(data, query) {
+        return request.put(`${moduleUrl}/invite`, data, query);
     },
     // 用户已经加入的组织列表
     list(data) {
