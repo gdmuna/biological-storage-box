@@ -4,8 +4,8 @@ const moduleUrl = '/org/user';
 // 组织 = 课题组
 const orgUser = {
     // 申请加入组织
-    apply(data) {
-        return request.put(`${moduleUrl}/apply`, data);
+    apply(data, query) {
+        return request.put(`${moduleUrl}/apply`, data, query);
     },
     // 将成员踢出组织
     del(data) {
