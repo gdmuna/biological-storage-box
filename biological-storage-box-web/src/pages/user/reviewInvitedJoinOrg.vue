@@ -16,14 +16,34 @@ export default {
     name: 'ReviewInvitedJoinOrgPage',
     data() {
         return {
+            orgID: 0,
             name: '',
             introduce: ''
         };
     },
-    created() {},
+    created() {
+        this.orgID = this.$route.query.id;
+        this.displayOrgInvitation(this.orgID);
+    },
     mounted() {},
     updated() {},
-    methods: {}
+    methods: {
+        async displayOrgInvitation(orgID) {
+            const result = await this.$api.org.one({ orgID });
+            this.name = result.name;
+            this.introduce = result.introduce;
+        },
+        async agreeInvitation() {
+            const result = await this.$api.orgUser.inviteAc({}, { orgID: this.orgID });
+            if (!result) {
+                this.$api.notify.error('审核失败');
+                return;
+            } else {
+                this.$api.notify.success('审核通过');
+            }
+            this.$router.push('/user/information');
+        }
+    }
 };
 </script>
 
@@ -32,11 +52,16 @@ export default {
 .apply-page {
     padding: 20px;
 }
+
 /* 按钮样式 */
 .teal-lighten-1-bg {
-    background-color: #95b9a1; /* teal-lighten-1 颜色的背景色 */
-    border-radius: 8px; /* 适当的圆角半径 */
-    padding: 12px; /* 适当的内边距 */
-    margin: 0; /* 移除默认的 margin */
+    background-color: #95b9a1;
+    /* teal-lighten-1 颜色的背景色 */
+    border-radius: 8px;
+    /* 适当的圆角半径 */
+    padding: 12px;
+    /* 适当的内边距 */
+    margin: 0;
+    /* 移除默认的 margin */
 }
 </style>
