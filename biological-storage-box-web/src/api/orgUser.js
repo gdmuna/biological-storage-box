@@ -7,6 +7,13 @@ const orgUser = {
     apply(data, query) {
         return request.put(`${moduleUrl}/apply`, data, query);
     },
+    // 同意申请
+    applyAc(data, query) {
+        return request.put(`${moduleUrl}/apply/ac`, data, query);
+    }, // 查看申请加入组织信息
+    applyMs(data) {
+        return request.get(`${moduleUrl}/apply/ms`, data);
+    },
     // 将成员踢出组织
     del(data) {
         return request.delete(`${moduleUrl}/del`, data);
@@ -14,6 +21,13 @@ const orgUser = {
     // 邀请用户加入组织
     invite(data, query) {
         return request.put(`${moduleUrl}/invite`, data, query);
+    },
+    // 同意加入组织
+    inviteAc(data, query) {
+        return request.put(`${moduleUrl}/invite/ac`, data, query);
+    }, // 查看邀请加入组织信息
+    inviteMs(data) {
+        return request.get(`${moduleUrl}/invite/ms`, data);
     },
     // 用户已经加入的组织列表
     list(data) {
