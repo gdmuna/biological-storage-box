@@ -20,10 +20,24 @@ export default {
             applyReason: ''
         };
     },
-    created() {},
+    created() {
+        this.nickname = this.$store.applyReason.applicant;
+        this.applyReason = this.$store.applyReason.applyReason;
+    },
     mounted() {},
     updated() {},
-    methods: {}
+    methods: {
+        async examinationPassed() {
+            const result = await this.$api.orgUser.applyAc({}, { orgID: localStorage.getItem('orgID'), userID: this.$store.applyReason.applicantID });
+            if (!result) {
+                this.$api.notify.error('审核失败');
+                return;
+            } else {
+                this.$api.notify.success('审核通过');
+            }
+            this.$router.push('/user/information');
+        }
+    }
 };
 </script>
 
@@ -34,9 +48,9 @@ export default {
 }
 /* 按钮样式 */
 .teal-lighten-1-bg {
-    background-color: #95b9a1; /* teal-lighten-1 颜色的背景色 */
-    border-radius: 8px; /* 适当的圆角半径 */
-    padding: 12px; /* 适当的内边距 */
-    margin: 0; /* 移除默认的 margin */
+    background-color: #95b9a1;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 0;
 }
 </style>
