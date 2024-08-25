@@ -2,7 +2,7 @@
     <div class="main-container py-10">
         <div class="w-full max-w-screen-sm mx-auto px-10">
             <!-- 搜索框 -->
-            <v-text-field v-model="searchOrgName" class="mb-6" :loading="loading" append-inner-icon="mdi-magnify" label="搜索" variant="solo" hide-details single-line @click:append-inner="search"></v-text-field>
+            <v-text-field v-model="searchOrgName" class="mb-6" :loading="loading" append-inner-icon="mdi-magnify" label="搜索" variant="solo" hide-details single-line @input="handleInput" @click:append-inner="search"></v-text-field>
             <!-- 分别显示每个组织 -->
             <div v-if="orgList.length === 0">
                 <v-card class="w-full mx-auto p-6">
@@ -14,15 +14,16 @@
             <div v-for="(item, index) in orgList" :key="index" class="mb-4">
                 <v-card class="border border-gray-300 rounded-lg">
                     <v-list-item>
-                        <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center justify-between w-full">
+                            <!-- 图标和组织信息 -->
                             <div class="flex items-center flex-1">
                                 <v-icon class="mr-4">mdi-account-group</v-icon>
-                                <div>
+                                <div class="text-left">
                                     <v-list-item-title class="text-lg font-semibold">{{ item.name }}</v-list-item-title>
-                                    <v-list-item-subtitle class="text-base mb-2">{{ item.introduce }}</v-list-item-subtitle>
+                                    <v-list-item-subtitle class="text-base">{{ item.introduce }}</v-list-item-subtitle>
                                 </div>
                             </div>
-                            <div class="ml-4 flex items-center justify-center" style="width: 50px">
+                            <div class="flex items-center justify-center" style="width: 50px">
                                 <v-chip v-if="!item.joined" class="w-full text-center flex items-center justify-center" @click="goToApplyPage(item.id)">加入</v-chip>
                                 <v-chip v-else color="success" class="w-full text-center flex items-center justify-center">已加入</v-chip>
                             </div>
@@ -42,7 +43,8 @@ export default {
             loading: false,
             searchOrgName: '',
             orgList: [],
-            userOrgIds: []
+            userOrgIds: [],
+            debounceTimer: null // 用于存储防抖计时器
         };
     },
     created() {
@@ -51,6 +53,15 @@ export default {
     mounted() {},
     updated() {},
     methods: {
+        // 处理输入事件，应用防抖功能
+        handleInput() {
+            if (this.debounceTimer) {
+                clearTimeout(this.debounceTimer);
+            }
+            this.debounceTimer = setTimeout(() => {
+                this.search();
+            }, 300);
+        },
         // 搜索课题组并与userOrgIds比对，更新组织列表的joined状态
         async search() {
             this.loading = true;
@@ -63,9 +74,6 @@ export default {
         },
         async goToApplyPage(orgId) {
             this.$router.push({ path: '/org/applyReason', query: { orgId } });
-            // // 假设加入成功，更新本地状态
-            // this.userOrgIds.push(orgId);
-            // this.updateOrgListJoinedStatus();
         },
         // 获取用户已加入的课题组将其加入到userOrgIds
         async fetchUserOrgs() {
