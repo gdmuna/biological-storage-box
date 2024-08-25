@@ -24,8 +24,7 @@ const request = {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'token': localStorage.getItem('token')
-            },
-            query: JSON.stringify(data)
+            }
         });
     },
     // 封装 POST 请求
