@@ -4,10 +4,10 @@
             <v-img class="w-1/2 max-w-48 mx-auto mt-3 mb-10 bg-white rounded-lg" cover src="/RhineLab.svg"></v-img>
             <v-form class="w-full max-w-sm mx-auto" @submit.prevent="register">
                 <v-text-field v-model="user.account" label="用户名"></v-text-field>
-                <v-text-field v-model="user.nickname" label="昵称"></v-text-field>
+                <v-text-field v-model="user.nickName" label="昵称"></v-text-field>
                 <v-text-field v-model="user.realName" label="真实姓名"></v-text-field>
                 <v-text-field v-model="user.password" label="密码" :type="showPassword ? 'text' : 'password'" :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'" :rules="[rules.minLength]" @click:append-inner="showPassword = !showPassword"></v-text-field>
-                <v-btn :loading="loading" :disabled="!isFormValid || isSubmitting" class="mt-2" text="注册" type="submit" block>注册</v-btn>
+                <v-btn :loading="loading" :disabled="!isFormValid || loading" class="mt-2" text="注册" type="submit" block>注册</v-btn>
             </v-form>
             <div class="text-center mt-4">
                 <span>
@@ -27,7 +27,7 @@ export default {
         return {
             user: {
                 account: null,
-                nickname: null,
+                nickName: null,
                 realName: null,
                 password: null
             },
@@ -42,14 +42,20 @@ export default {
     computed: {
         // 判断表单是否填写完整，从而是否可以点击注册按钮
         isFormValid() {
-            return this.user.account && this.user.nickname && this.user.realName && this.user.password && this.user.password.length >= 6;
+            const firstValue = this.user.account && this.user.nickName && this.user.realName;
+            const secondeValue = this.user.password && this.user.password.length >= 6
+            if (firstValue && secondeValue === true) {
+                return true;
+            } else {
+                return false;
+            }
         }
     },
     methods: {
         async register() {
             // 禁用注册按钮
             this.loading = true;
-            const result = await this.$api.auth.register({ account: this.user.account, nickname: this.user.nickname, realName: this.user.realName, password: this.user.password });
+            const result = await this.$api.auth.register({ account: this.user.account, nickName: this.user.nickName, realName: this.user.realName, password: this.user.password });
             // 如果注册失败则直接结束后续操作
             if (!result) {
                 this.$api.notify.error('用户名重复，请重新输入');
