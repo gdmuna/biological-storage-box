@@ -12,6 +12,9 @@
                 <span>
                     没有账户？
                     <a href="#" class="text-blue-500" @click.prevent="goToRegister">去注册</a>
+                    <!-- 虚假的忘记密码 等成哥的邮箱验证码 -->
+                    &nbsp;&nbsp;|&nbsp;&nbsp; 忘记密码？
+                    <!-- <a href="#" class="text-blue-500" @click.prevent="goToenterCaptcha">重置密码</a> -->
                 </span>
             </div>
         </div>
@@ -47,7 +50,6 @@ export default {
         async login() {
             this.loading = true;
             const result = await this.$api.auth.login({ account: this.user.account, password: this.user.password });
-            console.log(result);
             // 如果登录失败则直接结束后续操作
             if (!result) {
                 this.$api.notify.error('登录失败，请检查用户名和密码');
@@ -70,12 +72,16 @@ export default {
                 }
             }
             this.$api.notify.success('登录成功');
-            this.$router.push('/box');
+            this.$router.push('/root/manageRoot');
         },
         //跳转去注册页面
         goToRegister() {
             this.$router.push('/auth/register');
         }
+        // //跳转去重置密码页面
+        // goToenterCaptcha() {
+        //     this.$router.push('/auth/enterCaptcha');
+        // }
     }
 };
 </script>
