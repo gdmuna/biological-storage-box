@@ -8,6 +8,8 @@ import org from '@/api/org';
 import orgUser from '@/api/orgUser';
 import reagent from '@/api/reagent';
 import user from '@/api/user';
+import root from '@/api/root';
+import boxAlias from '@/api/boxAlias';
 
 import notify from '@/api/notify';
 
@@ -25,7 +27,9 @@ export default {
             orgUser,
             reagent,
             user,
-            notify
+            notify,
+            root,
+            boxAlias
         };
     }
 };
