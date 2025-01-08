@@ -72,7 +72,7 @@ export default {
                 }
             }
             this.$api.notify.success('登录成功');
-            this.$router.push('/root/manageRoom');
+            this.$router.push('/root/manageRoot');
         },
         //跳转去注册页面
         goToRegister() {
