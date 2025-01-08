@@ -19,6 +19,10 @@ const box = {
     one(data) {
         return request.get(`${moduleUrl}/one`, data);
     },
+    // 获取用户房间内的盒子列表
+    rootList(data) {
+        return request.get(`${moduleUrl}/root/list`, data);
+    },
     // 搜索盒子
     search(data) {
         return request.get(`${moduleUrl}/search`, data);
