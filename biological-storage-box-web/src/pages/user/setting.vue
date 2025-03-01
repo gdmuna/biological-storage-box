@@ -3,7 +3,7 @@
         <div class="w-full max-w-screen-sm mx-auto px-10 py-10">
             <v-card class="px-4 py-4">
                 <!-- 昵称 -->
-                <v-text-field v-model="nickname" label="昵称" :rules="[rules.notNull]" outlined dense></v-text-field>
+                <v-text-field v-model="nickName" label="昵称" :rules="[rules.notNull]" outlined dense></v-text-field>
                 <!-- 真实姓名 -->
                 <v-text-field v-model="realName" label="真实姓名" :rules="[rules.notNull]" outlined dense></v-text-field>
                 <!-- UID -->
@@ -45,7 +45,7 @@ export default {
     data() {
         return {
             uid: '',
-            nickname: '',
+            nickName: '',
             realName: '',
             // 控制修改密码弹窗+成功提示的显示与隐藏
             passwordDialog: false,
@@ -78,7 +78,7 @@ export default {
             if (response) {
                 const userInfo = response;
                 this.uid = userInfo.uid;
-                this.nickname = userInfo.nickName;
+                this.nickName = userInfo.nickName;
                 this.realName = userInfo.realName;
             }
         },
@@ -118,7 +118,16 @@ export default {
         },
         // 保存昵称 真实姓名修改
         async saveSettings() {
-            await this.$api.user.updateInfo({ nickname: this.nickname, realname: this.realName });
+            result = await this.$api.user.updateInfo({ nickName: this.nickName, realName: this.realName });
+            console.log(result);
+            if (result === '操作成功') {
+                // 上传成功后返回上一页
+                this.$router.go(-1);
+                this.$api.notify.success('更改成功');
+            } else {
+                this.loading = false;
+                this.$api.notify.error('更改失败，请重试');
+            }
         }
     }
 };

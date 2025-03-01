@@ -10,6 +10,10 @@ const reagent = {
     // 批量更新试剂
     update(data, query) {
         return request.post(`${moduleUrl}/update`, data, query);
+    },
+    // 单个试剂
+    one(data) {
+        return request.get(`${moduleUrl}/one`, data);
     }
 };
 
