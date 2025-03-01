@@ -217,6 +217,23 @@ const routes = [
         meta: {
             title: '搜索人员'
         }
+    },
+    {
+        path: '/root/manageRoot',
+        name: 'manageRoot',
+        component: () => import('@/pages/root/manageRoot.vue'),
+        meta: {
+            title: '管理房间',
+            showNavBar: true
+        }
+    },
+    {
+        path: '/auth/enterCaptcha',
+        name: 'enterCaptcha',
+        component: () => import('@/pages/auth/enterCaptcha.vue'),
+        meta: {
+            title: '输入验证码'
+        }
     }
 ];
 

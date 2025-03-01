@@ -14,7 +14,7 @@
                     <a href="#" class="text-blue-500" @click.prevent="goToRegister">去注册</a>
                     <!-- 虚假的忘记密码 等成哥的邮箱验证码 -->
                     &nbsp;&nbsp;|&nbsp;&nbsp; 忘记密码？
-                    <!-- <a href="#" class="text-blue-500" @click.prevent="goToenterCaptcha">重置密码</a> -->
+                    <a href="#" class="text-blue-500" @click.prevent="goToEnterCaptcha">重置密码</a>
                 </span>
             </div>
         </div>
@@ -77,11 +77,11 @@ export default {
         //跳转去注册页面
         goToRegister() {
             this.$router.push('/auth/register');
+        },
+        //跳转去重置密码页面
+        goToEnterCaptcha() {
+            this.$router.push('/auth/enterCaptcha');
         }
-        // //跳转去重置密码页面
-        // goToenterCaptcha() {
-        //     this.$router.push('/auth/enterCaptcha');
-        // }
     }
 };
 </script>
