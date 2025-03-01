@@ -3,15 +3,17 @@
         <div class="w-full max-w-screen-sm mx-auto px-10 py-10">
             <v-card class="px-4 py-4">
                 <!-- 昵称 -->
-                <v-text-field v-model="nickName" label="昵称" :rules="[rules.notNull]" outlined dense></v-text-field>
+                <v-text-field v-model="account" label="昵称" :rules="[rules.notNull]" outlined dense></v-text-field>
                 <!-- 真实姓名 -->
                 <v-text-field v-model="realName" label="真实姓名" :rules="[rules.notNull]" outlined dense></v-text-field>
                 <!-- UID -->
                 <v-text-field v-model="uid" label="UID" readonly outlined dense></v-text-field>
                 <!-- 密码 -->
                 <v-text-field v-model="password" label="密码" type="password" outlined dense @click="showPasswordDialog"></v-text-field>
+                <!-- 邮箱 -->
+                <v-text-field v-model="email" label="邮箱" type="Email" outlined dense @click="showEmailDialog"></v-text-field>
                 <!-- 保存按钮 -->
-                <v-btn class="mt-4 bg-custom-green text-white" block @click="saveSettings">保存</v-btn>
+                <v-btn :loading="isSaving" :disabled="isSaving" class="mt-4 bg-custom-green text-white" block @click="saveSettings">保存</v-btn>
             </v-card>
         </div>
         <!-- 修改密码对话框 -->
@@ -25,16 +27,30 @@
                     <v-text-field v-model="newPassword" label="新密码" :type="showNewPassword ? 'text' : 'password'" :append-inner-icon="showNewPassword ? 'mdi-eye-off' : 'mdi-eye'" :rules="[rules.notNull, rules.minLength]" outlined dense @click:append-inner="showNewPassword = !showNewPassword"></v-text-field>
                     <v-text-field v-model="confirmPassword" label="确认新密码" :type="showConfirmPassword ? 'text' : 'password'" :append-inner-icon="showConfirmPassword ? 'mdi-eye-off' : 'mdi-eye'" :rules="[rules.notNull, rules.minLength, rules.matchPassword]" outlined dense @click:append-inner="showConfirmPassword = !showConfirmPassword"></v-text-field>
                 </v-card-text>
-                <!-- 对话框操作按钮 -->
+                <!-- 修改密码操作按钮 -->
                 <v-card-actions class="justify-center pb-2">
-                    <v-btn class="mt-2 teal-lighten-1-bg text-white" style="width: 80%" @click="updatePassword">修改</v-btn>
+                    <v-btn :loading="isUpdatingPassword" :disabled="!isPasswordFieldsFilled || isUpdatingPassword" class="mt-2 teal-lighten-1-bg text-white" style="width: 80%" @click="updatePassword">修改密码</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <!-- 保存失败提示 -->
-        <v-alert v-model="showErrorAlert" type="error" dismissible class="rounded-lg p-2 mx-auto w-3/4 sm:w-2/3 md:w-1/2 lg:w-1/3">原密码输入错误，请重新输入</v-alert>
-        <!-- 保存成功提示 -->
-        <v-alert v-model="showSuccessAlert" type="success" dismissible class="rounded-lg p-2 mx-auto w-3/4 sm:w-2/3 md:w-1/2 lg:w-1/3">密码更新成功！请重新登录</v-alert>
+
+        <!-- 修改邮箱对话框 -->
+        <v-dialog v-model="emailDialog" max-width="500px" @click:outside="clearEmailFields">
+            <v-card>
+                <!-- 对话框标题 -->
+                <v-card-title>修改邮箱</v-card-title>
+                <!-- 对话框内容 -->
+                <v-card-text class="pb-2">
+                    <v-text-field v-model="oldEmailInput" label="旧邮箱" :type="'email'" :rules="[rules.notNull, rules.email]" outlined dense></v-text-field>
+                    <v-text-field v-model="newEmail" label="新邮箱" :type="'email'" :rules="[rules.notNull, rules.email]" outlined dense></v-text-field>
+                    <v-text-field v-model="confirmEmail" label="确认新邮箱" :type="'email'" :rules="[rules.notNull, rules.email, rules.matchEmail]" outlined dense></v-text-field>
+                </v-card-text>
+                <!-- 修改邮箱操作按钮 -->
+                <v-card-actions class="justify-center pb-2">
+                    <v-btn :loading="isUpdatingEmail" :disabled="!isEmailFieldsFilled || isUpdatingEmail" class="mt-2 teal-lighten-1-bg text-white" style="width: 80%" @click="updateEmail">修改邮箱</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -45,12 +61,11 @@ export default {
     data() {
         return {
             uid: '',
-            nickName: '',
+            account: '',
             realName: '',
-            // 控制修改密码弹窗+成功提示的显示与隐藏
+            email: '3108006259@qq.com',
+            // 控制修改密码弹窗+修改个人信息弹窗+成功提示的显示与隐藏
             passwordDialog: false,
-            showSuccessAlert: false,
-            showErrorAlert: false,
             // 用户输入的内容（原密码+新密码+第二次新密码）
             oldPasswordInput: '',
             newPassword: '',
@@ -59,12 +74,41 @@ export default {
             showOldPassword: false,
             showNewPassword: false,
             showConfirmPassword: false,
+            // 控制“保存按钮”是否可点击
+            isSaving: false,
+            // 控制“修改密码按钮”是否可点击
+            isUpdatingPassword: false,
+            // 控制修改密码弹窗+修改个人信息弹窗+成功提示的显示与隐藏
+            emailDialog: false,
+            // 用户输入的内容（原密码+新密码+第二次新密码）
+            oldEmailInput: '',
+            newEmail: '',
+            confirmEmail: '',
+            // 控制密码输入框的显示与隐藏
+            showOldEmail: false,
+            showNewEmail: false,
+            showConfirmEmail: false,
+            // 控制“修改密码按钮”是否可点击
+            isUpdatingEmail: false,
+
             rules: {
                 notNull: (value) => !!value || '此处不能为空',
                 minLength: (value) => (value && value.length >= 6) || '密码长度至少为6位',
-                matchPassword: (value) => value === this.newPassword || '两次输入的密码不匹配'
+                matchPassword: (value) => value === this.newPassword || '两次输入的密码不匹配',
+                email: (value) => /^(?:[a-z0-9]+(?:[.-_][a-z0-9]+)*@[a-z0-9-]+\.[a-z0-9]+(?:\.[a-z0-9]+)*)$/i.test(value) || '邮箱格式不正确',
+                matchEmail: (value) => value === this.newEmail || '两次输入的邮箱不匹配'
             }
         };
+    },
+    computed: {
+        // 检查所有密码输入框是否都有内容
+        isPasswordFieldsFilled() {
+            return this.oldPasswordInput && this.newPassword && this.confirmPassword && this.newPassword === this.confirmPassword && this.newPassword.length >= 6;
+        },
+        // 检查所有邮箱输入框是否都有内容
+        isEmailFieldsFilled() {
+            return this.oldEmailInput && this.newEmail && this.confirmEmail && this.newEmail === this.confirmEmail;
+        }
     },
     created() {
         this.loadUserInfo();
@@ -78,13 +122,17 @@ export default {
             if (response) {
                 const userInfo = response;
                 this.uid = userInfo.uid;
-                this.nickName = userInfo.nickName;
+                this.account = userInfo.account;
                 this.realName = userInfo.realName;
             }
         },
         // 显示修改密码对话框
         async showPasswordDialog() {
             this.passwordDialog = true;
+        },
+        // 显示修改邮箱对话框
+        async showEmailDialog() {
+            this.emailDialog = true;
         },
         // 清空密码输入字段
         clearPasswordFields() {
@@ -95,30 +143,38 @@ export default {
             this.showNewPassword = false;
             this.showConfirmPassword = false;
         },
-        // 更新密码
+        // 清空邮箱输入字段
+        clearEmailFields() {
+            this.oldEmailInput = '';
+            this.newEmail = '';
+            this.confirmEmail = '';
+            this.showOldEmail = false;
+            this.showNewEmail = false;
+            this.showConfirmEmail = false;
+        },
+        // 修改密码
         async updatePassword() {
+            // 禁用“修改密码”按钮
+            this.isUpdatingPassword = true;
             // 调用后端接口更新密码
             const result = await this.$api.user.updatePassword({ oldPassword: this.oldPasswordInput, newPassword: this.newPassword });
             // 旧密码错误进行提示并直接结束后续操作
             if (!result) {
-                this.showErrorAlert = true;
-                this.passwordDialog = false;
-                setTimeout(() => {
-                    this.showErrorAlert = false;
-                }, 3000);
+                // 显示“原密码输入错误，请重新输入”消息条
+                this.$api.notify.error('原密码输入错误，请重新输入');
+                // 重新启用“修改密码”按钮
+                this.isUpdatingPassword = false;
                 return;
             }
             // 修改成功后重新登录
-            this.showSuccessAlert = true;
+            // 显示“密码修改成功，请重新登录”消息条
+            this.$api.notify.success('密码修改成功！请重新登录');
             this.passwordDialog = false;
-            setTimeout(() => {
-                this.showSuccessAlert = false;
-                this.$router.push('/auth/login');
-            }, 3000);
+            this.$router.push('/auth/login');
         },
-        // 保存昵称 真实姓名修改
+        // 保存用户名 真实姓名修改
         async saveSettings() {
-            result = await this.$api.user.updateInfo({ nickName: this.nickName, realName: this.realName });
+            result = await this.$api.user.updateInfo({ account: this.account, realName: this.realName });
             console.log(result);
             if (result === '操作成功') {
                 // 上传成功后返回上一页

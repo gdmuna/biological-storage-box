@@ -76,23 +76,36 @@ export default {
     data() {
         return {
             items: [],
-            drawer: false,
+            drawer: this.value, // 修改1-确保drawer初始值同步
             loading: true // 增加加载状态
         };
     },
     computed: {},
+    watch: {
+        drawer(val) {
+            if (val) {
+                this.fetchOrgList(); // 修改2-当drawer打开时，重新获取组织列表
+            }
+        },
+        value(val) {
+            this.drawer = val; // 修改3-确保prop和data的同步
+        }
+    },
     created() {},
+    mounted() {
+        this.fetchOrgList();
+    },
+    updated() {},
     methods: {
         async fetchOrgList() {
+            this.loading = true;
             try {
                 const result = await this.$api.org.list();
                 if (Array.isArray(result)) {
                     this.items = result;
-                } else {
-                    console.error('Expected array but got:', result);
                 }
             } catch (error) {
-                console.error('Error fetching organization list:', error);
+                console.error(error);
             } finally {
                 this.loading = false;
             }

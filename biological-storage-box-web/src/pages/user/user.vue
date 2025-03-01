@@ -1,7 +1,7 @@
 <template>
     <div class="main-container">
         <div class="w-full max-w-screen-sm mx-auto px-10 py-10">
-            <v-card class="mx-auto px-1 py-1" :title="userInfo.nickName">
+            <v-card class="mx-auto px-1 py-1" :title="userInfo.account">
                 <template #prepend>
                     <v-avatar size="80">
                         <v-img alt="John" src="/images/avatar.jpg"></v-img>
@@ -28,7 +28,7 @@ export default {
     data() {
         return {
             userInfo: {
-                nickName: '',
+                account: '',
                 uid: ''
             }
         };
