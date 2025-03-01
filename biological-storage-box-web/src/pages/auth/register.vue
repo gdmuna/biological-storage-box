@@ -43,7 +43,7 @@ export default {
         // 判断表单是否填写完整，从而是否可以点击注册按钮
         isFormValid() {
             const firstValue = this.user.account && this.user.nickName && this.user.realName;
-            const secondeValue = this.user.password && this.user.password.length >= 6
+            const secondeValue = this.user.password && this.user.password.length >= 6;
             if (firstValue && secondeValue === true) {
                 return true;
             } else {

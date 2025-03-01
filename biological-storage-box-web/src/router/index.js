@@ -232,7 +232,15 @@ const routes = [
         name: 'enterCaptcha',
         component: () => import('@/pages/auth/enterCaptcha.vue'),
         meta: {
-            title: '输入验证码'
+            title: '身份验证'
+        }
+    },
+    {
+        path: '/auth/resetPassword',
+        name: 'resetPassword',
+        component: () => import('@/pages/auth/resetPassword.vue'),
+        meta: {
+            title: '重置密码'
         }
     }
 ];

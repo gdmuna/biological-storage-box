@@ -22,7 +22,7 @@
             <!-- 返回登录链接 -->
             <div class="text-center mt-4">
                 <span>
-                    已有账户？
+                    记得密码？
                     <a href="#" class="text-blue-500" @click.prevent="goToLogin">返回登录</a>
                 </span>
             </div>
@@ -52,7 +52,7 @@ export default {
                 .verifyCode({ email: this.user.email, code: this.user.code })
                 .then(() => {
                     this.$api.notify.success('验证码验证成功');
-                    this.$router.push('/auth/setNewPassword'); // 跳转到设置新密码页面
+                    this.$router.push('/auth/resetPassword'); // 跳转到设置新密码页面
                 })
                 .catch(() => {
                     this.$api.notify.error('验证码无效，请重试');
