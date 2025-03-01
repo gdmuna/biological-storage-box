@@ -20,14 +20,23 @@ export default {
     emits: [],
     data() {
         return {
-            navBarValue: false
+            navBarValue: this.$route.path // 初始值为当前路由路径
         };
+    },
+    watch: {
+        '$route.path'(newPath) {
+            this.navBarValue = newPath; // 路由变化时更新导航栏的值
+        }
     },
     created() {},
     mounted() {},
     updated() {},
     unmounted() {},
-    methods: {}
+    methods: {
+        navigateTo(path) {
+            this.$router.push(path);
+        }
+    }
 };
 </script>
 
