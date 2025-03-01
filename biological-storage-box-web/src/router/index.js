@@ -242,6 +242,22 @@ const routes = [
         meta: {
             title: '重置密码'
         }
+    },
+    {
+        path: '/root/updateRoot',
+        name: 'updateRoot',
+        component: () => import('@/pages/root/updateRoot.vue'),
+        meta: {
+            title: '更改房间信息'
+        }
+    },
+    {
+        path: '/root/createRoot',
+        name: 'createRoot',
+        component: () => import('@/pages/root/createRoot.vue'),
+        meta: {
+            title: '创建房间'
+        }
     }
 ];
 
