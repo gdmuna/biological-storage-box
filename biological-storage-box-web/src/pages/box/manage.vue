@@ -14,12 +14,12 @@
                         </v-card-subtitle>
                     </v-card-item>
                     <v-card-text class="py-1">
-                        创建时间：
-                        <v-chip size="small" color="deep-purple-lighten-1">{{ item.createTime }}</v-chip>
+                        简称1：
+                        <v-chip size="small" color="deep-purple-lighten-1">这里放简称1</v-chip>
                     </v-card-text>
                     <v-card-text class="py-1">
-                        更新时间：
-                        <v-chip size="small" color="purple-lighten-1">{{ item.updateTime }}</v-chip>
+                        简称2：
+                        <v-chip size="small" color="purple-lighten-1">这里放简称2</v-chip>
                     </v-card-text>
                     <v-card-actions>
                         <v-btn variant="flat" color="light-green-lighten-4" @click="routeToManageReagent(item.id)">管理试剂</v-btn>
