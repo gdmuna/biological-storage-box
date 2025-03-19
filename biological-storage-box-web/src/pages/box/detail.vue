@@ -15,6 +15,9 @@
                 <v-list-item lines="two" subtitle="长度y" link>{{ box.y }}</v-list-item>
                 <v-divider class="border-opacity-75"></v-divider>
                 <v-list-item lines="two" subtitle="试剂盒介绍" link>{{ box.introduce }}</v-list-item>
+                <div class="p-5 w-full flex justify-center">
+                    <v-btn class="w-full" variant="flat" color="teal-lighten-1" @click="routeToLogReagent()">日志</v-btn>
+                </div>
             </v-card>
         </div>
     </div>
@@ -45,6 +48,11 @@ export default {
             const orgId = this.$store.user.currentOrg;
             const result = await this.$api.box.one({ boxID: boxId, orgID: orgId });
             this.box = result;
+        },
+        // 跳转到试剂日志页面
+        async routeToLogReagent() {
+            let boxId = this.boxId;
+            this.$router.push({ path: '/reagent/log', query: { boxId } });
         }
     }
 };
