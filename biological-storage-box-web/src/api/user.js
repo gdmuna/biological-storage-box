@@ -18,6 +18,10 @@ const user = {
     // 修改用户密码
     updatePassword(data) {
         return request.put(`${moduleUrl}/update/password`, data);
+    },
+    // 向用户邮箱发送验证码
+    sendEmail(data) {
+        return request.post(`${moduleUrl}/test/code`, data);
     }
 };
 
