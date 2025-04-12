@@ -6,9 +6,35 @@
                     <v-text-field v-model="name" label="试剂盒名称" :rules="[rules.notNull]" clearable></v-text-field>
                     <v-text-field v-model="nickName1" label="简称1" :rules="[rules.notNull]" clearable></v-text-field>
                     <v-text-field v-model="nickName2" label="简称2" :rules="[rules.notNull]" clearable></v-text-field>
-                    <v-text-field v-model="x" label="长度x" :rules="[rules.notNull, rules.isNumber]" clearable></v-text-field>
-                    <v-text-field v-model="y" label="宽度y" :rules="[rules.notNull, rules.isNumber]" clearable></v-text-field>
-                    <v-textarea v-model="introduce" label="试剂盒介绍" :rules="[rules.notNull]" clearable></v-textarea>
+                    <div class="mb-3">
+                        <div>
+                            <div v-if="selectedX && selectedY" class="text-body-2 text-grey-darken-2">当前尺寸：{{ selectedX }} × {{ selectedY }}</div>
+                            <div
+                                @mouseleave="
+                                    hoverX = null;
+                                    hoverY = null;
+                                ">
+                                <div v-for="row in 10" :key="row" class="flex w-full justify-center">
+                                    <div
+                                        v-for="col in 10"
+                                        :key="col"
+                                        class="grid-cell"
+                                        :class="{
+                                            'active': (hoverX >= col || selectedX >= col) && (hoverY >= row || selectedY >= row),
+                                            'selected': selectedX >= col && selectedY >= row,
+                                            'rounded-sm': $vuetify.display.smAndUp
+                                        }"
+                                        @mouseover="
+                                            hoverX = col;
+                                            hoverY = row;
+                                        "
+                                        @click="selectSize(col, row)"></div>
+                                </div>
+                                <div class="text-caption text-grey-darken-1 mb-1 text-right">（最大10×10）</div>
+                            </div>
+                        </div>
+                    </div>
+                    <v-textarea v-model="introduce" label="试剂盒介绍" clearable></v-textarea>
                     <v-btn class="mt-4" type="submit" block :loading="loading" :disabled="!btnAllowClick">创建</v-btn>
                 </v-form>
             </v-card>
@@ -41,14 +67,14 @@ export default {
             y: null,
             loading: false,
             dialog: false,
+            selectedX: null,
+            selectedY: null,
+            hoverX: null,
+            hoverY: null,
             rules: {
                 notNull: (value) => {
                     if (value) return true;
                     return '此处不能为空';
-                },
-                isNumber: (value) => {
-                    const pattern = /^(?:[1-9][0-9]?|100)$/;
-                    return pattern.test(value) || '请输入 1-100 之间的数字';
                 }
             }
         };
@@ -56,13 +82,7 @@ export default {
     computed: {
         // 创建按钮是否可点击
         btnAllowClick() {
-            const firstValue = (this.rules.isNumber(this.x) === true ? true : false) && (this.rules.isNumber(this.y) === true ? true : false);
-            const secondeValue = this.rules.notNull(this.name);
-            if (firstValue && secondeValue === true) {
-                return true;
-            } else {
-                return false;
-            }
+            return this.selectedX && this.selectedY && this.name;
         }
     },
     created() {
@@ -76,6 +96,13 @@ export default {
     mounted() {},
     updated() {},
     methods: {
+        async selectSize(x, y) {
+            this.selectedX = x;
+            this.selectedY = y;
+            // 同时更新x,y值用于表单提交
+            this.x = x;
+            this.y = y;
+        },
         async boxAdd() {
             this.loading = true;
             const currentOrg = this.$store.user.currentOrg;
@@ -127,4 +154,33 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.grid-cell {
+    width: 10px;
+    height: 10px;
+    border: 3px solid rgba(0, 0, 0, 0.08);
+    margin: 0.5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease-in-out,
+        border-color 0.2s ease-in-out;
+}
+
+.grid-cell:hover {
+    background: #9ccc65 !important;
+}
+
+.grid-cell.selected {
+    background: #9ccc65 !important;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 600px) {
+    .grid-cell {
+        width: 24px;
+        height: 24px;
+    }
+}
+</style>

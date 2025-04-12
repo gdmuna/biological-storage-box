@@ -23,16 +23,8 @@
                         <v-chip size="small" color="deep-purple-lighten-1">{{ item.name }}</v-chip>
                     </v-card-text>
                     <v-card-text class="py-1">
-                        操作位置：
-                        <v-chip size="small" color="purple-lighten-1">[{{ item.x }},{{ item.y }}]</v-chip>
-                    </v-card-text>
-                    <v-card-text class="py-1">
                         操作时间：
                         <v-chip size="small" color="deep-purple-lighten-1">{{ item.createTime }}</v-chip>
-                    </v-card-text>
-                    <v-card-text class="py-1">
-                        备注：
-                        <v-chip size="small" color="purple-lighten-1">{{ item.remark }}</v-chip>
                     </v-card-text>
                 </v-card>
             </div>
