@@ -7,6 +7,7 @@ export const userStore = defineStore('userStore', {
         realName: null,
         avatar: null,
         currentOrg: null,
-        currentRole: null
+        currentContainer: null,
+        currentRoot: null
     })
 });
