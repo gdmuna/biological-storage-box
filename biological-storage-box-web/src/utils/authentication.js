@@ -40,6 +40,18 @@ const authentication = {
             return false;
         }
     },
+    // 封装 codeLogin 请求
+    codeLogin: async (data) => {
+        // 获取 jwt
+        const token = await authentication.fetch('/user/email/login', data);
+        if (token) {
+            // 将 jwt 保存到 localStorage
+            localStorage.setItem('token', token);
+            return true;
+        } else {
+            return false;
+        }
+    },
     // 封装 register 请求
     register: async (data) => {
         // 调用注册接口，不包含 token
