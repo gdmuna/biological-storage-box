@@ -228,14 +228,6 @@ const routes = [
         }
     },
     {
-        path: '/auth/enterCaptcha',
-        name: 'enterCaptcha',
-        component: () => import('@/pages/auth/enterCaptcha.vue'),
-        meta: {
-            title: '身份验证'
-        }
-    },
-    {
         path: '/auth/resetPassword',
         name: 'resetPassword',
         component: () => import('@/pages/auth/resetPassword.vue'),
