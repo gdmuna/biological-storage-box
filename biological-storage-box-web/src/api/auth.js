@@ -7,6 +7,10 @@ const auth = {
     login(data) {
         return authentication.login(data);
     },
+    // 邮箱验证码登录
+    codeLogin(data) {
+        return authentication.codeLogin(data)
+    },
     // 用户注册
     register(data) {
         return authentication.register(data);
