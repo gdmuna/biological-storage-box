@@ -14,12 +14,8 @@
                         </v-card-subtitle>
                     </v-card-item>
                     <v-card-text class="py-1">
-                        简称1：
-                        <v-chip size="small" color="deep-purple-lighten-1">这里放简称1</v-chip>
-                    </v-card-text>
-                    <v-card-text class="py-1">
-                        简称2：
-                        <v-chip size="small" color="purple-lighten-1">这里放简称2</v-chip>
+                        简称：
+                        <v-chip size="small" color="deep-purple-lighten-1">{{ item.shortName }}</v-chip>
                     </v-card-text>
                     <v-card-actions>
                         <v-btn variant="flat" color="light-green-lighten-4" @click="routeToManageReagent(item.id)">管理试剂</v-btn>
@@ -63,10 +59,18 @@ export default {
     },
     updated() {},
     methods: {
-        // 获取试剂盒列表
+        // 获取房间下的试剂盒
         async getBox() {
             const orgID = this.$store.user.currentOrg;
-            const result = await this.$api.box.list({ orgID: orgID, pageNum: 1, pageSize: 10 });
+            const rootID = this.$store.user.currentRoot;
+            console.log(rootID);
+            console.log(orgID, rootID);
+            const result = await this.$api.box.rootList({
+                orgID: orgID,
+                pageNum: 1,
+                pageSize: 10,
+                rootID: rootID
+            });
             this.boxList = result;
         },
         // 跳转到管理试剂页面
