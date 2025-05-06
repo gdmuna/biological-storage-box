@@ -2,20 +2,48 @@
     <div class="main-container">
         <div class="w-full max-w-screen-sm mx-auto px-10 py-10">
             <v-card class="px-4 py-4">
-                <!-- 昵称 -->
-                <v-text-field v-model="account" label="昵称" :rules="[rules.notNull]" outlined dense></v-text-field>
+                <!-- 邮箱 -->
+                <v-text-field v-model="email" label="邮箱" type="Email" outlined dense @click="showEmailDialog"></v-text-field>
+                <!--昵称-->
+                <v-text-field v-model="nickName" label="昵称" :rules="[rules.notNull]" outlined dense @click="showNickNameDialog"></v-text-field>
                 <!-- 真实姓名 -->
-                <v-text-field v-model="realName" label="真实姓名" :rules="[rules.notNull]" outlined dense></v-text-field>
+                <v-text-field v-model="realName" label="真实姓名" :rules="[rules.notNull]" outlined dense @click="showRealNameDialog"></v-text-field>
                 <!-- UID -->
                 <v-text-field v-model="uid" label="UID" readonly outlined dense></v-text-field>
                 <!-- 密码 -->
                 <v-text-field v-model="password" label="密码" type="password" outlined dense @click="showPasswordDialog"></v-text-field>
-                <!-- 邮箱 -->
-                <v-text-field v-model="email" label="邮箱" type="Email" outlined dense @click="showEmailDialog"></v-text-field>
+                
                 <!-- 保存按钮 -->
                 <v-btn :loading="isSaving" :disabled="isSaving" class="mt-4 bg-custom-green text-white" block @click="saveSettings">保存</v-btn>
             </v-card>
         </div>
+
+        <!-- 修改昵称对话框 -->
+        <v-dialog v-model="nickNameDialog" max-width="500px" @click:outside="clearNickNameField">
+            <v-card>
+                <v-card-title>修改昵称</v-card-title>
+                <v-card-text class="pb-2">
+                    <v-text-field v-model="newNickName" label="新昵称" :rules="[rules.notNull]" outlined dense></v-text-field>
+                </v-card-text>
+                <v-card-actions class="justify-center pb-2">
+                    <v-btn :loading="isUpdatingNickName" :disabled="!newNickName" class="mt-2 teal-lighten-1-bg text-white" style="width: 80%" @click="updateNickName">修改昵称</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <!-- 修改真实姓名对话框 -->
+        <v-dialog v-model="realNameDialog" max-width="500px" @click:outside="clearRealNameField">
+            <v-card>
+                <v-card-title>修改真实姓名</v-card-title>
+                <v-card-text class="pb-2">
+                    <v-text-field v-model="newRealName" label="新真实姓名" :rules="[rules.notNull]" outlined dense></v-text-field>
+                </v-card-text>
+                <v-card-actions class="justify-center pb-2">
+                    <v-btn :loading="isUpdatingRealName" :disabled="!newRealName" class="mt-2 teal-lighten-1-bg text-white" style="width: 80%" @click="updateRealName">修改真实姓名</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        
         <!-- 修改密码对话框 -->
         <v-dialog v-model="passwordDialog" max-width="500px" @click:outside="clearPasswordFields">
             <v-card>
@@ -33,21 +61,28 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-
         <!-- 修改邮箱对话框 -->
         <v-dialog v-model="emailDialog" max-width="500px" @click:outside="clearEmailFields">
             <v-card>
-                <!-- 对话框标题 -->
                 <v-card-title>修改邮箱</v-card-title>
-                <!-- 对话框内容 -->
                 <v-card-text class="pb-2">
-                    <v-text-field v-model="oldEmailInput" label="旧邮箱" :type="'email'" :rules="[rules.notNull, rules.email]" outlined dense></v-text-field>
-                    <v-text-field v-model="newEmail" label="新邮箱" :type="'email'" :rules="[rules.notNull, rules.email]" outlined dense></v-text-field>
-                    <v-text-field v-model="confirmEmail" label="确认新邮箱" :type="'email'" :rules="[rules.notNull, rules.email, rules.matchEmail]" outlined dense></v-text-field>
+                    <v-text-field v-model="email" label="当前邮箱" type="email" readonly outlined dense></v-text-field>
+
+                    <v-text-field v-model="code" label="输入你的验证码" :append-inner-icon="'mdi-shield-key'" :rules="[rules.notNull]" outlined dense>
+                        <template #append>
+                            <v-btn text small :disabled="!email || sending || countdown > 0" @click="sendCode">
+                                {{ countdown > 0 ? countdown + '秒后重发' : sending ? '发送中...' : '发送验证码' }}
+                            </v-btn>
+                        </template>
+                    </v-text-field>
+
+                    <v-text-field v-model="newEmail" label="新邮箱" type="email" :rules="[rules.notNull, rules.email]" outlined dense></v-text-field>
+
+                    <v-text-field v-model="confirmEmail" label="确认新邮箱" type="email" :rules="[rules.notNull, rules.email, rules.matchEmail]" outlined dense></v-text-field>
                 </v-card-text>
-                <!-- 修改邮箱操作按钮 -->
+
                 <v-card-actions class="justify-center pb-2">
-                    <v-btn :loading="isUpdatingEmail" :disabled="!isEmailFieldsFilled || isUpdatingEmail" class="mt-2 teal-lighten-1-bg text-white" style="width: 80%" @click="updateEmail">修改邮箱</v-btn>
+                    <v-btn :loading="isUpdatingEmail" :disabled="!canUpdateEmail" class="mt-2 teal-lighten-1-bg text-white" style="width: 80%" @click="updateEmail">修改邮箱</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -62,6 +97,7 @@ export default {
         return {
             uid: '',
             account: '',
+            nickName: '',
             realName: '',
             email: '3108006259@qq.com',
             // 控制修改密码弹窗+修改个人信息弹窗+成功提示的显示与隐藏
@@ -82,6 +118,7 @@ export default {
             emailDialog: false,
             // 用户输入的内容（原密码+新密码+第二次新密码）
             oldEmailInput: '',
+            code: '',
             newEmail: '',
             confirmEmail: '',
             // 控制密码输入框的显示与隐藏
@@ -90,6 +127,16 @@ export default {
             showConfirmEmail: false,
             // 控制“修改密码按钮”是否可点击
             isUpdatingEmail: false,
+            countdown: 0,
+            sending: false,
+            // 修改昵称弹窗
+            nickNameDialog: false,
+            newNickName: '',
+            isUpdatingNickName: false,
+            // 修改真实姓名弹窗
+            realNameDialog: false,
+            newRealName: '',
+            isUpdatingRealName: false,
 
             rules: {
                 notNull: (value) => !!value || '此处不能为空',
@@ -108,6 +155,15 @@ export default {
         // 检查所有邮箱输入框是否都有内容
         isEmailFieldsFilled() {
             return this.oldEmailInput && this.newEmail && this.confirmEmail && this.newEmail === this.confirmEmail;
+        },
+        canUpdateEmail() {
+            return (
+                this.verifyCode &&
+                this.newEmail &&
+                this.confirmEmail &&
+                this.newEmail === this.confirmEmail &&
+                this.newEmail !== this.email
+            );
         }
     },
     created() {
@@ -122,6 +178,7 @@ export default {
             if (response) {
                 const userInfo = response;
                 this.uid = userInfo.uid;
+                this.nickName = userInfo.nickName;
                 this.account = userInfo.account;
                 this.realName = userInfo.realName;
             }
@@ -133,6 +190,16 @@ export default {
         // 显示修改邮箱对话框
         async showEmailDialog() {
             this.emailDialog = true;
+        },
+        // 显示修改昵称对话框
+        showNickNameDialog() {
+            this.nickNameDialog = true;
+            this.newNickName = this.nickName;
+        },
+        // 显示修改真实姓名对话框
+        showRealNameDialog() {
+            this.realNameDialog = true;
+            this.newRealName = this.realName;
         },
         // 清空密码输入字段
         clearPasswordFields() {
@@ -151,6 +218,14 @@ export default {
             this.showOldEmail = false;
             this.showNewEmail = false;
             this.showConfirmEmail = false;
+        },
+        // 清空昵称输入字段
+        clearNickNameField() {
+            this.newNickName = '';
+        },
+        // 清空真实姓名输入字段
+        clearRealNameField() {
+            this.newRealName = '';
         },
         // 修改密码
         async updatePassword() {
@@ -184,6 +259,94 @@ export default {
                 this.loading = false;
                 this.$api.notify.error('更改失败，请重试');
             }
+        },
+        // 点击发送验证码按钮
+        async sendCode() {
+            // 防止重复点击
+            if (this.sending || this.countdown > 0) return;
+            this.sending = true;
+            try {
+                await this.$api.user.sendEmail({ email: this.email });
+                this.$api.notify.success('验证码已发送');
+                // 成功后启动60秒倒计时
+                this.startCountdown(60);
+            } catch (error) {
+                this.$api.notify.error('发送验证码失败，请稍后重试');
+            } finally {
+                this.sending = false;
+            }
+        },
+        // 启动倒计时
+        startCountdown(seconds) {
+            this.countdown = seconds;
+            this.timer && clearInterval(this.timer);
+            this.timer = setInterval(() => {
+                this.countdown--;
+                if (this.countdown <= 0) {
+                    clearInterval(this.timer);
+                    this.timer = null;
+                }
+            }, 1000);
+        },
+        async updateEmail() {
+            this.isUpdatingEmail = true;
+            try {
+                const result = await this.$api.user.updateEmail({
+                    code: this.verifyCode,
+                    newEmail: this.newEmail
+                });
+                if (result === '操作成功') {
+                    this.$api.notify.success('邮箱修改成功');
+                    this.emailDialog = false;
+                    this.email = this.newEmail;
+                } else {
+                    this.$api.notify.error(result || '修改失败，请重试');
+                }
+            } catch (e) {
+                this.$api.notify.error('修改失败，请检查验证码');
+            }
+            this.isUpdatingEmail = false;
+        },
+        // 修改昵称
+        async updateNickName() {
+            this.isUpdatingNickName = true;
+            try {
+                const result = await this.$api.user.updateInfo({
+                    nickName: this.newNickName,
+                    realName: this.realName
+                });
+                console.log(result);
+                if (result === '修改完成') {
+                    this.$api.notify.success('昵称修改成功');
+                    this.nickName = this.newNickName;
+                    this.nickNameDialog = false;
+                } else {
+                    this.$api.notify.error('修改失败，请重试');
+                }
+            } catch (error) {
+                this.$api.notify.error('修改失败，请重试');
+            }
+            this.isUpdatingNickName = false;
+        },
+        // 修改真实姓名
+        async updateRealName() {
+            this.isUpdatingRealName = true;
+            try {
+                const result = await this.$api.user.updateInfo({
+                    nickName: this.nickName,
+                    realName: this.newRealName
+                });
+                if (result === '修改完成') {
+                    this.$api.notify.success('真实姓名修改成功');
+                    this.realName = this.newRealName;
+                    this.realNameDialog = false;
+                } else {
+                    this.$api.notify.error('修改失败，请重试');
+                }
+            } catch (error) {
+                this.$api.notify.error('修改失败，请重试');
+            }
+            this.isUpdatingRealName = false;
         }
     }
 };
