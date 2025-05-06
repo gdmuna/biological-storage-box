@@ -73,8 +73,8 @@ export default {
                 }
             );
             if (result === 1) {
-                this.$router.push('/box');
                 this.$api.notify.success('更新成功');
+                this.$router.go(-1);
             } else {
                 this.loading = false;
                 this.$api.notify.error('更新失败，请重试');
