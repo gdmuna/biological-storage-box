@@ -198,6 +198,33 @@ const routes = [
         }
     },
 
+    //容器层级路由
+    {
+        path: '/storageLocation/manageContainer',
+        name: 'manageContainer',
+        component: () => import('@/pages/storageLocation/manageContainer.vue'),
+        meta: {
+            title: '管理容器',
+            showNavBar: true
+        }
+    },
+    {
+        path: '/storageLocation/updateContainer',
+        name: 'updateContainer',
+        component: () => import('@/pages/storageLocation/updateContainer.vue'),
+        meta: {
+            title: '更改容器信息'
+        }
+    },
+    {
+        path: '/storageLocation/createContainer',
+        name: 'createContainer',
+        component: () => import('@/pages/storageLocation/createContainer.vue'),
+        meta: {
+            title: '创建容器'
+        }
+    },
+
     //试剂盒层级路由
     {
         path: '/box/detail',
