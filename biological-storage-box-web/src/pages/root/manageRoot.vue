@@ -4,7 +4,7 @@
             <div v-for="(item, index) in roomList" :key="item.id" :class="index === 0 ? '' : 'mt-5'">
                 <v-card>
                     <v-card-item>
-                        <v-card-title>{{ item.rootName }}</v-card-title>
+                        <v-card-title>{{ item.roomName }}</v-card-title>
                         <v-card-subtitle>
                             创建者：
                             <v-chip size="small" color="indigo">
@@ -14,11 +14,11 @@
                         </v-card-subtitle>
                     </v-card-item>
                     <v-card-text class="py-1">
-                        创建时间：
-                        <v-chip size="small" color="deep-purple-lighten-1">{{ item.createTime }}</v-chip>
+                        房间简介：
+                        <v-chip size="small" color="deep-purple-lighten-1">{{ item.roomDescribe }}</v-chip>
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn variant="flat" color="light-green-lighten-4" @click="routeToManageBox(item.id)">管理试剂盒</v-btn>
+                        <v-btn variant="flat" color="light-green-lighten-4" @click="routeToManageContainer(item.id)">管理容器</v-btn>
                         <v-btn variant="flat" color="light-green-lighten-4" @click="routeToEditRoot(item.id)">编辑信息</v-btn>
                         <v-btn variant="flat" color="light-green-lighten-4" @click="showDeleteDialog(item.id)">删除</v-btn>
                     </v-card-actions>
@@ -41,23 +41,23 @@
 <script>
 export default {
     name: 'ManageRoomPage',
+    components: {},
     data() {
         return {
-            roomList: [
-                {
-                    id: 1,
-                    rootName: '医药信息学实验室',
-                    describe: '这是测试房间',
-                    capacity: 10,
-                    createBy: 'test_cyr',
-                    createTime: '2024-12-27'
-                }
-            ],
+            roomList: [],
             deleteDialog: false,
             deleteRootID: '',
             loading: false
         };
     },
+    watch: {
+        '$store.user.currentOrg': 'getRootList'
+    },
+    created() {},
+    mounted() {
+        this.getRootList();
+    },
+    updated() {},
     methods: {
         // 跳转到创建房间页面
         async routeToCreateRoot() {
@@ -67,16 +67,19 @@ export default {
         async getRootList() {
             const orgID = this.$store.user.currentOrg;
             const result = await this.$api.root.list({ orgID: orgID, pageNum: 1, pageSize: 10, parentID: 0 });
-            this.boxList = result;
+            this.roomList = result;
         },
-        // 跳转到管理试剂盒页面
-        async routeToManageBox(rootID) {
-            this.$router.push({ path: '/box', query: { rootID } });
+        // 跳转到管理容器页面
+        async routeToManageContainer(rootID) {
+            const store = this.$store.user;
+            store.currentRoot = rootID;
+            this.$router.push({ path: '/storageLocation/manageContainer' });
         },
         // 跳转到编辑房间信息页面
         async routeToEditRoot(rootID) {
             this.$router.push({ path: '/root/updateRoot', query: { rootID } });
         },
+        // 显示删除对话框
         async showDeleteDialog(rootID) {
             this.deleteRootID = rootID;
             this.deleteDialog = true;
@@ -95,6 +98,7 @@ export default {
         async deleteRoot() {
             this.loading = true;
             const orgID = this.$store.user.currentOrg;
+            console.log('deleteRootID', this.deleteRootID);
             const roomList = await this.getRootInfo(this.deleteRootID);
             const result = await this.$api.root.del(
                 {
