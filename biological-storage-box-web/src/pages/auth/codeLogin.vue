@@ -2,19 +2,21 @@
     <div class="main-container">
         <div class="w-full max-w-screen-sm h-full mx-auto px-10 py-10 flex-1">
             <v-img class="w-1/2 max-w-48 mx-auto my-10 bg-white rounded-lg" cover src="/RhineLab.svg"></v-img>
-            <v-form class="w-full max-w-sm mx-auto" @submit.prevent="login">
-                <v-text-field v-model="user.account" label="邮箱"></v-text-field>
-                <v-text-field v-model="user.password" label="密码" :type="showPassword ? 'text' : 'password'" :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'" :rules="[rules.minLength]" @click:append-inner="showPassword = !showPassword"></v-text-field>
+            <v-form class="w-full max-w-sm mx-auto" @submit.prevent="codeLogin">
+                <v-text-field v-model="email" label="邮箱"></v-text-field>
+                <v-text-field v-model="code" label="输入你的验证码" :append-inner-icon="'mdi-shield-key'" :rules="[rules.notNull]" outlined dense>
+                    <template #append>
+                        <v-btn text small :disabled="!email || sending || countdown > 0" @click="sendCode">
+                            {{ countdown > 0 ? countdown + '秒后重发' : sending ? '发送中...' : '发送验证码' }}
+                        </v-btn>
+                    </template>
+                </v-text-field>
                 <v-btn :loading="loading" :disabled="!isFormValid || loading" class="mt-2" text="登录" type="submit" block></v-btn>
             </v-form>
-            <!-- 添加注册跳转链接 -->
+            <!-- 账号密码登录跳转链接 -->
             <div class="text-center mt-4">
                 <span>
-                    <a href="#" class="text-blue-500" @click.prevent="goToRegister">去注册</a>
-                    &nbsp;&nbsp;|&nbsp;&nbsp; 
-                    <a href="#" class="text-blue-500" @click.prevent="goToEnterCaptcha">重置密码</a>
-                    &nbsp;&nbsp;|&nbsp;&nbsp; 
-                    <a href="#" class="text-blue-500" @click.prevent="goToCodeLogin">邮箱验证码登录</a>
+                    <a href="#" class="text-blue-500" @click.prevent="goToLogin">账号密码登录</a>
                 </span>
             </div>
         </div>
@@ -27,10 +29,8 @@ export default {
     components: {},
     data() {
         return {
-            user: {
-                account: null,
-                password: null
-            },
+            email: null,
+            code: null,
             showPassword: false,
             loading: false,
             // 控制“修改密码按钮”是否可点击
@@ -38,22 +38,23 @@ export default {
             countdown: 0,
             sending: false,
             rules: {
-                minLength: (value) => (value && value.length >= 6) || '密码长度至少为6位'
+                notNull: (value) => !!value || '此处不能为空'
             }
         };
     },
     computed: {
         isFormValid() {
-            return this.user.account && this.user.password && this.user.password.length >= 6;
+            return this.email && this.code;
         }
     },
     created() {},
     mounted() {},
     updated() {},
     methods: {
-        async login() {
+        async codeLogin() {
             this.loading = true;
-            const result = await this.$api.auth.login({ account: this.user.account, password: this.user.password });
+            const result = await this.$api.auth.login({ email: this.email, code: this.code });
+            console.log(result);
             // 如果登录失败则直接结束后续操作
             if (!result) {
                 this.$api.notify.error('登录失败，请检查用户名和密码');
@@ -78,17 +79,37 @@ export default {
             this.$api.notify.success('登录成功');
             this.$router.push('/root/manageRoot');
         },
-        //跳转去注册页面
-        goToRegister() {
-            this.$router.push('/auth/register');
+        // 点击发送验证码按钮
+        async sendCode() {
+            // 防止重复点击
+            if (this.sending || this.countdown > 0) return;
+            this.sending = true;
+            try {
+                await this.$api.user.sendEmail({ email: this.email });
+                this.$api.notify.success('验证码已发送');
+                // 成功后启动60秒倒计时
+                this.startCountdown(60);
+            } catch (error) {
+                this.$api.notify.error('发送验证码失败，请稍后重试');
+            } finally {
+                this.sending = false;
+            }
         },
-        //跳转去重置密码页面
-        goToEnterCaptcha() {
-            this.$router.push('/auth/resetPassword');
+        // 启动倒计时
+        startCountdown(seconds) {
+            this.countdown = seconds;
+            this.timer && clearInterval(this.timer);
+            this.timer = setInterval(() => {
+                this.countdown--;
+                if (this.countdown <= 0) {
+                    clearInterval(this.timer);
+                    this.timer = null;
+                }
+            }, 1000);
         },
-        //跳转去邮箱验证码登录页面
-        goToCodeLogin() {
-            this.$router.push('/auth/codeLogin');
+        //跳转账号密码登录页面
+        goToLogin() {
+            this.$router.push('/auth/login');
         }
     }
 };
