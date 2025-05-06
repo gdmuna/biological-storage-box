@@ -4,8 +4,7 @@
             <v-card class="w-full mx-auto px-10">
                 <v-form class="w-full max-w-sm mx-auto py-16" @submit.prevent="boxAdd">
                     <v-text-field v-model="name" label="试剂盒名称" :rules="[rules.notNull]" clearable></v-text-field>
-                    <v-text-field v-model="nickName1" label="简称1" :rules="[rules.notNull]" clearable></v-text-field>
-                    <v-text-field v-model="nickName2" label="简称2" :rules="[rules.notNull]" clearable></v-text-field>
+                    <v-text-field v-model="nickName" label="简称" :rules="[rules.notNull]" clearable></v-text-field>
                     <div class="mb-3">
                         <div>
                             <div v-if="selectedX && selectedY" class="text-body-2 text-grey-darken-2">当前尺寸：{{ selectedX }} × {{ selectedY }}</div>
@@ -60,11 +59,8 @@ export default {
     data() {
         return {
             name: null,
-            nickName1: '这里是简称1',
-            nickName2: '这里是简称2',
+            nickName: '',
             introduce: null,
-            x: null,
-            y: null,
             loading: false,
             dialog: false,
             selectedX: null,
@@ -106,12 +102,15 @@ export default {
         async boxAdd() {
             this.loading = true;
             const currentOrg = this.$store.user.currentOrg;
+            const currentRoot = this.$store.user.currentRoot;
             const result = await this.$api.box.add(
                 {
                     name: this.name,
                     introduce: this.introduce,
                     x: this.x,
-                    y: this.y
+                    y: this.y,
+                    rootId: currentRoot,
+                    shortName: this.nickName
                 },
                 {
                     orgID: currentOrg
@@ -120,13 +119,12 @@ export default {
             console.log(result);
             if (result === 1) {
                 this.$api.notify.success('创建成功');
-                this.$router.push('/box');
+                this.$router.go(-1);
                 // 保存试剂盒信息到本地缓存
                 const boxInfo = {
                     name: this.name,
                     introduce: this.introduce,
-                    x: this.x,
-                    y: this.y
+                    nickName: this.nickName
                 };
                 localStorage.setItem('lastBoxInfo', JSON.stringify(boxInfo));
             } else {
@@ -141,8 +139,7 @@ export default {
                 const boxInfo = JSON.parse(savedBoxInfo);
                 this.name = boxInfo.name;
                 this.introduce = boxInfo.introduce;
-                this.x = boxInfo.x;
-                this.y = boxInfo.y;
+                this.nickName = boxInfo.nickName;
             }
             this.dialog = false; // 关闭弹窗
         },
