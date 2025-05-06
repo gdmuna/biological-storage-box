@@ -1,6 +1,6 @@
 <template>
     <v-bottom-navigation v-model="navBarValue" color="light-green-lighten-1" grow horizontal>
-        <v-btn @click="$router.push('/box')">
+        <v-btn @click="$router.push('/root/manageRoot')">
             <v-icon class="fa-duotone fa-vial"></v-icon>
         </v-btn>
         <v-btn @click="$router.push('/grid')">
