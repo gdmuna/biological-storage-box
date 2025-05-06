@@ -21,7 +21,6 @@ export default {
     data() {
         return {
             roomName: null,
-            // address: null,
             describe: null,
             loading: false,
             rules: {
@@ -42,10 +41,11 @@ export default {
         async addRoot() {
             this.loading = true;
             const currentOrg = this.$store.user.currentOrg;
+            console.log(this.$store.user.currentOrg);
             const result = await this.$api.root.add(
                 {
                     roomName: this.roomName,
-                    describe: this.describe
+                    roomDescribe: this.describe
                 },
                 {
                     orgID: currentOrg
