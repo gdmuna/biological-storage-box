@@ -4,7 +4,7 @@
             <v-card class="w-full mx-auto px-10">
                 <v-form class="w-full max-w-sm mx-auto py-16" @submit.prevent="updateRoot">
                     <v-text-field v-model="rootInfo.roomName" label="房间名称" :rules="[rules.notNull]"></v-text-field>
-                    <v-textarea v-model="rootInfo.roomDescribe" label="房间描述" :rules="[rules.notNull]"></v-textarea>
+                    <v-textarea v-model="rootInfo.roomDescribe" label="房间描述"></v-textarea>
                     <v-btn class="mt-4" type="submit" block :loading="loading" :disabled="!btnAllowClick">更新</v-btn>
                 </v-form>
             </v-card>
@@ -31,7 +31,7 @@ export default {
     computed: {
         // 创建按钮是否可点击
         btnAllowClick() {
-            const value = this.rules.notNull(this.rootInfo.name) && this.rules.notNull(this.rootInfo.description) && this.rules.notNull(this.rootInfo.location);
+            const value = this.rules.notNull(this.rootInfo.name);
             return !!value;
         }
     },

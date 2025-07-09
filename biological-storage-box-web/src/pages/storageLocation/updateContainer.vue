@@ -33,7 +33,7 @@ export default {
         btnAllowClick() {
             const value = this.rules.notNull(this.containerInfo.roomName) && this.rules.notNull(this.containerInfo.roomDescribe);
             return !!value;
-        },
+        }
     },
     // 从路由中获取 containerId
     async created() {
@@ -47,7 +47,7 @@ export default {
             const result = await this.$api.root.one({
                 orgID: orgId,
                 rootID: containerId
-            })
+            });
             this.containerInfo = result;
         },
         // 更新存储容器信息
