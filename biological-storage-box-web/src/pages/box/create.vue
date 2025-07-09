@@ -4,34 +4,10 @@
             <v-card class="w-full mx-auto px-10">
                 <v-form class="w-full max-w-sm mx-auto py-16" @submit.prevent="boxAdd">
                     <v-text-field v-model="name" label="试剂盒名称" :rules="[rules.notNull]" clearable></v-text-field>
-                    <v-text-field v-model="nickName" label="简称" :rules="[rules.notNull]" clearable></v-text-field>
-                    <div class="mb-3">
-                        <div>
-                            <div v-if="selectedX && selectedY" class="text-body-2 text-grey-darken-2">当前尺寸：{{ selectedX }} × {{ selectedY }}</div>
-                            <div
-                                @mouseleave="
-                                    hoverX = null;
-                                    hoverY = null;
-                                ">
-                                <div v-for="row in 10" :key="row" class="flex w-full justify-center">
-                                    <div
-                                        v-for="col in 10"
-                                        :key="col"
-                                        class="grid-cell"
-                                        :class="{
-                                            'active': (hoverX >= col || selectedX >= col) && (hoverY >= row || selectedY >= row),
-                                            'selected': selectedX >= col && selectedY >= row,
-                                            'rounded-sm': $vuetify.display.smAndUp
-                                        }"
-                                        @mouseover="
-                                            hoverX = col;
-                                            hoverY = row;
-                                        "
-                                        @click="selectSize(col, row)"></div>
-                                </div>
-                                <div class="text-caption text-grey-darken-1 mb-1 text-right">（最大10×10）</div>
-                            </div>
-                        </div>
+                    <v-text-field v-model="shortName" label="简称" clearable></v-text-field>
+                    <div class="flex space-x-4">
+                        <v-select v-model="x" :items="xOptions" label="宽" :rules="[rules.notNull]" clearable></v-select>
+                        <v-select v-model="y" :items="yOptions" label="高" :rules="[rules.notNull]" clearable></v-select>
                     </div>
                     <v-textarea v-model="introduce" label="试剂盒介绍" clearable></v-textarea>
                     <v-btn class="mt-4" type="submit" block :loading="loading" :disabled="!btnAllowClick">创建</v-btn>
@@ -59,14 +35,14 @@ export default {
     data() {
         return {
             name: null,
-            nickName: '',
+            shortName: null,
             introduce: null,
             loading: false,
             dialog: false,
-            selectedX: null,
-            selectedY: null,
-            hoverX: null,
-            hoverY: null,
+            x: null,
+            y: null,
+            xOptions: Array.from({ length: 10 }, (_, i) => i + 1),
+            yOptions: Array.from({ length: 10 }, (_, i) => i + 1),
             rules: {
                 notNull: (value) => {
                     if (value) return true;
@@ -78,7 +54,7 @@ export default {
     computed: {
         // 创建按钮是否可点击
         btnAllowClick() {
-            return this.selectedX && this.selectedY && this.name;
+            return this.x && this.y && this.name;
         }
     },
     created() {
@@ -92,13 +68,7 @@ export default {
     mounted() {},
     updated() {},
     methods: {
-        async selectSize(x, y) {
-            this.selectedX = x;
-            this.selectedY = y;
-            // 同时更新x,y值用于表单提交
-            this.x = x;
-            this.y = y;
-        },
+        // 创建试剂盒
         async boxAdd() {
             this.loading = true;
             const currentOrg = this.$store.user.currentOrg;
@@ -110,7 +80,7 @@ export default {
                     x: this.x,
                     y: this.y,
                     rootId: currentRoot,
-                    shortName: this.nickName
+                    shortName: this.shortName
                 },
                 {
                     orgID: currentOrg
@@ -124,7 +94,9 @@ export default {
                 const boxInfo = {
                     name: this.name,
                     introduce: this.introduce,
-                    nickName: this.nickName
+                    x: this.x,
+                    y: this.y,
+                    shortName: this.shortName
                 };
                 localStorage.setItem('lastBoxInfo', JSON.stringify(boxInfo));
             } else {
@@ -139,7 +111,9 @@ export default {
                 const boxInfo = JSON.parse(savedBoxInfo);
                 this.name = boxInfo.name;
                 this.introduce = boxInfo.introduce;
-                this.nickName = boxInfo.nickName;
+                this.x = boxInfo.x;
+                this.y = boxInfo.y;
+                this.shortName = boxInfo.shortName;
             }
             this.dialog = false; // 关闭弹窗
         },
@@ -152,32 +126,5 @@ export default {
 </script>
 
 <style scoped>
-.grid-cell {
-    width: 10px;
-    height: 10px;
-    border: 3px solid rgba(0, 0, 0, 0.08);
-    margin: 0.5px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition:
-        background-color 0.2s ease-in-out,
-        border-color 0.2s ease-in-out;
-}
-
-.grid-cell:hover {
-    background: #9ccc65 !important;
-}
-
-.grid-cell.selected {
-    background: #9ccc65 !important;
-    border-color: rgba(0, 0, 0, 0.08);
-    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
-}
-
-@media (max-width: 600px) {
-    .grid-cell {
-        width: 24px;
-        height: 24px;
-    }
-}
+/* 移除了网格相关样式 */
 </style>

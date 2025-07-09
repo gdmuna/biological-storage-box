@@ -6,7 +6,7 @@
                     <!-- 房间名称输入框 -->
                     <v-text-field v-model="roomName" label="房间名称" :rules="[rules.notNull]"></v-text-field>
                     <!-- 房间介绍文本区域 -->
-                    <v-textarea v-model="describe" label="房间介绍" :rules="[rules.notNull]"></v-textarea>
+                    <v-textarea v-model="describe" label="房间介绍"></v-textarea>
                     <!-- 创建按钮 -->
                     <v-btn class="mt-4" type="submit" block :loading="loading" :disabled="!btnAllowClick">创建</v-btn>
                 </v-form>
@@ -34,7 +34,7 @@ export default {
     computed: {
         // 创建按钮是否可点击
         btnAllowClick() {
-            return this.rules.notNull(this.roomName) === true && this.rules.notNull(this.describe) === true;
+            return this.rules.notNull(this.roomName) === true;
         }
     },
     methods: {
