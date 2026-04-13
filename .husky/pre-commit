@@ -1,0 +1,33 @@
+#!/bin/sh
+
+GREEN="\033[32m"; YELLOW="\033[33m"; RESET="\033[0m"
+
+printf "%-12b  %b\n" "\n${GREEN}[GitHook]" "[LOG] 执行 Pre-commit hook...${RESET}"
+
+# 记录已暂存的 env 文件（排除 .env.keys 和 .env.example）
+staged_env_files=$(git diff --cached --name-only -- ':.env.*' ':!.env.keys' ':!.env.example')
+
+# 如果有暂存的 env 文件，先加密它们
+if [ -n "$staged_env_files" ]; then
+    # 加密环境变量，以防忘记加密
+    pnpm --filter biological-storage-box-service dotenvx encrypt -f $staged_env_files
+    git add $staged_env_files
+fi
+
+if git diff --cached --quiet; then
+    printf "%-12b  %b\n" "${YELLOW}[GitHook]" "[WARN] 无暂存文件，跳出 Pre-commit hooks${RESET}"
+    exit 0
+fi
+
+pnpm lint-staged
+
+staged_has_scripts=$(git diff --cached --name-only -- '*.js' '*.ts')
+if [ -z "$staged_has_scripts" ]; then
+    printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] 无暂存的 .js/.ts 文件，跳过 lint 和测试${RESET}"
+else
+    pnpm --filter biological-storage-box-service lint
+    pnpm --filter biological-storage-box-service test
+fi
+
+printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] Pre-commit hooks 执行完毕${RESET}"
+exit 0
