@@ -1,0 +1,40 @@
+{
+  // ===== 代码格式化 =====
+  // TypeScript 文件配置
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode", // 使用 Prettier 格式化
+    "editor.formatOnSave": true // 保存时自动格式化
+  },
+
+  // JavaScript 文件配置
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode", // 使用 Prettier 格式化
+    "editor.formatOnSave": true // 保存时自动格式化
+  },
+
+  // YAML 文件配置
+  "[yaml]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+
+  // JSON 文件配置
+  "[json]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+
+  // ===== 编辑器配置 =====
+  "editor.tabSize": 4, // 制表符宽度：4 个空格
+  "editor.insertSpaces": true, // 用空格代替制表符
+  "editor.trimAutoWhitespace": true, // 自动移除行尾空白
+
+  // ===== 文件配置 =====
+  "files.trimTrailingWhitespace": true, // 保存时移除行尾空白
+  "files.insertFinalNewline": true, // 文件末尾自动插入换行符
+  "files.encoding": "utf8", // 文件编码：UTF-8
+  "files.eol": "\n", // 行结束符：Unix 风格（\n）
+
+  // ===== NPM 配置 =====
+  "npm.exclude": "**/dist" // 排除 dist 目录下的 package.json
+}
