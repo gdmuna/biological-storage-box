@@ -14,7 +14,7 @@ const reagent = {
     // 单个试剂
     one(data) {
         return request.get(`${moduleUrl}/one`, data);
-    }
+    },
 };
 
 export default reagent;

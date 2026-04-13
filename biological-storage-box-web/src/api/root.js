@@ -22,7 +22,7 @@ const root = {
     // 用户更改房间信息
     update(data, query) {
         return request.put(`${moduleUrl}/update`, data, query);
-    }
+    },
 };
 
 export default root;

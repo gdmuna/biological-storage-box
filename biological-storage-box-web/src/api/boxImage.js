@@ -14,7 +14,7 @@ const boxImage = {
     // 历史拍照图片列表
     list(data) {
         return request.get(`${moduleUrl}/list`, data);
-    }
+    },
 };
 
 export default boxImage;

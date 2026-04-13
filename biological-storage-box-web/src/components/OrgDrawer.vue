@@ -154,12 +154,12 @@ export default {
         };
     },
     watch: {
-        'drawer'(val) {
+        drawer(val) {
             if (val) {
                 this.fetchOrgList();
             }
         },
-        'value'(val) {
+        value(val) {
             this.drawer = val;
         },
         // 监听组织ID变化，加载房间列表
@@ -172,7 +172,7 @@ export default {
             immediate: true
         },
         // 添加路由监听，当路由变化时刷新列表
-        '$route': {
+        $route: {
             handler() {
                 if (this.$store.user.currentOrg) {
                     this.getRootList();

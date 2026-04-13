@@ -15,8 +15,8 @@ import 'vuetify/styles';
 import '@mdi/font/css/materialdesignicons.css';
 const vuetify = createVuetify({
     icons: {
-        defaultSet: 'mdi'
-    }
+        defaultSet: 'mdi',
+    },
 });
 
 // App Entry

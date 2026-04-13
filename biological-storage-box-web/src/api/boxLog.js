@@ -10,7 +10,7 @@ const boxLog = {
     // 试剂操作历史记录
     reagenList(data) {
         return request.get(`${moduleUrl}/reagen/list`, data);
-    }
+    },
 };
 
 export default boxLog;

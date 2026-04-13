@@ -8,6 +8,6 @@ export const userStore = defineStore('userStore', {
         avatar: null,
         currentOrg: null,
         currentContainer: null,
-        currentRoot: null
-    })
+        currentRoot: null,
+    }),
 });

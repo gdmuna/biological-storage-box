@@ -18,7 +18,7 @@ const boxAlias = {
     // 用户更改盒子别名
     update(data) {
         return request.put(`${moduleUrl}/update`, data);
-    }
+    },
 };
 
 export default boxAlias;

@@ -14,7 +14,7 @@ const auth = {
     // 用户注册
     register(data) {
         return authentication.register(data);
-    }
+    },
 };
 
 export default auth;

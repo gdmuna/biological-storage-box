@@ -29,7 +29,7 @@ export default {
             user,
             notify,
             root,
-            boxAlias
+            boxAlias,
         };
-    }
+    },
 };

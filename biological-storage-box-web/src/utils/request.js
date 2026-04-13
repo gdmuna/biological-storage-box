@@ -23,8 +23,8 @@ const request = {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'token': localStorage.getItem('token')
-            }
+                token: localStorage.getItem('token'),
+            },
         });
     },
     // 封装 POST 请求
@@ -34,9 +34,9 @@ const request = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'token': localStorage.getItem('token')
+                token: localStorage.getItem('token'),
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
         });
     },
     // 封装 PUT 请求
@@ -46,9 +46,9 @@ const request = {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'token': localStorage.getItem('token')
+                token: localStorage.getItem('token'),
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
         });
     },
     // 封装 DELETE 请求
@@ -58,9 +58,9 @@ const request = {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'token': localStorage.getItem('token')
+                token: localStorage.getItem('token'),
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
         });
     },
     // 封装 upload 请求
@@ -68,11 +68,11 @@ const request = {
         return request.fetch(url, {
             method: 'PUT',
             headers: {
-                token: localStorage.getItem('token')
+                token: localStorage.getItem('token'),
             },
-            body: formData
+            body: formData,
         });
-    }
+    },
 };
 
 export default request;

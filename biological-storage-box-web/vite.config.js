@@ -15,22 +15,22 @@ export default defineConfig(({ command, mode }) => {
         // 配置路径别名
         resolve: {
             alias: {
-                '@': '/src'
-            }
+                '@': '/src',
+            },
         },
         define: {
-            __APP_ENV__: env.APP_ENV // 定义全局常量替换方式
+            __APP_ENV__: env.APP_ENV, // 定义全局常量替换方式
         },
         server: {
             host: '0.0.0.0',
             port: 8081,
             open: true, // 自动打开浏览器
-            hmr: true // 开启热更新
+            hmr: true, // 开启热更新
         },
         plugins: [vue(), vuetify()],
         // 打包时自动去除 console 和 debugger
         esbuild: {
-            drop: env?.VITE_DROP_CONSOLE === 'true' ? ['console', 'debugger'] : []
-        }
+            drop: env?.VITE_DROP_CONSOLE === 'true' ? ['console', 'debugger'] : [],
+        },
     };
 });

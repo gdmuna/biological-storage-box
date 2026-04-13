@@ -26,7 +26,7 @@ const org = {
     // 修改组织
     update(data) {
         return request.put(`${moduleUrl}/update`, data);
-    }
+    },
 };
 
 export default org;

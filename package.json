@@ -16,7 +16,7 @@
   "devDependencies": {
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
-    "prettier": "^3.8.1"
+    "prettier": "^3.8.2"
   },
   "lint-staged": {
     "**/*.{js,ts,jsx,tsx,vue,json,md,css,scss,html,yml,yaml}": [

@@ -2,13 +2,13 @@
 export default {
     content: [
         './index.html',
-        './src/**/*.{vue,js,ts,jsx,tsx}' // Vue
+        './src/**/*.{vue,js,ts,jsx,tsx}', // Vue
     ],
     theme: {
-        extend: {}
+        extend: {},
     },
     plugins: [require('daisyui')],
     daisyui: {
-        themes: ['winter']
-    }
+        themes: ['winter'],
+    },
 };

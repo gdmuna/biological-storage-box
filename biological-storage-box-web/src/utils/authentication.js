@@ -7,9 +7,9 @@ const authentication = {
         return await fetch(`${apiUrl}${url}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
         })
             .then((res) => {
                 if (!res.ok) {
@@ -61,7 +61,7 @@ const authentication = {
         } else {
             return false;
         }
-    }
+    },
 };
 
 export default authentication;

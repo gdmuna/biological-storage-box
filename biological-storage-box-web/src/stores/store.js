@@ -8,7 +8,7 @@ export default {
         app.config.globalProperties.$store = {
             user: userStore(),
             reagent: reagentStore(),
-            applyReason: applyReasonStore()
+            applyReason: applyReasonStore(),
         };
-    }
+    },
 };

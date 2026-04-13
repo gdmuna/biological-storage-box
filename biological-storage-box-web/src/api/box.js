@@ -30,7 +30,7 @@ const box = {
     // 用户更改盒子信息
     update(data, query) {
         return request.put(`${moduleUrl}/update`, data, query);
-    }
+    },
 };
 
 export default box;

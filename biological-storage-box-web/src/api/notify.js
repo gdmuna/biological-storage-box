@@ -6,37 +6,37 @@ const notify = {
         Snackbar.success({
             content: message,
             type: 'success',
-            position: 'top'
+            position: 'top',
         });
     },
     error: (message) => {
         Snackbar.error({
             content: message,
             type: 'error',
-            position: 'top'
+            position: 'top',
         });
     },
     warning: (message) => {
         Snackbar.warning({
             content: message,
             type: 'warning',
-            position: 'top'
+            position: 'top',
         });
     },
     info: (message) => {
         Snackbar.info({
             content: message,
             type: 'info',
-            position: 'top'
+            position: 'top',
         });
     },
     primary: (message) => {
         Snackbar.primary({
             content: message,
             type: 'primary',
-            position: 'top'
+            position: 'top',
         });
-    }
+    },
 };
 
 export default notify;

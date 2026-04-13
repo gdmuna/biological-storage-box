@@ -37,5 +37,16 @@ export default {
                 tabWidth: 2,
             },
         },
+        {
+            // Vue 文件使用宽松规则：长行不强制换行，模板风格优先
+            files: '*.{vue,html}',
+            options: {
+                printWidth: 360,
+                trailingComma: 'none',
+                bracketSameLine: true,
+                htmlWhitespaceSensitivity: 'ignore',
+                vueIndentScriptAndStyle: false,
+            },
+        },
     ],
 };

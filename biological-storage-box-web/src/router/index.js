@@ -4,7 +4,7 @@ const routes = [
     {
         path: '/',
         name: '',
-        redirect: '/auth/login'
+        redirect: '/auth/login',
     },
     {
         path: '/demo',
@@ -12,8 +12,8 @@ const routes = [
         component: () => import('@/pages/demo/demo.vue'),
         meta: {
             title: '示例页面',
-            showNavBar: true
-        }
+            showNavBar: true,
+        },
     },
 
     // 登录页面录路由
@@ -22,32 +22,32 @@ const routes = [
         name: 'login',
         component: () => import('@/pages/auth/login.vue'),
         meta: {
-            title: '用户登录'
-        }
+            title: '用户登录',
+        },
     },
     {
         path: '/auth/codeLogin',
         name: 'codeLogin',
         component: () => import('@/pages/auth/codeLogin.vue'),
         meta: {
-            title: '邮箱验证码登录'
-        }
+            title: '邮箱验证码登录',
+        },
     },
     {
         path: '/auth/register',
         name: 'register',
         component: () => import('@/pages/auth/register.vue'),
         meta: {
-            title: '注册页面'
-        }
+            title: '注册页面',
+        },
     },
     {
         path: '/auth/resetPassword',
         name: 'resetPassword',
         component: () => import('@/pages/auth/resetPassword.vue'),
         meta: {
-            title: '重置密码'
-        }
+            title: '重置密码',
+        },
     },
 
     // 底部导航栏路由
@@ -57,8 +57,8 @@ const routes = [
         component: () => import('@/pages/work/work.vue'),
         meta: {
             title: '工作台',
-            showNavBar: true
-        }
+            showNavBar: true,
+        },
     },
     {
         path: '/user',
@@ -66,8 +66,8 @@ const routes = [
         component: () => import('@/pages/user/user.vue'),
         meta: {
             title: '我的',
-            showNavBar: true
-        }
+            showNavBar: true,
+        },
     },
     // 用户信息路由
     {
@@ -75,40 +75,40 @@ const routes = [
         name: 'setting',
         component: () => import('@/pages/user/setting.vue'),
         meta: {
-            title: '设置'
-        }
+            title: '设置',
+        },
     },
     {
         path: '/user/feedback',
         name: 'feedback',
         component: () => import('@/pages/user/feedback.vue'),
         meta: {
-            title: '意见反馈'
-        }
+            title: '意见反馈',
+        },
     },
     {
         path: '/user/information',
         name: 'information',
         component: () => import('@/pages/user/information.vue'),
         meta: {
-            title: '消息'
-        }
+            title: '消息',
+        },
     },
     {
         path: '/user/reviewInformationJoinOrg',
         name: 'reviewInformationJoinOrg',
         component: () => import('@/pages/user/reviewInformationJoinOrg.vue'),
         meta: {
-            title: '审核申请加入组织的消息'
-        }
+            title: '审核申请加入组织的消息',
+        },
     },
     {
         path: '/user/reviewInvitedJoinOrg',
         name: 'reviewInvitedJoinOrg',
         component: () => import('@/pages/user/reviewInvitedJoinOrg.vue'),
         meta: {
-            title: '审核被邀请加入组织的消息'
-        }
+            title: '审核被邀请加入组织的消息',
+        },
     },
     // 工具台路由
     {
@@ -116,32 +116,32 @@ const routes = [
         name: 'search',
         component: () => import('@/pages/search/search.vue'),
         meta: {
-            title: '搜索'
-        }
+            title: '搜索',
+        },
     },
     {
         path: '/work/searchPeople',
         name: 'searchPeople',
         component: () => import('@/pages/work/searchPeople.vue'),
         meta: {
-            title: '搜索人员'
-        }
+            title: '搜索人员',
+        },
     },
     {
         path: '/org/joinOrg',
         name: 'joinOrg',
         component: () => import('@/pages/org/joinOrg.vue'),
         meta: {
-            title: '搜索加入组织'
-        }
+            title: '搜索加入组织',
+        },
     },
     {
         path: '/org/applyReason',
         name: 'applyReason',
         component: () => import('@/pages/org/applyReason.vue'),
         meta: {
-            title: '申请理由'
-        }
+            title: '申请理由',
+        },
     },
 
     //课题组层级路由
@@ -150,24 +150,24 @@ const routes = [
         name: 'org-create',
         component: () => import('@/pages/org/create.vue'),
         meta: {
-            title: '课题组创建'
-        }
+            title: '课题组创建',
+        },
     },
     {
         path: '/org/exit',
         name: 'org-exit',
         component: () => import('@/pages/org/exit.vue'),
         meta: {
-            title: '课题组退出或编辑'
-        }
+            title: '课题组退出或编辑',
+        },
     },
     {
         path: '/org/update',
         name: 'org-update',
         component: () => import('@/pages/org/update.vue'),
         meta: {
-            title: '课题组编辑'
-        }
+            title: '课题组编辑',
+        },
     },
 
     //房间层级路由
@@ -177,8 +177,8 @@ const routes = [
         component: () => import('@/pages/root/manageRoot.vue'),
         meta: {
             title: '管理房间',
-            showNavBar: true
-        }
+            showNavBar: true,
+        },
     },
 
     {
@@ -186,16 +186,16 @@ const routes = [
         name: 'updateRoot',
         component: () => import('@/pages/root/updateRoot.vue'),
         meta: {
-            title: '更改房间信息'
-        }
+            title: '更改房间信息',
+        },
     },
     {
         path: '/root/createRoot',
         name: 'createRoot',
         component: () => import('@/pages/root/createRoot.vue'),
         meta: {
-            title: '创建房间'
-        }
+            title: '创建房间',
+        },
     },
 
     //容器层级路由
@@ -205,24 +205,24 @@ const routes = [
         component: () => import('@/pages/storageLocation/manageContainer.vue'),
         meta: {
             title: '管理容器',
-            showNavBar: true
-        }
+            showNavBar: true,
+        },
     },
     {
         path: '/storageLocation/updateContainer',
         name: 'updateContainer',
         component: () => import('@/pages/storageLocation/updateContainer.vue'),
         meta: {
-            title: '更改容器信息'
-        }
+            title: '更改容器信息',
+        },
     },
     {
         path: '/storageLocation/createContainer',
         name: 'createContainer',
         component: () => import('@/pages/storageLocation/createContainer.vue'),
         meta: {
-            title: '创建容器'
-        }
+            title: '创建容器',
+        },
     },
 
     //试剂盒层级路由
@@ -231,8 +231,8 @@ const routes = [
         name: 'box-detail',
         component: () => import('@/pages/box/detail.vue'),
         meta: {
-            title: '试剂盒详情'
-        }
+            title: '试剂盒详情',
+        },
     },
     {
         path: '/box',
@@ -240,24 +240,24 @@ const routes = [
         component: () => import('@/pages/box/manage.vue'),
         meta: {
             title: '试剂盒管理',
-            showNavBar: true
-        }
+            showNavBar: true,
+        },
     },
     {
         path: '/box/create',
         name: 'box-create',
         component: () => import('@/pages/box/create.vue'),
         meta: {
-            title: '试剂盒创建'
-        }
+            title: '试剂盒创建',
+        },
     },
     {
         path: '/box/update',
         name: 'box-update',
         component: () => import('@/pages/box/update.vue'),
         meta: {
-            title: '更改试剂盒信息'
-        }
+            title: '更改试剂盒信息',
+        },
     },
 
     //试剂层级路由
@@ -266,46 +266,46 @@ const routes = [
         name: 'reagent-detail',
         component: () => import('@/pages/reagent/detail.vue'),
         meta: {
-            title: '试剂详情'
-        }
+            title: '试剂详情',
+        },
     },
     {
         path: '/reagent',
         name: 'reagent-manage',
         component: () => import('@/pages/reagent/manage.vue'),
         meta: {
-            title: '试剂管理'
-        }
+            title: '试剂管理',
+        },
     },
     {
         path: '/reagent/operate',
         name: 'reagent-operate',
         component: () => import('@/pages/reagent/operate.vue'),
         meta: {
-            title: '试剂操作'
-        }
+            title: '试剂操作',
+        },
     },
     {
         path: '/reagent/upload',
         name: 'reagent-upload',
         component: () => import('@/pages/reagent/upload.vue'),
         meta: {
-            title: '图片上传'
-        }
+            title: '图片上传',
+        },
     },
     {
         path: '/reagent/log',
         name: 'reagent-log',
         component: () => import('@/pages/reagent/log.vue'),
         meta: {
-            title: '日志'
-        }
-    }
+            title: '日志',
+        },
+    },
 ];
 
 const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes,
 });
 
 export default router;

@@ -46,7 +46,7 @@ const orgUser = {
     // 修改成员权限
     updateAuthority(data) {
         return request.put(`${moduleUrl}/updateAuthority`, data);
-    }
+    },
 };
 
 export default orgUser;
