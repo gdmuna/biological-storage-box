@@ -1,0 +1,10 @@
+.env.keys
+.env.example
+node_modules
+dist
+logs
+coverage
+.vitepress
+website/node_modules
+website/dist
+prisma/generated
