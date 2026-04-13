@@ -18,5 +18,158 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  ownedOrgs      Organization[]     @relation("OrgOwner")
+  orgMemberships OrganizationUser[]
+  boxLogs        BoxLog[]
+  feedbacks      Feedback[]
+
   @@index(createdAt)
+}
+
+model Organization {
+  id          String   @id @default(ulid())
+  name        String
+  description String?
+  ownerId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner   User               @relation("OrgOwner", fields: [ownerId], references: [id])
+  members OrganizationUser[]
+  roots   Root[]
+  boxes   Box[]
+
+  @@index([ownerId])
+}
+
+model OrganizationUser {
+  id        String        @id @default(ulid())
+  orgId     String
+  userId    String
+  role      OrgRole       @default(MEMBER)
+  status    OrgUserStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  org  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, userId])
+  @@index([userId])
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum OrgUserStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+}
+
+model Root {
+  id          String   @id @default(ulid())
+  orgId       String
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  boxes Box[]
+
+  @@index([orgId])
+}
+
+model Box {
+  id          String   @id @default(ulid())
+  orgId       String
+  rootId      String?
+  name        String
+  description String?
+  rows        Int      @default(9)
+  cols        Int      @default(9)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  root     Root?        @relation(fields: [rootId], references: [id], onDelete: SetNull)
+  aliases  BoxAlias[]
+  images   BoxImage[]
+  logs     BoxLog[]
+  reagents Reagent[]
+
+  @@index([orgId])
+  @@index([rootId])
+}
+
+model BoxAlias {
+  id        String   @id @default(ulid())
+  boxId     String
+  alias     String
+  createdAt DateTime @default(now())
+
+  box Box @relation(fields: [boxId], references: [id], onDelete: Cascade)
+
+  @@index([boxId])
+}
+
+model BoxImage {
+  id        String   @id @default(ulid())
+  boxId     String
+  imageUrl  String
+  createdAt DateTime @default(now())
+
+  box Box @relation(fields: [boxId], references: [id], onDelete: Cascade)
+
+  @@index([boxId])
+}
+
+model BoxLog {
+  id            String   @id @default(ulid())
+  boxId         String
+  userId        String
+  reagentId     String?
+  operationType String
+  detail        String?
+  createdAt     DateTime @default(now())
+
+  box     Box      @relation(fields: [boxId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id])
+  reagent Reagent? @relation(fields: [reagentId], references: [id], onDelete: SetNull)
+
+  @@index([boxId])
+  @@index([userId])
+  @@index([reagentId])
+}
+
+model Reagent {
+  id          String   @id @default(ulid())
+  boxId       String
+  orgId       String
+  position    String
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  box  Box      @relation(fields: [boxId], references: [id], onDelete: Cascade)
+  logs BoxLog[]
+
+  @@index([boxId])
+  @@index([orgId])
+}
+
+model Feedback {
+  id        String   @id @default(ulid())
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
