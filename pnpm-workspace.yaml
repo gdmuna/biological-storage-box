@@ -1,0 +1,13 @@
+packages:
+  - 'biological-storage-box-service'
+  - 'biological-storage-box-docs'
+  - 'biological-storage-box-web'
+
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@prisma/engines'
+  - '@scarf/scarf'
+  - esbuild
+  - prisma
+  - unrs-resolver
+  - vue-demi

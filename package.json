@@ -1,0 +1,26 @@
+{
+  "name": "biological-storage-box",
+  "private": true,
+  "version": "0.1.0",
+  "description": "生物样本储存管理系统 monorepo",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1"
+  },
+  "lint-staged": {
+    "**/*.{js,ts,jsx,tsx,vue,json,md,css,scss,html,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}
