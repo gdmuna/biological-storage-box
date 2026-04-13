@@ -47,7 +47,7 @@ Remove-Item biological-storage-box-web\.yarnrc
 Remove-Item -Recurse -Force biological-storage-box-web\.husky
 ```
 
-预期：`biological-storage-box-web/.husky/` 目录及其 `pre-commit` 文件消失。  
+预期：`biological-storage-box-web/.husky/` 目录及其 `pre-commit` 文件消失。
 解释：根目录 `.husky/pre-commit` 已统一管理 lint-staged，web 独立 hook 为冗余。
 
 **Step 3: 修改 `biological-storage-box-web/package.json`**
@@ -126,7 +126,7 @@ pnpm --filter biological-storage-box-web build
 pnpm run format:check
 ```
 
-预期：所有文件通过 Prettier 检查，输出 `All matched files use Prettier code style!`。  
+预期：所有文件通过 Prettier 检查，输出 `All matched files use Prettier code style!`。
 如有格式问题：运行 `pnpm run format` 修复后再检查。
 
 **Step 2: Service 代码检查**
@@ -197,7 +197,7 @@ git commit -m "chore: flatten monorepo to three-package workspace
 - Update copilot-instructions: point to package-level AGENTS.md"
 ```
 
-预期：  
+预期：
 - pre-commit hook 触发，lint-staged 运行（格式/lint 检查）
 - 如果有 `.js/.ts` 文件被暂存（pnpm-lock.yaml 等不算），还会触发 service 测试
 - 提交成功，显示 commit hash 和变更统计
