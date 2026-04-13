@@ -1,7 +1,7 @@
 packages:
-  - 'biological-storage-box-service'
-  - 'biological-storage-box-docs'
-  - 'biological-storage-box-web'
+  - 'BSB-Backend'
+  - 'BSB-Docsite'
+  - 'BSB-Frontend'
 
 onlyBuiltDependencies:
   - '@nestjs/core'

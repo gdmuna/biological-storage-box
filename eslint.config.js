@@ -21,18 +21,15 @@ export default [
         ignores: [
             '**/dist/**',
             '**/node_modules/**',
-            'biological-storage-box-service/prisma/generated/**',
-            'biological-storage-box-docs/.vitepress/dist/**',
-            'biological-storage-box-docs/.vitepress/cache/**',
+            'BSB-Backend/prisma/generated/**',
+            'BSB-Docsite/.vitepress/dist/**',
+            'BSB-Docsite/.vitepress/cache/**',
         ],
     },
 
-    // ── biological-storage-box-service: TypeScript ───────────
+    // ── BSB-Backend: TypeScript ───────────
     {
-        files: [
-            'biological-storage-box-service/src/**/*.ts',
-            'biological-storage-box-service/test/**/*.ts',
-        ],
+        files: ['BSB-Backend/src/**/*.ts', 'BSB-Backend/test/**/*.ts'],
         languageOptions: {
             parser: tsParser,
             globals: {
@@ -42,7 +39,7 @@ export default [
                 NodeJS: 'readonly',
             },
             parserOptions: {
-                project: './biological-storage-box-service/tsconfig.json',
+                project: './BSB-Backend/tsconfig.json',
                 tsconfigRootDir: import.meta.dirname,
                 sourceType: 'module',
                 // lint-staged 传入单文件时，允许不在 tsconfig include 内的文件
@@ -68,9 +65,9 @@ export default [
         },
     },
 
-    // ── biological-storage-box-web: Vue 3 + TypeScript ───────
+    // ── BSB-Frontend: Vue 3 + TypeScript ───────
     {
-        files: ['biological-storage-box-web/src/**/*.{js,ts,vue}'],
+        files: ['BSB-Frontend/src/**/*.{js,ts,vue}'],
         languageOptions: {
             parser: vueParser,
             parserOptions: {

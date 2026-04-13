@@ -10,7 +10,7 @@ staged_env_files=$(git diff --cached --name-only -- ':.env.*' ':!.env.keys' ':!.
 # 如果有暂存的 env 文件，先加密它们
 if [ -n "$staged_env_files" ]; then
     # 加密环境变量，以防忘记加密
-    pnpm --filter biological-storage-box-service dotenvx encrypt -f $staged_env_files
+    pnpm --filter BSB-Backend dotenvx encrypt -f $staged_env_files
     git add $staged_env_files
 fi
 
@@ -22,19 +22,19 @@ fi
 pnpm lint-staged
 
 # 按工作区分别触发测试
-staged_service=$(git diff --cached --name-only | grep -E '^biological-storage-box-service/.*\.(js|ts)$' || true)
-staged_web=$(git diff --cached --name-only | grep -E '^biological-storage-box-web/.*\.(js|ts|d\.ts|vue)$' || true)
+staged_service=$(git diff --cached --name-only | grep -E '^BSB-Backend/.*\.(js|ts)$' || true)
+staged_web=$(git diff --cached --name-only | grep -E '^BSB-Frontend/.*\.(js|ts|d\.ts|vue)$' || true)
 
 if [ -n "$staged_service" ]; then
     printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] 检测到 service 变更，运行测试${RESET}"
-    pnpm --filter biological-storage-box-service test
+    pnpm --filter BSB-Backend test
 else
     printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] 无 service .js/.ts 变更，跳过 service 测试${RESET}"
 fi
 
 if [ -n "$staged_web" ]; then
     printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] 检测到 web 变更，运行测试${RESET}"
-    # pnpm --filter biological-storage-box-web test  # 待 web 添加测试后启用
+    # pnpm --filter BSB-Frontend test  # 待 web 添加测试后启用
     printf "%-12b  %b\n" "${YELLOW}[GitHook]" "[WARN] web 暂无测试脚本，跳过${RESET}"
 fi
 

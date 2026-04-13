@@ -28,11 +28,11 @@
     "vue-eslint-parser": "^9.4.3"
   },
   "lint-staged": {
-    "biological-storage-box-service/**/*.{js,ts}": [
+    "BSB-Backend/**/*.{js,ts}": [
       "eslint --fix",
       "prettier --write"
     ],
-    "biological-storage-box-web/**/*.{js,ts,vue}": [
+    "BSB-Frontend/**/*.{js,ts,vue}": [
       "eslint --fix",
       "prettier --write"
     ],

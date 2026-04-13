@@ -42,22 +42,7 @@ importers:
         specifier: ^9.4.3
         version: 9.4.3(eslint@9.39.4(jiti@2.6.1))
 
-  biological-storage-box-docs:
-    dependencies:
-      '@mdit/plugin-tasklist':
-        specifier: ^0.23.2
-        version: 0.23.2
-      vitepress:
-        specifier: ^1.6.4
-        version: 1.6.4(@algolia/client-search@5.50.1)(@types/node@25.6.0)(lightningcss@1.32.0)(postcss@8.5.9)(search-insights@2.17.3)(terser@5.46.1)(typescript@5.9.3)
-      vitepress-mermaid-renderer:
-        specifier: ^1.1.20
-        version: 1.1.20(mermaid@11.14.0)(vue@3.5.32(typescript@5.9.3))
-      vue:
-        specifier: ^3.5.32
-        version: 3.5.32(typescript@5.9.3)
-
-  biological-storage-box-service:
+  BSB-Backend:
     dependencies:
       '@dotenvx/dotenvx-ops':
         specifier: ^0.37.8
@@ -199,7 +184,22 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  biological-storage-box-web:
+  BSB-Docsite:
+    dependencies:
+      '@mdit/plugin-tasklist':
+        specifier: ^0.23.2
+        version: 0.23.2
+      vitepress:
+        specifier: ^1.6.4
+        version: 1.6.4(@algolia/client-search@5.50.1)(@types/node@25.6.0)(lightningcss@1.32.0)(postcss@8.5.9)(search-insights@2.17.3)(terser@5.46.1)(typescript@5.9.3)
+      vitepress-mermaid-renderer:
+        specifier: ^1.1.20
+        version: 1.1.20(mermaid@11.14.0)(vue@3.5.32(typescript@5.9.3))
+      vue:
+        specifier: ^3.5.32
+        version: 3.5.32(typescript@5.9.3)
+
+  BSB-Frontend:
     dependencies:
       '@varlet/ui':
         specifier: ^3.14.2

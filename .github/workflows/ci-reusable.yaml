@@ -45,7 +45,7 @@ jobs:
         run: pnpm format:check
 
       - name: Lint
-        run: pnpm --filter biological-storage-box-service lint
+        run: pnpm --filter BSB-Backend lint
 
   test:
     name: Test
@@ -87,7 +87,7 @@ jobs:
       - name: Extract version
         id: version
         run: |
-          VERSION=$(node -e "const fs=require('fs');console.log(JSON.parse(fs.readFileSync('./biological-storage-box-service/package.json','utf8')).version)")
+          VERSION=$(node -e "const fs=require('fs');console.log(JSON.parse(fs.readFileSync('./BSB-Backend/package.json','utf8')).version)")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "📦 Version: $VERSION"
 
@@ -105,25 +105,25 @@ jobs:
             -c "CREATE DATABASE bio_storage_box_shadow;"
 
       - name: Generate Prisma Client
-        run: pnpm --filter biological-storage-box-service prisma generate
+        run: pnpm --filter BSB-Backend prisma generate
 
       - name: Sync schema (CI DB)
         run: |
-          if compgen -G "biological-storage-box-service/prisma/migrations/*/migration.sql" > /dev/null 2>&1; then
+          if compgen -G "BSB-Backend/prisma/migrations/*/migration.sql" > /dev/null 2>&1; then
             echo "\U0001f50d Validating schema.prisma matches migrations..."
-            pnpm --filter biological-storage-box-service prisma migrate diff \
-              --from-migrations ./biological-storage-box-service/prisma/migrations \
-              --to-schema-datamodel ./biological-storage-box-service/prisma/schema.prisma \
+            pnpm --filter BSB-Backend prisma migrate diff \
+              --from-migrations ./BSB-Backend/prisma/migrations \
+              --to-schema-datamodel ./BSB-Backend/prisma/schema.prisma \
               --exit-code || (echo "\u274c schema.prisma has uncommitted changes \u2014 run pnpm db:migrate" && exit 1)
             echo "\u2705 Schema matches, running migrate deploy"
-            pnpm --filter biological-storage-box-service prisma migrate deploy
+            pnpm --filter BSB-Backend prisma migrate deploy
           else
             echo "\u26a0\ufe0f  No migration files, falling back to db push (dev phase)"
-            pnpm --filter biological-storage-box-service prisma db push
+            pnpm --filter BSB-Backend prisma db push
           fi
 
       - name: Run tests with coverage
-        run: pnpm --filter biological-storage-box-service test --ci --coverage
+        run: pnpm --filter BSB-Backend test --ci --coverage
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
@@ -171,10 +171,10 @@ jobs:
         run: curl -sfS https://dotenvx.sh/install.sh | sh
 
       - name: Generate Prisma Client
-        run: pnpm --filter biological-storage-box-service prisma generate
+        run: pnpm --filter BSB-Backend prisma generate
         env:
           DATABASE_URL: postgresql://ci_test:ci_test_password@localhost:5432/bio_storage_box_test?schema=public
           SHADOW_DATABASE_URL: postgresql://ci_test:ci_test_password@localhost:5432/bio_storage_box_shadow?schema=public
 
       - name: Build application
-        run: pnpm --filter biological-storage-box-service build
+        run: pnpm --filter BSB-Backend build

@@ -1,9 +1,9 @@
 ## 项目定位
 
 生物样本储存管理系统 monorepo，包含三个工作区：
-- `biological-storage-box-service` — NestJS 后端服务
-- `biological-storage-box-docs` — VitePress 文档站
-- `biological-storage-box-web` — Vue 3 前端
+- `BSB-Backend` — NestJS 后端服务
+- `BSB-Docsite` — VitePress 文档站
+- `BSB-Frontend` — Vue 3 前端
 
 ## 文档导航
 
@@ -11,9 +11,9 @@
 
 | 文档 | 路径 | 何时加载 |
 |------|------|--------|
-| 后端 AI 操作手册 | [biological-storage-box-service/AGENTS.md](../biological-storage-box-service/AGENTS.md) | 涉及后端 service 代码时：模块职责、请求流程、架构决策、提交前自我审查 |
-| 后端文档规范 | [biological-storage-box-service/docs/AGENTS.md](../biological-storage-box-service/docs/AGENTS.md) | 需要创建或修改后端文档时 |
-| 后端架构设计 | [biological-storage-box-service/docs/03-architecture/](../biological-storage-box-service/docs/03-architecture/) | 涉及模块职责、请求流程、技术选型时 |
+| 后端 AI 操作手册 | [BSB-Backend/AGENTS.md](../BSB-Backend/AGENTS.md) | 涉及后端 service 代码时：模块职责、请求流程、架构决策、提交前自我审查 |
+| 后端文档规范 | [BSB-Backend/docs/AGENTS.md](../BSB-Backend/docs/AGENTS.md) | 需要创建或修改后端文档时 |
+| 后端架构设计 | [BSB-Backend/docs/03-architecture/](../BSB-Backend/docs/03-architecture/) | 涉及模块职责、请求流程、技术选型时 |
 
 ## 硬性约束
 
@@ -34,12 +34,12 @@ pnpm run format          # Prettier 格式化（全工作区）
 pnpm run format:check    # 格式检查
 
 # 后端 service
-pnpm --filter biological-storage-box-service start:dev   # 热重载开发
-pnpm --filter biological-storage-box-service build       # 编译 + 类型检查
-pnpm --filter biological-storage-box-service test        # 单元测试 + E2E
-pnpm --filter biological-storage-box-service lint:fix    # ESLint 自动修复
-pnpm --filter biological-storage-box-service db:migrate  # 数据库迁移
-pnpm --filter biological-storage-box-service db:gen-client  # 重新生成 Prisma Client
+pnpm --filter BSB-Backend start:dev   # 热重载开发
+pnpm --filter BSB-Backend build       # 编译 + 类型检查
+pnpm --filter BSB-Backend test        # 单元测试 + E2E
+pnpm --filter BSB-Backend lint:fix    # ESLint 自动修复
+pnpm --filter BSB-Backend db:migrate  # 数据库迁移
+pnpm --filter BSB-Backend db:gen-client  # 重新生成 Prisma Client
 ```
 
 <!-- gitnexus:start -->

@@ -11,33 +11,33 @@ WORKDIR /repo
 # 1. 先只复制 workspace 元文件和所有包的 package.json
 #    目的：最大化 Docker 层缓存——只有 package.json 变化时才重新 install
 COPY pnpm-workspace.yaml pnpm-lock.yaml .npmrc package.json ./
-COPY biological-storage-box-service/package.json ./biological-storage-box-service/
-COPY biological-storage-box-web/package.json ./biological-storage-box-web/
-COPY biological-storage-box-docs/package.json ./biological-storage-box-docs/
+COPY BSB-Backend/package.json ./BSB-Backend/
+COPY BSB-Frontend/package.json ./BSB-Frontend/
+COPY BSB-Docsite/package.json ./BSB-Docsite/
 
 # 2. 安装全部工作区依赖（lockfile 锁版本）
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # 3. 复制 service 源码（在 install 之后，避免源码变化导致 install 层缓存失效）
-COPY biological-storage-box-service/src ./biological-storage-box-service/src
-COPY biological-storage-box-service/tsconfig.json \
-     biological-storage-box-service/tsconfig.build.json \
-     biological-storage-box-service/nest-cli.json \
-     biological-storage-box-service/prisma.config.ts \
-     ./biological-storage-box-service/
-COPY biological-storage-box-service/prisma ./biological-storage-box-service/prisma
-COPY biological-storage-box-service/config ./biological-storage-box-service/config
+COPY BSB-Backend/src ./BSB-Backend/src
+COPY BSB-Backend/tsconfig.json \
+     BSB-Backend/tsconfig.build.json \
+     BSB-Backend/nest-cli.json \
+     BSB-Backend/prisma.config.ts \
+     ./BSB-Backend/
+COPY BSB-Backend/prisma ./BSB-Backend/prisma
+COPY BSB-Backend/config ./BSB-Backend/config
 
 # 4. 生成 Prisma Client + 编译 TypeScript
 ARG DATABASE_URL="postgresql://username:password@host:5432/dbName?schema=public"
 ARG SHADOW_DATABASE_URL="postgresql://username:password@host:5432/dbName?schema=public"
 
-RUN cd biological-storage-box-service \
+RUN cd BSB-Backend \
     && pnpm prisma generate \
     && pnpm build
 
 # 5. pnpm deploy：将 service 的纯生产依赖提取到独立目录（无 devDeps，无 symlink）
-RUN pnpm --filter biological-storage-box-service deploy --prod /app/deploy
+RUN pnpm --filter BSB-Backend deploy --prod /app/deploy
 
 # ===== 运行阶段 =====
 FROM node:22.22-slim AS runner
@@ -46,10 +46,10 @@ WORKDIR /app
 
 # 从构建阶段复制 deploy 产物
 COPY --from=builder /app/deploy/node_modules ./node_modules
-COPY --from=builder /repo/biological-storage-box-service/dist ./dist
+COPY --from=builder /repo/BSB-Backend/dist ./dist
 
 # .env.* 文件在构建时从 service 目录复制（含加密的 dotenvx 文件）
-COPY biological-storage-box-service/.env.* ./
+COPY BSB-Backend/.env.* ./
 
 RUN apt-get update -y \
     && apt-get install -y openssl curl \
