@@ -51,7 +51,7 @@ export default {
                     if (value) return true;
                     return '此处不能为空';
                 },
-                email: (value) => /^(?:[a-z0-9]+(?:[.-_][a-z0-9]+)*@[a-z0-9-]+\.[a-z0-9]+(?:\.[a-z0-9]+)*)$/i.test(value) || '邮箱格式不正确',
+                email: (value) => /^(?:[a-z0-9]+(?:[.-_][a-z0-9]+)*@[a-z0-9-]+\.[a-z0-9]+(?:\.[a-z0-9]+)*)$/i.test(value) || '邮箱格式不正确'
             }
         };
     },
@@ -71,7 +71,13 @@ export default {
         async register() {
             // 禁用注册按钮
             this.loading = true;
-            const result = await this.$api.auth.register({ account: this.user.email, code: this.user.code, nickName: this.user.nickName, realName: this.user.realName, password: this.user.password });
+            const result = await this.$api.auth.register({
+                account: this.user.email,
+                code: this.user.code,
+                nickName: this.user.nickName,
+                realName: this.user.realName,
+                password: this.user.password
+            });
             // 如果注册失败则直接结束后续操作
             if (!result) {
                 this.$api.notify.error('邮箱已注册，请重新输入');
@@ -88,10 +94,9 @@ export default {
             if (this.sending || this.countdown > 0) return;
             this.sending = true;
             const result = await this.$api.user.sendEmail({ email: this.user.email });
-            if (result!="验证码发送成功") {
+            if (result != '验证码发送成功') {
                 this.$api.notify.error('发送验证码失败，请稍后重试');
-            }
-            else {
+            } else {
                 this.$api.notify.success('验证码已发送');
                 // 成功后启动60秒倒计时
                 this.startCountdown(60);

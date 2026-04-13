@@ -65,7 +65,11 @@ export default {
         // 搜索课题组并与userOrgIds比对，更新组织列表的joined状态
         async search() {
             this.loading = true;
-            const result = await this.$api.org.search({ name: this.searchOrgName, pageNum: 1, pageSize: 10 });
+            const result = await this.$api.org.search({
+                name: this.searchOrgName,
+                pageNum: 1,
+                pageSize: 10
+            });
             this.orgList = result.map((org) => ({
                 ...org,
                 joined: this.userOrgIds.includes(org.id)

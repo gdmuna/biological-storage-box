@@ -55,7 +55,12 @@ export default {
         async getLog() {
             let boxId = this.boxId;
             const orgId = this.$store.user.currentOrg;
-            const result = await this.$api.boxLog.list({ boxID: boxId, orgID: orgId, pageNum: 1, pageSize: 10 });
+            const result = await this.$api.boxLog.list({
+                boxID: boxId,
+                orgID: orgId,
+                pageNum: 1,
+                pageSize: 10
+            });
             this.boxList = result;
         },
         // 操作类型判断

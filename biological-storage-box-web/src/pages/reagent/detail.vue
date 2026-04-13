@@ -38,7 +38,11 @@ export default {
         async getDetail() {
             let boxId = this.boxId;
             const orgId = this.$store.user.currentOrg;
-            const result = await this.$api.reagent.one({ boxID: boxId, orgID: orgId, reagentID: this.reagentId });
+            const result = await this.$api.reagent.one({
+                boxID: boxId,
+                orgID: orgId,
+                reagentID: this.reagentId
+            });
             this.reagent = result;
         }
     }

@@ -62,7 +62,11 @@ export default {
     methods: {
         async resetPassword() {
             this.isResetting = true;
-            const result = await this.$api.user.updatePassword({ email: this.email, code: this.code, newPassword: this.newPassword });
+            const result = await this.$api.user.updatePassword({
+                email: this.email,
+                code: this.code,
+                newPassword: this.newPassword
+            });
             if (result === '操作成功') {
                 this.$api.notify.success('密码重置成功！请重新登录');
                 this.$router.push('/auth/login');
@@ -101,7 +105,7 @@ export default {
                     this.timer = null;
                 }
             }, 1000);
-        },
+        }
     }
 };
 </script>

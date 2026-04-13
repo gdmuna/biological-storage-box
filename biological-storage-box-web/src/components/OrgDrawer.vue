@@ -33,10 +33,9 @@
                                                 <v-list-item-title class="text-truncate">{{ room.roomName }}</v-list-item-title>
                                             </v-list-item>
                                         </template>
-                                
 
                                         <!-- 容器列表 -->
-                                        <v-list-group v-for="container in (containerMap.get(room.id) || [])" :key="container.id" :value="container.id">
+                                        <v-list-group v-for="container in containerMap.get(room.id) || []" :key="container.id" :value="container.id">
                                             <template v-slot:activator="{ props }">
                                                 <v-list-item v-bind="props" @click="readContainerID(container.id)">
                                                     <template v-slot:prepend>
@@ -47,7 +46,7 @@
                                             </template>
 
                                             <!-- 容器下的试剂盒列表 -->
-                                            <v-list-item v-for="box in (boxMap.get(container.id) || [])" :key="box.id" @click="goToBox(box.id)">
+                                            <v-list-item v-for="box in boxMap.get(container.id) || []" :key="box.id" @click="goToBox(box.id)">
                                                 <template v-slot:prepend>
                                                     <v-icon>mdi-cube-outline</v-icon>
                                                 </template>
@@ -56,7 +55,7 @@
                                         </v-list-group>
 
                                         <!-- 房间下的试剂盒列表 -->
-                                        <v-list-item v-for="box in (roomBoxMap.get(room.id) || [])" :key="box.id" @click="goToBox(box.id)">
+                                        <v-list-item v-for="box in roomBoxMap.get(room.id) || []" :key="box.id" @click="goToBox(box.id)">
                                             <template v-slot:prepend>
                                                 <v-icon>mdi-cube-outline</v-icon>
                                             </template>
@@ -141,17 +140,17 @@ export default {
             items: [],
             roomList: [],
             // 使用Map存储每个房间的容器列表
-            containerMap: new Map(), 
+            containerMap: new Map(),
             // 使用Map存储每个容器的盒子列表
             boxMap: new Map(),
             // 使用Map存储每个房间的盒子列表
-            roomBoxMap: new Map(),   
+            roomBoxMap: new Map(),
             drawer: this.value,
             loading: true,
             // 添加当前选中的房间
-            currentRoom: null,    
+            currentRoom: null,
             // 控制展开的项，默认展开组织
-            open: ['org']           
+            open: ['org']
         };
     },
     watch: {
@@ -267,21 +266,24 @@ export default {
             this.containerMap.clear();
             this.boxMap.clear();
             this.roomBoxMap.clear();
-            this.roomList = [];  // 清空房间列表
-            
+            this.roomList = []; // 清空房间列表
+
             await this.getRootList();
             // 跳转到房间管理页面
             this.$router.push({ path: '/root/manageRoot' });
         },
         // 选择房间
         async readRoomID(roomId) {
-            this.currentRoom = roomId;  // 设置当前选中的房间
+            this.currentRoom = roomId; // 设置当前选中的房间
             this.$store.user.currentRoot = roomId;
             await this.getContainer(roomId);
             await this.getRoomBox(roomId);
             // 更新展开的项
             this.open = ['org', roomId];
-            this.$router.push({ path: '/storageLocation/manageContainer', query: { rootId: roomId } });
+            this.$router.push({
+                path: '/storageLocation/manageContainer',
+                query: { rootId: roomId }
+            });
         },
 
         // 选择容器
@@ -356,9 +358,7 @@ export default {
 :deep(.org-list-container .v-list-group > .v-list-group__items > .v-list-item) {
     padding-left: 16px !important;
 }
-.child{
-    margin-left: 16px!important;
+.child {
+    margin-left: 16px !important;
 }
 </style>
-
-

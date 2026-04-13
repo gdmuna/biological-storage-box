@@ -30,9 +30,7 @@ const user = {
     // 修改密码
     updatePassword(data) {
         return request.put(`${moduleUrl}/update/password`, data);
-    },
-    
-    
+    }
 };
 
 export default user;

@@ -143,7 +143,7 @@ const routes = [
             title: '申请理由'
         }
     },
-    
+
     //课题组层级路由
     {
         path: '/org/create',
@@ -180,7 +180,7 @@ const routes = [
             showNavBar: true
         }
     },
-    
+
     {
         path: '/root/updateRoot',
         name: 'updateRoot',
@@ -300,7 +300,7 @@ const routes = [
         meta: {
             title: '日志'
         }
-    },
+    }
 ];
 
 const router = createRouter({

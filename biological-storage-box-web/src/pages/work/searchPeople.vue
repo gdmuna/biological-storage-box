@@ -65,7 +65,11 @@ export default {
         },
         // 获取组织成员列表
         async getOrgMemberList() {
-            const result = await this.$api.orgUser.memberList({ orgID: this.$store.user.currentOrg, pageNum: 1, pageSize: 10 });
+            const result = await this.$api.orgUser.memberList({
+                orgID: this.$store.user.currentOrg,
+                pageNum: 1,
+                pageSize: 10
+            });
             // 获取组织成员的uid列表
             if (result && Array.isArray(result)) {
                 this.memberList = result.map((member) => member.uid);
@@ -76,7 +80,11 @@ export default {
         // 搜索用户
         async search() {
             this.loading = true;
-            const result = await this.$api.user.search({ s: this.searchUserName, pageNum: 1, pageSize: 10 });
+            const result = await this.$api.user.search({
+                s: this.searchUserName,
+                pageNum: 1,
+                pageSize: 10
+            });
             // 判断用户是否已在组织中
             if (result && Array.isArray(result)) {
                 this.userList = result.map((user) => ({

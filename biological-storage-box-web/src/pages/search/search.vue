@@ -63,7 +63,11 @@ export default {
         // 搜索试剂盒
         async search() {
             this.loading = true;
-            const result = await this.$api.box.search({ c: this.searchBoxName, pageNum: 1, pageSize: 10 });
+            const result = await this.$api.box.search({
+                c: this.searchBoxName,
+                pageNum: 1,
+                pageSize: 10
+            });
             this.boxList = result;
             this.loading = false;
         },

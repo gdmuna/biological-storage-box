@@ -28,7 +28,13 @@ export default {
     updated() {},
     methods: {
         async examinationPassed() {
-            const result = await this.$api.orgUser.applyAc({}, { orgID: localStorage.getItem('orgID'), userID: this.$store.applyReason.applicantID });
+            const result = await this.$api.orgUser.applyAc(
+                {},
+                {
+                    orgID: localStorage.getItem('orgID'),
+                    userID: this.$store.applyReason.applicantID
+                }
+            );
             if (!result) {
                 this.$api.notify.error('审核失败');
                 return;

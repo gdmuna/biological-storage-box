@@ -11,9 +11,9 @@
             <div class="text-center mt-4">
                 <span>
                     <a href="#" class="text-blue-500" @click.prevent="goToRegister">去注册</a>
-                    &nbsp;&nbsp;|&nbsp;&nbsp; 
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
                     <a href="#" class="text-blue-500" @click.prevent="goToEnterCaptcha">重置密码</a>
-                    &nbsp;&nbsp;|&nbsp;&nbsp; 
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
                     <a href="#" class="text-blue-500" @click.prevent="goToCodeLogin">邮箱验证码登录</a>
                 </span>
             </div>
@@ -53,7 +53,10 @@ export default {
     methods: {
         async login() {
             this.loading = true;
-            const result = await this.$api.auth.login({ account: this.user.account, password: this.user.password });
+            const result = await this.$api.auth.login({
+                account: this.user.account,
+                password: this.user.password
+            });
             // 如果登录失败则直接结束后续操作
             if (!result) {
                 this.$api.notify.error('登录失败，请检查用户名和密码');

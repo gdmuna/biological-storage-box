@@ -66,7 +66,12 @@ export default {
         // 获取房间列表
         async getRootList() {
             const orgID = this.$store.user.currentOrg;
-            const result = await this.$api.root.list({ orgID: orgID, pageNum: 1, pageSize: 10, parentID: 0 });
+            const result = await this.$api.root.list({
+                orgID: orgID,
+                pageNum: 1,
+                pageSize: 10,
+                parentID: 0
+            });
             this.roomList = result;
         },
         // 跳转到管理容器页面

@@ -301,7 +301,10 @@ export default {
                 }
             ];
             try {
-                const result = await this.$api.reagent.update(payload, { boxID: this.boxId, orgID: orgId });
+                const result = await this.$api.reagent.update(payload, {
+                    boxID: this.boxId,
+                    orgID: orgId
+                });
                 if (result === '操作完成') {
                     await this.getReagentList(this.boxId);
                     this.$api.notify.success('更新成功');
@@ -332,7 +335,10 @@ export default {
                 }
             ];
             try {
-                const result = await this.$api.reagent.update(payload, { boxID: this.boxId, orgID: orgId });
+                const result = await this.$api.reagent.update(payload, {
+                    boxID: this.boxId,
+                    orgID: orgId
+                });
                 if (result === '操作完成') {
                     await this.getReagentList(this.boxId);
                     this.$api.notify.success('新增成功');
@@ -367,7 +373,10 @@ export default {
                 }
             ];
             try {
-                const result = await this.$api.reagent.update(payload, { boxID: this.boxId, orgID: orgId });
+                const result = await this.$api.reagent.update(payload, {
+                    boxID: this.boxId,
+                    orgID: orgId
+                });
                 if (result === '操作完成') {
                     await this.getReagentList(this.boxId);
                     this.$api.notify.success('删除成功');

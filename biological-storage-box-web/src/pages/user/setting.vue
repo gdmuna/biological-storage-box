@@ -12,7 +12,7 @@
                 <v-text-field v-model="uid" label="UID" readonly outlined dense></v-text-field>
                 <!-- 密码 -->
                 <v-text-field v-model="password" label="密码" type="password" outlined dense @click="showPasswordDialog"></v-text-field>
-                
+
                 <!-- 保存按钮 -->
                 <v-btn :loading="isSaving" :disabled="isSaving" class="mt-4 bg-custom-green text-white" block @click="saveSettings">保存</v-btn>
             </v-card>
@@ -43,7 +43,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        
+
         <!-- 修改密码对话框 -->
         <v-dialog v-model="passwordDialog" max-width="500px" @click:outside="clearPasswordFields">
             <v-card>
@@ -157,13 +157,7 @@ export default {
             return this.oldEmailInput && this.newEmail && this.confirmEmail && this.newEmail === this.confirmEmail;
         },
         canUpdateEmail() {
-            return (
-                this.verifyCode &&
-                this.newEmail &&
-                this.confirmEmail &&
-                this.newEmail === this.confirmEmail &&
-                this.newEmail !== this.email
-            );
+            return this.verifyCode && this.newEmail && this.confirmEmail && this.newEmail === this.confirmEmail && this.newEmail !== this.email;
         }
     },
     created() {
@@ -232,7 +226,10 @@ export default {
             // 禁用“修改密码”按钮
             this.isUpdatingPassword = true;
             // 调用后端接口更新密码
-            const result = await this.$api.user.updatePassword({ oldPassword: this.oldPasswordInput, newPassword: this.newPassword });
+            const result = await this.$api.user.updatePassword({
+                oldPassword: this.oldPasswordInput,
+                newPassword: this.newPassword
+            });
             // 旧密码错误进行提示并直接结束后续操作
             if (!result) {
                 // 显示“原密码输入错误，请重新输入”消息条
@@ -249,7 +246,10 @@ export default {
         },
         // 保存用户名 真实姓名修改
         async saveSettings() {
-            result = await this.$api.user.updateInfo({ account: this.account, realName: this.realName });
+            result = await this.$api.user.updateInfo({
+                account: this.account,
+                realName: this.realName
+            });
             console.log(result);
             if (result === '操作成功') {
                 // 上传成功后返回上一页

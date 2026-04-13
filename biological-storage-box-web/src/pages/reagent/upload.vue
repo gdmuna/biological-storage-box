@@ -58,7 +58,11 @@ export default {
             this.imgUrl = await this.$api.file.upload(formData);
             if (this.imgUrl) {
                 const orgID = this.$store.user.currentOrg;
-                const res = await this.$api.boxImage.add(null, { boxID: this.boxId, orgID: orgID, url: this.imgUrl });
+                const res = await this.$api.boxImage.add(null, {
+                    boxID: this.boxId,
+                    orgID: orgID,
+                    url: this.imgUrl
+                });
                 if (res === '操作成功') {
                     // 上传成功后返回上一页
                     this.$router.go(-1);
