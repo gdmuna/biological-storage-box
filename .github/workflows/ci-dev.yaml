@@ -1,0 +1,42 @@
+name: CI - Development (dev)
+
+on:
+  push:
+    branches: [dev]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-development-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci-reusable.yaml
+    secrets: inherit
+
+  summary:
+    name: Summary
+    needs: [ci]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate summary
+        run: |
+          CI_STATUS="${{ needs.ci.result }}"
+          case "$CI_STATUS" in
+            success)   ICON="✅" ;;
+            failure)   ICON="❌" ;;
+            cancelled) ICON="🚫" ;;
+            skipped)   ICON="⏭️" ;;
+            *)         ICON="❓" ;;
+          esac
+          TIMESTAMP_CN=$(TZ='Asia/Shanghai' date +"%Y-%m-%d %H:%M:%S %Z")
+          cat >> "$GITHUB_STEP_SUMMARY" << EOF
+          # 🔬 CI 报告 - Development (dev)
+          **分支**: ${{ github.ref_name }} · **提交**: ${GITHUB_SHA:0:7} · **时间**: $TIMESTAMP_CN
+          | Job | 状态 |
+          |-----|------|
+          | CI (lint + test) | $ICON $CI_STATUS |
+          EOF

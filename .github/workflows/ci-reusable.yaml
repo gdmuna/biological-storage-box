@@ -1,0 +1,180 @@
+name: CI Reusable
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        default: '22.22'
+      pnpm-version:
+        type: string
+        default: '10'
+    outputs:
+      version:
+        description: 'Application version from package.json'
+        value: ${{ jobs.test.outputs.version }}
+
+permissions:
+  contents: read
+
+env:
+  NODE_ENV: test
+  DOTENV_PRIVATE_KEY_TEST: ${{ secrets.DOTENV_PRIVATE_KEY_TEST }}
+
+jobs:
+  lint-and-format:
+    name: Lint and format
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ inputs.pnpm-version }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm --filter biological-storage-box-service lint
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: ci_test
+          POSTGRES_PASSWORD: ci_test_password
+          POSTGRES_DB: bio_storage_box_test
+        options: >-
+          --health-cmd "pg_isready -U ci_test -d bio_storage_box_test"
+          --health-start-period 10s
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ inputs.pnpm-version }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=$(node -e "const fs=require('fs');console.log(JSON.parse(fs.readFileSync('./biological-storage-box-service/package.json','utf8')).version)")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "📦 Version: $VERSION"
+
+      - name: Install dotenvx
+        run: curl -sfS https://dotenvx.sh/install.sh | sh
+
+      - name: Set CI database URLs
+        run: |
+          echo "DATABASE_URL=postgresql://ci_test:ci_test_password@localhost:5432/bio_storage_box_test?schema=public" >> "$GITHUB_ENV"
+          echo "SHADOW_DATABASE_URL=postgresql://ci_test:ci_test_password@localhost:5432/bio_storage_box_shadow?schema=public" >> "$GITHUB_ENV"
+
+      - name: Create shadow database
+        run: |
+          PGPASSWORD=ci_test_password psql -h localhost -U ci_test -d postgres \
+            -c "CREATE DATABASE bio_storage_box_shadow;"
+
+      - name: Generate Prisma Client
+        run: pnpm --filter biological-storage-box-service prisma generate
+
+      - name: Sync schema (CI DB)
+        run: |
+          if compgen -G "biological-storage-box-service/prisma/migrations/*/migration.sql" > /dev/null 2>&1; then
+            echo "\U0001f50d Validating schema.prisma matches migrations..."
+            pnpm --filter biological-storage-box-service prisma migrate diff \
+              --from-migrations ./biological-storage-box-service/prisma/migrations \
+              --to-schema-datamodel ./biological-storage-box-service/prisma/schema.prisma \
+              --exit-code || (echo "\u274c schema.prisma has uncommitted changes \u2014 run pnpm db:migrate" && exit 1)
+            echo "\u2705 Schema matches, running migrate deploy"
+            pnpm --filter biological-storage-box-service prisma migrate deploy
+          else
+            echo "\u26a0\ufe0f  No migration files, falling back to db push (dev phase)"
+            pnpm --filter biological-storage-box-service prisma db push
+          fi
+
+      - name: Run tests with coverage
+        run: pnpm --filter biological-storage-box-service test --ci --coverage
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-${{ github.run_id }}
+          path: coverage/
+          retention-days: 7
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint-and-format, test]
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: ci_test
+          POSTGRES_PASSWORD: ci_test_password
+          POSTGRES_DB: bio_storage_box_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ inputs.pnpm-version }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install dotenvx
+        run: curl -sfS https://dotenvx.sh/install.sh | sh
+
+      - name: Generate Prisma Client
+        run: pnpm --filter biological-storage-box-service prisma generate
+        env:
+          DATABASE_URL: postgresql://ci_test:ci_test_password@localhost:5432/bio_storage_box_test?schema=public
+          SHADOW_DATABASE_URL: postgresql://ci_test:ci_test_password@localhost:5432/bio_storage_box_shadow?schema=public
+
+      - name: Build application
+        run: pnpm --filter biological-storage-box-service build

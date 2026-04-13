@@ -1,0 +1,310 @@
+name: CD - Development (dev)
+
+on:
+  workflow_run:
+    workflows: ['CI - Development (dev)']
+    branches: [dev]
+    types: [completed]
+
+permissions:
+  contents: read
+
+env:
+  NODE_ENV: test
+  DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME || github.repository_owner }}
+  BACKEND_IMAGE: ${{ vars.DOCKER_USERNAME || github.repository_owner }}/${{ vars.DOCKER_REPO_NAME || github.event.repository.name }}
+  DOCS_IMAGE: ${{ vars.DOCKER_USERNAME || github.repository_owner }}/${{ vars.DOCKER_DOCS_REPO_NAME || format('{0}-docs', github.event.repository.name) }}
+  DOTENV_PRIVATE_KEY_TEST: ${{ secrets.DOTENV_PRIVATE_KEY_TEST }}
+
+concurrency:
+  group: cd-development
+  cancel-in-progress: true
+
+jobs:
+  # ── 1. 构建并推送后端镜像 ───────────────────────────────────
+  build-backend:
+    name: Build & Push Backend Image
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    outputs:
+      sha7: ${{ steps.meta.outputs.sha7 }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Extract build metadata
+        id: meta
+        run: |
+          SHA="${{ github.event.workflow_run.head_sha }}"
+          echo "sha7=${SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ${{ env.BACKEND_IMAGE }}:dev-latest
+          build-args: |
+            GIT_COMMIT=${{ github.event.workflow_run.head_sha }}
+            APP_VERSION=dev-${{ steps.meta.outputs.sha7 }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ── 2. 导出 OpenAPI JSON ────────────────────────────────────
+  export-openapi:
+    name: Export OpenAPI JSON
+    needs: [build-backend]
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: cd_export
+          POSTGRES_PASSWORD: cd_export_pass
+          POSTGRES_DB: nestjs_cd_export
+        options: >-
+          --health-cmd "pg_isready -U cd_export -d nestjs_cd_export"
+          --health-start-period 10s
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Install dotenvx
+        run: curl -sfS https://dotenvx.sh/install.sh | sh
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22'
+
+      - name: Run prisma migrations
+        run: |
+          npm install -g pnpm
+          pnpm install --frozen-lockfile --ignore-scripts
+          PGPASSWORD=cd_export_pass psql -h localhost -U cd_export -d postgres \
+            -c "CREATE DATABASE nestjs_cd_export_shadow;"
+          pnpm prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://cd_export:cd_export_pass@localhost:5432/nestjs_cd_export?schema=public
+          SHADOW_DATABASE_URL: postgresql://cd_export:cd_export_pass@localhost:5432/nestjs_cd_export_shadow?schema=public
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Decrypt .env.test
+        run: |
+          npx --yes @dotenvx/dotenvx decrypt \
+            --env-file .env.test \
+            --stdout > /tmp/.env.cd_export
+        env:
+          DOTENV_PRIVATE_KEY_TEST: ${{ secrets.DOTENV_PRIVATE_KEY_TEST }}
+
+      - name: Start backend container for OpenAPI export
+        run: |
+          docker run -d \
+            --name backend-export \
+            --network host \
+            -e DOTENV_PRIVATE_KEY_TEST=${{ secrets.DOTENV_PRIVATE_KEY_TEST }} \
+            -e NODE_ENV=test \
+            -e DATABASE_URL="postgresql://cd_export:cd_export_pass@localhost:5432/nestjs_cd_export?schema=public" \
+            -e PORT=3000 \
+            ${{ env.BACKEND_IMAGE }}:dev-latest
+
+      - name: Wait for backend to be healthy
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000/health; then
+              echo "✅ Backend healthy"
+              break
+            fi
+            echo "⏳ Waiting... ($i/30)"
+            sleep 3
+          done
+          curl -sf http://localhost:3000/health || (echo "❌ Backend not healthy" && exit 1)
+
+      - name: Export OpenAPI JSON
+        run: |
+          curl -sf http://localhost:3000/api-doc-json -o openapi.json
+          echo "✅ Exported $(wc -c < openapi.json) bytes"
+
+      - name: Stop backend container
+        if: always()
+        run: docker rm -f backend-export || true
+
+      - name: Upload OpenAPI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-json-${{ github.run_id }}
+          path: openapi.json
+          retention-days: 7
+
+  # ── 3. 构建并推送文档镜像（含 Scalar API 参考）────────────
+  build-docs:
+    name: Build & Push Docs Image
+    needs: [export-openapi]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push docs image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: website/Dockerfile.dev
+          push: true
+          tags: |
+            ${{ env.DOCS_IMAGE }}:dev-latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ── 4. 通知服务器拉取新镜像（Watchtower）─────────────────
+  notify-server:
+    name: Notify Server (Watchtower)
+    needs: [build-backend, build-docs]
+    runs-on: ubuntu-latest
+    continue-on-error: true # 通知失败不阻断 CD 主流程
+
+    steps:
+      - name: Trigger Watchtower update
+        run: |
+          HTTP_STATUS=$(curl -sf -o /dev/null -w "%{http_code}" \
+            --max-time 30 \
+            -H "Authorization: Bearer ${{ secrets.WATCHTOWER_HTTP_API_TOKEN }}" \
+            "${{ secrets.WATCHTOWER_WEBHOOK_URL }}")
+          if echo "$HTTP_STATUS" | grep -qE "^2"; then
+            echo "✅ Watchtower notified successfully (HTTP $HTTP_STATUS)"
+          else
+            echo "⚠️ Watchtower returned HTTP $HTTP_STATUS"
+            exit 1
+          fi
+
+  # ── 5. 推送 Swagger JSON 到 Apifox ─────────────────────────
+  sync-apifox:
+    name: Sync OpenAPI to Apifox
+    needs: [export-openapi]
+    runs-on: ubuntu-latest
+    continue-on-error: true # Apifox 同步失败不阻断 CD 主流程
+
+    steps:
+      - name: Download OpenAPI artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: openapi-json-${{ github.run_id }}
+          path: assets
+
+      - name: Push OpenAPI to Apifox
+        run: |
+          RESPONSE=$(curl -sf --max-time 60 \
+            -X POST "https://api.apifox.com/v1/projects/${{ secrets.APIFOX_PROJECT_ID }}/import-openapi?locale=zh-CN" \
+            -H "X-Apifox-Api-Version: 2024-03-28" \
+            -H "Authorization: Bearer ${{ secrets.APIFOX_ACCESS_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data-raw "$(jq -n \
+              --slurpfile spec assets/openapi.json \
+              '{
+                input: { url: null, content: ($spec[0] | tojson) },
+                options: {
+                  endpointOverwriteBehavior: "OVERWRITE_EXISTING",
+                  schemaOverwriteBehavior: "OVERWRITE_EXISTING",
+                  updateFolderOfChangedEndpoint: true,
+                  prependBasePath: false,
+                  deleteUnmatchedResources: false
+                }
+              }')")
+          echo "Apifox response:"
+          echo "$RESPONSE" | python3 -m json.tool || echo "$RESPONSE"
+
+  # ── 6. 汇总报告 ──────────────────────────────────────────────
+  finished:
+    name: CD Summary
+    needs:
+      - build-backend
+      - export-openapi
+      - build-docs
+      - notify-server
+      - sync-apifox
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate summary
+        run: |
+          TIMESTAMP_CN=$(TZ='Asia/Shanghai' date +"%Y-%m-%d %H:%M:%S %Z")
+          SHA="${{ github.event.workflow_run.head_sha }}"
+          SHA7="${SHA:0:7}"
+          CI_RESULT="${{ github.event.workflow_run.conclusion }}"
+
+          status_icon() {
+            case "$1" in
+              success)   echo "✅" ;;
+              failure)   echo "❌" ;;
+              cancelled) echo "🚫" ;;
+              skipped)   echo "⏭️" ;;
+              *)         echo "❓" ;;
+            esac
+          }
+
+          BB=$(status_icon "${{ needs.build-backend.result }}")
+          EO=$(status_icon "${{ needs.export-openapi.result }}")
+          BD=$(status_icon "${{ needs.build-docs.result }}")
+          NS=$(status_icon "${{ needs.notify-server.result }}")
+          SA=$(status_icon "${{ needs.sync-apifox.result }}")
+
+          CI_ICON=$(status_icon "$CI_RESULT")
+
+          cat >> "$GITHUB_STEP_SUMMARY" << EOF
+          # 🚀 CD 报告 - Development
+
+          **分支**: dev · **提交**: \`$SHA7\` · **时间**: $TIMESTAMP_CN
+
+          ## CI 触发状态
+
+          | 触发 CI 结果 | 状态 |
+          |-------------|------|
+          | CI - Development | $CI_ICON $CI_RESULT |
+
+          ## 执行状态
+
+          | Job | 状态 |
+          |-----|------|
+          | 后端镜像构建 | $BB ${{ needs.build-backend.result }} |
+          | OpenAPI 导出 | $EO ${{ needs.export-openapi.result }} |
+          | 文档镜像构建 | $BD ${{ needs.build-docs.result }} |
+          | 服务器通知   | $NS ${{ needs.notify-server.result }} |
+          | Apifox 同步  | $SA ${{ needs.sync-apifox.result }} |
+
+          ## 镜像产物
+
+          - \`${{ env.BACKEND_IMAGE }}:dev-latest\`
+          - \`${{ env.DOCS_IMAGE }}:dev-latest\`
+          EOF

@@ -1,0 +1,18 @@
+name: Pull Request Check - Development
+
+on:
+  pull_request:
+    branches: [dev]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-check-dev-${{ github.event.pull_request.id }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci-reusable.yaml
+    secrets: inherit

@@ -1,0 +1,65 @@
+name: CI - Release Branch
+
+on:
+  push:
+    branches: ['release/**']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci-reusable.yaml
+    secrets: inherit
+
+  check-version:
+    name: Check version
+    runs-on: ubuntu-latest
+    outputs:
+      is_valid: ${{ steps.validate.outputs.is_valid }}
+      message_cn: ${{ steps.validate.outputs.message_cn }}
+      message_en: ${{ steps.validate.outputs.message_en }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate release version
+        id: validate
+        run: node scripts/validate-release-version.cjs
+
+  summary:
+    name: Summary
+    needs: [ci, check-version]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate summary
+        run: |
+          CI_STATUS="${{ needs.ci.result }}"
+          CV_STATUS="${{ needs.check-version.result }}"
+          status_icon() {
+            case "$1" in
+              success)   echo "✅" ;; failure) echo "❌" ;;
+              cancelled) echo "🚫" ;; skipped) echo "⏭️" ;; *) echo "❓" ;;
+            esac
+          }
+          TIMESTAMP_CN=$(TZ='Asia/Shanghai' date +"%Y-%m-%d %H:%M:%S %Z")
+          cat >> "$GITHUB_STEP_SUMMARY" << EOF
+          # 🔬 CI 报告 - Release Branch
+          **分支**: ${{ github.ref_name }} · **时间**: $TIMESTAMP_CN
+          | Job | 状态 |
+          |-----|------|
+          | CI (lint + test) | $(status_icon "$CI_STATUS") $CI_STATUS |
+          | Check version | $(status_icon "$CV_STATUS") $CV_STATUS |
+          EOF
+          if [ "$CV_STATUS" == "success" ]; then
+            echo "**版本验证**: ${{ needs.check-version.outputs.message_cn }}" >> "$GITHUB_STEP_SUMMARY"
+          fi
