@@ -28,7 +28,15 @@
     "vue-eslint-parser": "^9.4.3"
   },
   "lint-staged": {
-    "**/*.{js,ts,jsx,tsx,vue,json,md,css,scss,html,yml,yaml}": [
+    "biological-storage-box-service/**/*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "biological-storage-box-web/**/*.{js,ts,vue}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "**/*.{json,yaml,yml,css,scss,html}": [
       "prettier --write"
     ]
   }

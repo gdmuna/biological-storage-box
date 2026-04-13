@@ -21,12 +21,21 @@ fi
 
 pnpm lint-staged
 
-staged_has_scripts=$(git diff --cached --name-only -- '*.js' '*.ts')
-if [ -z "$staged_has_scripts" ]; then
-    printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] 无暂存的 .js/.ts 文件，跳过 lint 和测试${RESET}"
-else
-    pnpm --filter biological-storage-box-service lint
+# 按工作区分别触发测试
+staged_service=$(git diff --cached --name-only | grep -E '^biological-storage-box-service/.*\.(js|ts)$' || true)
+staged_web=$(git diff --cached --name-only | grep -E '^biological-storage-box-web/.*\.(js|ts|d\.ts|vue)$' || true)
+
+if [ -n "$staged_service" ]; then
+    printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] 检测到 service 变更，运行测试${RESET}"
     pnpm --filter biological-storage-box-service test
+else
+    printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] 无 service .js/.ts 变更，跳过 service 测试${RESET}"
+fi
+
+if [ -n "$staged_web" ]; then
+    printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] 检测到 web 变更，运行测试${RESET}"
+    # pnpm --filter biological-storage-box-web test  # 待 web 添加测试后启用
+    printf "%-12b  %b\n" "${YELLOW}[GitHook]" "[WARN] web 暂无测试脚本，跳过${RESET}"
 fi
 
 printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] Pre-commit hooks 执行完毕${RESET}"
