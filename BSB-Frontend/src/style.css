@@ -1,38 +1,148 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
+@import "tw-animate-css";
+@import "shadcn-vue/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-    font-family: SmileySans, Helvetica, Arial, Menlo, Monaco, monospace, sans-serif;
-
-    color-scheme: light dark;
-    color: rgba(0, 0, 0, 0.87);
-
-    /* 文本渲染优化 */
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings:
+        'cv01',
+        'ss03';
+    --background:
+        oklch(1 0 0);
+    --foreground:
+        oklch(0.145 0 0);
+    --card:
+        oklch(1 0 0);
+    --card-foreground:
+        oklch(0.145 0 0);
+    --popover:
+        oklch(1 0 0);
+    --popover-foreground:
+        oklch(0.145 0 0);
+    --primary:
+        oklch(0.205 0 0);
+    --primary-foreground:
+        oklch(0.985 0 0);
+    --secondary:
+        oklch(0.97 0 0);
+    --secondary-foreground:
+        oklch(0.205 0 0);
+    --muted:
+        oklch(0.97 0 0);
+    --muted-foreground:
+        oklch(0.556 0 0);
+    --accent:
+        oklch(0.97 0 0);
+    --accent-foreground:
+        oklch(0.205 0 0);
+    --destructive:
+        oklch(0.577 0.245 27.325);
+    --border:
+        oklch(0.922 0 0);
+    --input:
+        oklch(0.922 0 0);
+    --ring:
+        oklch(0.708 0 0);
+    --chart-1:
+        oklch(0.87 0 0);
+    --chart-2:
+        oklch(0.556 0 0);
+    --chart-3:
+        oklch(0.439 0 0);
+    --chart-4:
+        oklch(0.371 0 0);
+    --chart-5:
+        oklch(0.269 0 0);
+    --radius:
+        0.625rem;
+    --sidebar:
+        oklch(0.985 0 0);
+    --sidebar-foreground:
+        oklch(0.145 0 0);
+    --sidebar-primary:
+        oklch(0.205 0 0);
+    --sidebar-primary-foreground:
+        oklch(0.985 0 0);
+    --sidebar-accent:
+        oklch(0.97 0 0);
+    --sidebar-accent-foreground:
+        oklch(0.205 0 0);
+    --sidebar-border:
+        oklch(0.922 0 0);
+    --sidebar-ring:
+        oklch(0.708 0 0);
 }
 
-/* 渐变动画背景 */
-.linear-bg {
-    background: linear-gradient(-45deg, #ee7752, #ce3e75, #23a6d5, #23d5ab);
-    background-size: 400% 400%;
-    -webkit-animation: Gradient 10s linear infinite;
-    -moz-animation: Gradient 10s linear infinite;
-    animation: Gradient 10s linear infinite;
+html {
+    background-color: #08090a;
+    color: #f7f8f8;
 }
-@keyframes Gradient {
-    0% {
-        background-position: 0% 0%;
-    }
-    50% {
-        background-position: 100% 100%;
-    }
-    100% {
-        background-position: 0% 0%;
-    }
+
+/* shadcn-vue CSS variable overrides (dark theme) */
+.dark {
+    --background:
+        oklch(0.145 0 0); /* #08090a */
+    --foreground:
+        oklch(0.985 0 0); /* #f7f8f8 */
+    --card:
+        oklch(0.205 0 0); /* #0f1011 */
+    --card-foreground:
+        oklch(0.985 0 0);
+    --primary:
+        oklch(0.922 0 0); /* #5e6ad2 */
+    --primary-foreground:
+        oklch(0.205 0 0);
+    --muted:
+        oklch(0.269 0 0); /* #191a1b */
+    --muted-foreground:
+        oklch(0.708 0 0);
+    --border:
+        oklch(1 0 0 / 10%);
+    --input:
+        oklch(1 0 0 / 15%);
+    --ring:
+        oklch(0.556 0 0);
+    --popover:
+        oklch(0.205 0 0);
+    --popover-foreground:
+        oklch(0.985 0 0);
+    --secondary:
+        oklch(0.269 0 0);
+    --secondary-foreground:
+        oklch(0.985 0 0);
+    --accent:
+        oklch(0.269 0 0);
+    --accent-foreground:
+        oklch(0.985 0 0);
+    --destructive:
+        oklch(0.704 0.191 22.216);
+    --chart-1:
+        oklch(0.87 0 0);
+    --chart-2:
+        oklch(0.556 0 0);
+    --chart-3:
+        oklch(0.439 0 0);
+    --chart-4:
+        oklch(0.371 0 0);
+    --chart-5:
+        oklch(0.269 0 0);
+    --sidebar:
+        oklch(0.205 0 0);
+    --sidebar-foreground:
+        oklch(0.985 0 0);
+    --sidebar-primary:
+        oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground:
+        oklch(0.985 0 0);
+    --sidebar-accent:
+        oklch(0.269 0 0);
+    --sidebar-accent-foreground:
+        oklch(0.985 0 0);
+    --sidebar-border:
+        oklch(1 0 0 / 10%);
+    --sidebar-ring:
+        oklch(0.556 0 0);
 }
 
 * {
@@ -40,43 +150,135 @@
     padding: 0;
     box-sizing: border-box;
 }
-/* 隐藏垂直滚动条 */
-*::-webkit-scrollbar {
-    display: none;
-}
 
 body {
     width: 100vw;
     height: 100vh;
-
-    margin: 0;
-    padding: 0;
-
-    /* 禁止在浏览器上选中文本内容 */
-    -o-user-select: none;
-    -ms-user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
-#app {
-    width: 100vw;
-    height: 100vh;
-
-    margin: 0;
-    padding: 0;
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
 }
 
-/* 页面区域主容器 */
-.main-container {
-    width: 100vw;
-    height: 100%;
+::-webkit-scrollbar-track {
+    background: transparent;
+}
 
-    margin: 0;
-    padding: 0;
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
 
-    background-color: #f1f8e9;
+@theme inline {
+    --font-sans:
+        'Inter Variable', 'SF Pro Display', -apple-system, system-ui, 'Segoe UI', sans-serif;
+    --font-heading:
+        var(--font-sans);
+    --font-mono:
+        'Berkeley Mono', ui-monospace, 'SF Mono', 'Menlo', monospace;
 
-    overflow: auto;
+    /* BSB custom tokens */
+    --color-bsb-bg-marketing: #08090a;
+    --color-bsb-bg-panel: #0f1011;
+    --color-bsb-bg-surface: #191a1b;
+    --color-bsb-bg-secondary: #28282c;
+    --color-bsb-text-primary: #f7f8f8;
+    --color-bsb-text-secondary: #d0d6e0;
+    --color-bsb-text-tertiary: #8a8f98;
+    --color-bsb-text-quaternary: #62666d;
+    --color-bsb-accent-brand: #5e6ad2;
+    --color-bsb-accent-violet: #7170ff;
+    --color-bsb-accent-hover: #828fff;
+    --color-bsb-border-subtle: rgba(255, 255, 255, 0.05);
+    --color-bsb-border-standard: rgba(255, 255, 255, 0.08);
+    --color-bsb-status-green: #27a644;
+    --color-bsb-status-emerald: #10b981;
+    --font-weight-emphasis: 510;
+    --font-weight-semibold: 590;
+
+    /* shadcn-vue semantic colors */
+    --color-sidebar-ring:
+        var(--sidebar-ring);
+    --color-sidebar-border:
+        var(--sidebar-border);
+    --color-sidebar-accent-foreground:
+        var(--sidebar-accent-foreground);
+    --color-sidebar-accent:
+        var(--sidebar-accent);
+    --color-sidebar-primary-foreground:
+        var(--sidebar-primary-foreground);
+    --color-sidebar-primary:
+        var(--sidebar-primary);
+    --color-sidebar-foreground:
+        var(--sidebar-foreground);
+    --color-sidebar:
+        var(--sidebar);
+    --color-chart-5:
+        var(--chart-5);
+    --color-chart-4:
+        var(--chart-4);
+    --color-chart-3:
+        var(--chart-3);
+    --color-chart-2:
+        var(--chart-2);
+    --color-chart-1:
+        var(--chart-1);
+    --color-ring:
+        var(--ring);
+    --color-input:
+        var(--input);
+    --color-border:
+        var(--border);
+    --color-destructive:
+        var(--destructive);
+    --color-accent-foreground:
+        var(--accent-foreground);
+    --color-accent:
+        var(--accent);
+    --color-muted-foreground:
+        var(--muted-foreground);
+    --color-muted:
+        var(--muted);
+    --color-secondary-foreground:
+        var(--secondary-foreground);
+    --color-secondary:
+        var(--secondary);
+    --color-primary-foreground:
+        var(--primary-foreground);
+    --color-primary:
+        var(--primary);
+    --color-popover-foreground:
+        var(--popover-foreground);
+    --color-popover:
+        var(--popover);
+    --color-card-foreground:
+        var(--card-foreground);
+    --color-card:
+        var(--card);
+    --color-foreground:
+        var(--foreground);
+    --color-background:
+        var(--background);
+    --radius-sm:
+        calc(var(--radius) - 4px);
+    --radius-md:
+        calc(var(--radius) - 2px);
+    --radius-lg:
+        var(--radius);
+    --radius-xl:
+        calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    @apply font-sans;
+    }
 }
