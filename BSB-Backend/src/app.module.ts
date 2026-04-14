@@ -20,13 +20,14 @@ import {
     OrgModule,
     RootModule,
     BoxModule,
+    NodeModule,
     ReagentModule,
     FeedbackModule,
 } from '@/modules/index.js';
 
 import allConfig, { AllConfig } from '@/constants/index.js';
 
-import { DatabaseModule, AlsModule } from '@/infra/index.js';
+import { DatabaseModule, AlsModule, MailModule } from '@/infra/index.js';
 
 import { Module, MiddlewareConsumer, NestModule, Global } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -95,6 +96,7 @@ import pino from 'pino';
         }),
         AlsModule,
         DatabaseModule,
+        MailModule,
         ExceptionCatalogModule,
         AuthModule,
         UserModule,
@@ -102,6 +104,7 @@ import pino from 'pino';
         OrgModule,
         RootModule,
         BoxModule,
+        NodeModule,
         ReagentModule,
         FeedbackModule,
     ],

@@ -1,10 +1,14 @@
 import { UserService } from '@/modules/user/user.service.js';
 import { UserRepository } from '@/modules/user/user.repository.js';
+import { EmailVerificationRepository } from '@/modules/user/email-verification.repository.js';
 import {
     UserNotFoundException,
     OldPasswordWrongException,
     EmailSameException,
+    VerificationCodeInvalidException,
+    VerificationCodeExpiredException,
 } from '@/modules/user/user.exception.js';
+import { MailService } from '@/infra/mail/mail.service.js';
 
 import bcrypt from 'bcryptjs';
 
@@ -20,6 +24,18 @@ describe('UserService', () => {
         search: jest.fn(),
     };
 
+    const mockEvRepository: jest.Mocked<
+        Pick<EmailVerificationRepository, 'create' | 'findLatestByEmail' | 'deleteByEmail'>
+    > = {
+        create: jest.fn(),
+        findLatestByEmail: jest.fn(),
+        deleteByEmail: jest.fn(),
+    };
+
+    const mockMailService: jest.Mocked<Pick<MailService, 'sendVerificationCode'>> = {
+        sendVerificationCode: jest.fn(),
+    };
+
     const mockConfigService: any = {
         get: jest.fn().mockReturnValue(10),
     };
@@ -30,6 +46,8 @@ describe('UserService', () => {
         jest.clearAllMocks();
         service = new UserService(
             mockUserRepository as unknown as UserRepository,
+            mockEvRepository as unknown as EmailVerificationRepository,
+            mockMailService as unknown as MailService,
             mockConfigService
         );
     });
@@ -163,6 +181,68 @@ describe('UserService', () => {
 
             await expect(service.updateEmail('u_1', 'test@example.com', '123456')).rejects.toThrow(
                 EmailSameException
+            );
+        });
+    });
+
+    describe('sendEmailCode', () => {
+        it('should delete old code, save new code, and send email', async () => {
+            mockEvRepository.deleteByEmail.mockResolvedValue(undefined as any);
+            mockEvRepository.create.mockResolvedValue({ id: 'ev_01' } as any);
+            mockMailService.sendVerificationCode.mockResolvedValue(undefined);
+
+            const result = await service.sendEmailCode('test@example.com');
+            expect(mockEvRepository.deleteByEmail).toHaveBeenCalledWith('test@example.com');
+            expect(mockEvRepository.create).toHaveBeenCalled();
+            expect(mockMailService.sendVerificationCode).toHaveBeenCalledWith(
+                'test@example.com',
+                expect.stringMatching(/^\d{6}$/)
+            );
+            expect(result).toEqual({ sent: true });
+        });
+    });
+
+    describe('emailLogin', () => {
+        it('should return user info on valid code', async () => {
+            const futureDate = new Date(Date.now() + 5 * 60 * 1000);
+            mockEvRepository.findLatestByEmail.mockResolvedValue({
+                code: '123456',
+                expiresAt: futureDate,
+            } as any);
+            mockUserRepository.findByEmail.mockResolvedValue({
+                id: 'u_01',
+                email: 'test@example.com',
+                passwordHash: 'hash',
+                username: 'test',
+                nickname: null,
+                realname: null,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            } as any);
+            mockEvRepository.deleteByEmail.mockResolvedValue(undefined as any);
+
+            const result = await service.emailLogin('test@example.com', '123456');
+            expect(result).not.toHaveProperty('passwordHash');
+        });
+
+        it('should throw VerificationCodeInvalidException on wrong code', async () => {
+            mockEvRepository.findLatestByEmail.mockResolvedValue({
+                code: '999999',
+                expiresAt: new Date(Date.now() + 60000),
+            } as any);
+            await expect(service.emailLogin('test@example.com', '000000')).rejects.toThrow(
+                VerificationCodeInvalidException
+            );
+        });
+
+        it('should throw VerificationCodeExpiredException on expired code', async () => {
+            const pastDate = new Date(Date.now() - 1000);
+            mockEvRepository.findLatestByEmail.mockResolvedValue({
+                code: '123456',
+                expiresAt: pastDate,
+            } as any);
+            await expect(service.emailLogin('test@example.com', '123456')).rejects.toThrow(
+                VerificationCodeExpiredException
             );
         });
     });
