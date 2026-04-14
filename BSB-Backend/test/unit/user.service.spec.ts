@@ -1,13 +1,19 @@
 import { UserService } from '@/modules/user/user.service.js';
 import { UserRepository } from '@/modules/user/user.repository.js';
-import { UserNotFoundException, OldPasswordWrongException, EmailSameException } from '@/modules/user/user.exception.js';
+import {
+    UserNotFoundException,
+    OldPasswordWrongException,
+    EmailSameException,
+} from '@/modules/user/user.exception.js';
 
 import bcrypt from 'bcryptjs';
 
 describe('UserService', () => {
     const passwordHash = bcrypt.hashSync('P@ssw0rd!', 10);
 
-    const mockUserRepository: jest.Mocked<Pick<UserRepository, 'findById' | 'findByEmail' | 'update' | 'search'>> = {
+    const mockUserRepository: jest.Mocked<
+        Pick<UserRepository, 'findById' | 'findByEmail' | 'update' | 'search'>
+    > = {
         findById: jest.fn(),
         findByEmail: jest.fn(),
         update: jest.fn(),
@@ -75,7 +81,10 @@ describe('UserService', () => {
                 updatedAt: new Date(),
             });
 
-            const result = await service.updateInfo('u_1', { nickname: 'NewNick', realname: 'Real Name' });
+            const result = await service.updateInfo('u_1', {
+                nickname: 'NewNick',
+                realname: 'Real Name',
+            });
             expect(result.nickname).toBe('NewNick');
             expect(result.realname).toBe('Real Name');
             expect(result).not.toHaveProperty('passwordHash');
@@ -97,7 +106,10 @@ describe('UserService', () => {
             mockUserRepository.update.mockResolvedValue({} as any);
 
             await expect(
-                service.updatePassword('u_1', { oldPassword: 'P@ssw0rd!', newPassword: 'NewP@ssw0rd!' })
+                service.updatePassword('u_1', {
+                    oldPassword: 'P@ssw0rd!',
+                    newPassword: 'NewP@ssw0rd!',
+                })
             ).resolves.toBeUndefined();
             expect(mockUserRepository.update).toHaveBeenCalledTimes(1);
         });
@@ -115,7 +127,10 @@ describe('UserService', () => {
             });
 
             await expect(
-                service.updatePassword('u_1', { oldPassword: 'WrongPass1', newPassword: 'NewP@ssw0rd!' })
+                service.updatePassword('u_1', {
+                    oldPassword: 'WrongPass1',
+                    newPassword: 'NewP@ssw0rd!',
+                })
             ).rejects.toThrow(OldPasswordWrongException);
         });
     });
@@ -146,9 +161,9 @@ describe('UserService', () => {
                 updatedAt: new Date(),
             });
 
-            await expect(
-                service.updateEmail('u_1', 'test@example.com', '123456')
-            ).rejects.toThrow(EmailSameException);
+            await expect(service.updateEmail('u_1', 'test@example.com', '123456')).rejects.toThrow(
+                EmailSameException
+            );
         });
     });
 });

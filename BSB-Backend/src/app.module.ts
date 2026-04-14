@@ -12,7 +12,17 @@ import { AppController, TestController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { AllExceptionFilter, ZodExceptionFilter, ThrottlerExceptionFilter } from './app.filter.js';
 
-import { ExceptionCatalogModule, AuthModule, UserModule } from '@/modules/index.js';
+import {
+    ExceptionCatalogModule,
+    AuthModule,
+    UserModule,
+    FileModule,
+    OrgModule,
+    RootModule,
+    BoxModule,
+    ReagentModule,
+    FeedbackModule,
+} from '@/modules/index.js';
 
 import allConfig, { AllConfig } from '@/constants/index.js';
 
@@ -88,6 +98,12 @@ import pino from 'pino';
         ExceptionCatalogModule,
         AuthModule,
         UserModule,
+        FileModule,
+        OrgModule,
+        RootModule,
+        BoxModule,
+        ReagentModule,
+        FeedbackModule,
     ],
     controllers: [AppController, TestController],
     providers: [

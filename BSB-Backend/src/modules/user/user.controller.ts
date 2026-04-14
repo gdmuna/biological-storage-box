@@ -48,7 +48,10 @@ export class UserController {
     @ApiRoute({
         auth: 'required',
         summary: '修改密码',
-        errors: [USER_EXCEPTION.UserNotFoundException.code, USER_EXCEPTION.OldPasswordWrongException.code],
+        errors: [
+            USER_EXCEPTION.UserNotFoundException.code,
+            USER_EXCEPTION.OldPasswordWrongException.code,
+        ],
     })
     async updatePassword(@CurrentUser() user: AccessTokenClaim, @Body() body: UpdatePasswordDto) {
         await this.userService.updatePassword(user.sub, body);

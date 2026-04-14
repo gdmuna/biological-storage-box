@@ -1,6 +1,10 @@
 import { UpdateUserInfoDto, UpdatePasswordDto } from './user.dto.js';
 import { UserRepository } from './user.repository.js';
-import { UserNotFoundException, OldPasswordWrongException, EmailSameException } from './user.exception.js';
+import {
+    UserNotFoundException,
+    OldPasswordWrongException,
+    EmailSameException,
+} from './user.exception.js';
 
 import { Injectable } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
