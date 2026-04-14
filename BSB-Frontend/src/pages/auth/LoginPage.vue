@@ -12,7 +12,7 @@ import { useAuthStore } from '@/stores/auth';
 const router = useRouter();
 const auth = useAuthStore();
 
-const username = ref('');
+const account = ref('');
 const password = ref('');
 const error = ref('');
 const loading = ref(false);
@@ -20,7 +20,7 @@ const loading = ref(false);
 async function handleLogin() {
     error.value = '';
     const result = LoginFormSchema.safeParse({
-        username: username.value,
+        account: account.value,
         password: password.value
     });
     if (!result.success) {
@@ -52,8 +52,8 @@ async function handleLogin() {
             <CardContent>
                 <form class="space-y-4" @submit.prevent="handleLogin">
                     <div class="space-y-2">
-                        <Label for="username" class="text-bsb-text-secondary">用户名</Label>
-                        <Input id="username" v-model="username" placeholder="请输入用户名" autocomplete="username" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary placeholder:text-bsb-text-quaternary" />
+                        <Label for="account" class="text-bsb-text-secondary">用户名</Label>
+                        <Input id="account" v-model="account" placeholder="请输入用户名" autocomplete="account" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary placeholder:text-bsb-text-quaternary" />
                     </div>
                     <div class="space-y-2">
                         <Label for="password" class="text-bsb-text-secondary">密码</Label>

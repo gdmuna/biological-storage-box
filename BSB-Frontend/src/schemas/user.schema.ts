@@ -11,7 +11,7 @@ export const UserInfoSchema = z.object({
 export type UserInfo = z.infer<typeof UserInfoSchema>;
 
 export const LoginFormSchema = z.object({
-    username: z.string().min(3),
+    account: z.string().min(3),
     password: z.string().min(8),
 });
 
