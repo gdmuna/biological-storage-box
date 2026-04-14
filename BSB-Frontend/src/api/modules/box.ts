@@ -20,7 +20,7 @@ export const listBoxes = (orgId: string) =>
 export const listBoxesGroupedByRoot = (orgId: string) =>
     alovaInstance.Get<{ rootId: string | null; rootName: string | null; boxes: Box[] }[]>(
         '/box/root/list',
-        { params: { orgId } },
+        { params: { orgId } }
     );
 
 export const searchBoxes = (params: { orgId: string; keyword: string; limit?: number }) =>

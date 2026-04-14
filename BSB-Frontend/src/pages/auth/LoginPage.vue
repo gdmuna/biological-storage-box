@@ -21,7 +21,7 @@ async function handleLogin() {
     error.value = '';
     const result = LoginFormSchema.safeParse({
         username: username.value,
-        password: password.value,
+        password: password.value
     });
     if (!result.success) {
         error.value = result.error.issues[0].message;
@@ -47,46 +47,25 @@ async function handleLogin() {
                     <Box class="size-5 text-bsb-accent-brand" />
                 </div>
                 <CardTitle class="text-xl text-bsb-text-primary">登录</CardTitle>
-                <CardDescription class="text-bsb-text-tertiary">
-                    输入账号和密码以继续
-                </CardDescription>
+                <CardDescription class="text-bsb-text-tertiary">输入账号和密码以继续</CardDescription>
             </CardHeader>
             <CardContent>
                 <form class="space-y-4" @submit.prevent="handleLogin">
                     <div class="space-y-2">
                         <Label for="username" class="text-bsb-text-secondary">用户名</Label>
-                        <Input
-                            id="username"
-                            v-model="username"
-                            placeholder="请输入用户名"
-                            autocomplete="username"
-                            class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary placeholder:text-bsb-text-quaternary"
-                        />
+                        <Input id="username" v-model="username" placeholder="请输入用户名" autocomplete="username" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary placeholder:text-bsb-text-quaternary" />
                     </div>
                     <div class="space-y-2">
                         <Label for="password" class="text-bsb-text-secondary">密码</Label>
-                        <Input
-                            id="password"
-                            v-model="password"
-                            type="password"
-                            placeholder="请输入密码"
-                            autocomplete="current-password"
-                            class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary placeholder:text-bsb-text-quaternary"
-                        />
+                        <Input id="password" v-model="password" type="password" placeholder="请输入密码" autocomplete="current-password" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary placeholder:text-bsb-text-quaternary" />
                     </div>
                     <p v-if="error" class="text-sm text-red-400">{{ error }}</p>
-                    <Button
-                        type="submit"
-                        class="w-full bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover"
-                        :disabled="loading"
-                    >
+                    <Button type="submit" class="w-full bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" :disabled="loading">
                         {{ loading ? '登录中…' : '登录' }}
                     </Button>
                     <p class="text-center text-sm text-bsb-text-quaternary">
                         没有账号？
-                        <RouterLink to="/register" class="text-bsb-accent-brand hover:text-bsb-accent-hover">
-                            注册
-                        </RouterLink>
+                        <RouterLink to="/register" class="text-bsb-accent-brand hover:text-bsb-accent-hover">注册</RouterLink>
                     </p>
                 </form>
             </CardContent>

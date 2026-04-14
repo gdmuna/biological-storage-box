@@ -23,7 +23,7 @@ async function handleRegister() {
     const result = RegisterFormSchema.safeParse({
         username: username.value,
         email: email.value,
-        password: password.value,
+        password: password.value
     });
     if (!result.success) {
         error.value = result.error.issues[0].message;
@@ -49,57 +49,29 @@ async function handleRegister() {
                     <Box class="size-5 text-bsb-accent-brand" />
                 </div>
                 <CardTitle class="text-xl text-bsb-text-primary">注册</CardTitle>
-                <CardDescription class="text-bsb-text-tertiary">
-                    创建一个新账号
-                </CardDescription>
+                <CardDescription class="text-bsb-text-tertiary">创建一个新账号</CardDescription>
             </CardHeader>
             <CardContent>
                 <form class="space-y-4" @submit.prevent="handleRegister">
                     <div class="space-y-2">
                         <Label for="username" class="text-bsb-text-secondary">用户名</Label>
-                        <Input
-                            id="username"
-                            v-model="username"
-                            placeholder="请输入用户名"
-                            autocomplete="username"
-                            class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary placeholder:text-bsb-text-quaternary"
-                        />
+                        <Input id="username" v-model="username" placeholder="请输入用户名" autocomplete="username" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary placeholder:text-bsb-text-quaternary" />
                     </div>
                     <div class="space-y-2">
                         <Label for="email" class="text-bsb-text-secondary">邮箱</Label>
-                        <Input
-                            id="email"
-                            v-model="email"
-                            type="email"
-                            placeholder="请输入邮箱"
-                            autocomplete="email"
-                            class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary placeholder:text-bsb-text-quaternary"
-                        />
+                        <Input id="email" v-model="email" type="email" placeholder="请输入邮箱" autocomplete="email" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary placeholder:text-bsb-text-quaternary" />
                     </div>
                     <div class="space-y-2">
                         <Label for="password" class="text-bsb-text-secondary">密码</Label>
-                        <Input
-                            id="password"
-                            v-model="password"
-                            type="password"
-                            placeholder="请输入密码（至少8位）"
-                            autocomplete="new-password"
-                            class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary placeholder:text-bsb-text-quaternary"
-                        />
+                        <Input id="password" v-model="password" type="password" placeholder="请输入密码（至少8位）" autocomplete="new-password" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary placeholder:text-bsb-text-quaternary" />
                     </div>
                     <p v-if="error" class="text-sm text-red-400">{{ error }}</p>
-                    <Button
-                        type="submit"
-                        class="w-full bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover"
-                        :disabled="loading"
-                    >
+                    <Button type="submit" class="w-full bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" :disabled="loading">
                         {{ loading ? '注册中…' : '注册' }}
                     </Button>
                     <p class="text-center text-sm text-bsb-text-quaternary">
                         已有账号？
-                        <RouterLink to="/login" class="text-bsb-accent-brand hover:text-bsb-accent-hover">
-                            登录
-                        </RouterLink>
+                        <RouterLink to="/login" class="text-bsb-accent-brand hover:text-bsb-accent-hover">登录</RouterLink>
                     </p>
                 </form>
             </CardContent>

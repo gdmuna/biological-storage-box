@@ -5,6 +5,6 @@ export const uploadFile = (file: File) => {
     formData.append('file', file);
     return alovaInstance.Post<{ url: string; filename: string; size: number }>(
         '/file/upload',
-        formData,
+        formData
     );
 };

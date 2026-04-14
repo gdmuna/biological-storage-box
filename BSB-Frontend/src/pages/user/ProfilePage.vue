@@ -26,7 +26,7 @@ async function handleUpdateInfo() {
     try {
         await updateUserInfo({
             nickname: nickname.value || undefined,
-            realname: realname.value || undefined,
+            realname: realname.value || undefined
         }).send();
         await auth.fetchMe();
     } catch (e: unknown) {
@@ -46,7 +46,7 @@ async function handleUpdatePassword() {
     try {
         await updatePassword({
             oldPassword: oldPassword.value,
-            newPassword: newPassword.value,
+            newPassword: newPassword.value
         }).send();
         oldPassword.value = '';
         newPassword.value = '';
@@ -71,42 +71,22 @@ async function handleUpdatePassword() {
                 <form class="space-y-4" @submit.prevent="handleUpdateInfo">
                     <div class="space-y-2">
                         <Label class="text-bsb-text-secondary">用户名</Label>
-                        <Input
-                            :model-value="auth.user?.username ?? ''"
-                            disabled
-                            class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-quaternary"
-                        />
+                        <Input :model-value="auth.user?.username ?? ''" disabled class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-quaternary" />
                     </div>
                     <div class="space-y-2">
                         <Label class="text-bsb-text-secondary">邮箱</Label>
-                        <Input
-                            :model-value="auth.user?.email ?? ''"
-                            disabled
-                            class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-quaternary"
-                        />
+                        <Input :model-value="auth.user?.email ?? ''" disabled class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-quaternary" />
                     </div>
                     <div class="space-y-2">
                         <Label class="text-bsb-text-secondary">昵称</Label>
-                        <Input
-                            v-model="nickname"
-                            placeholder="输入昵称"
-                            class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary"
-                        />
+                        <Input v-model="nickname" placeholder="输入昵称" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary" />
                     </div>
                     <div class="space-y-2">
                         <Label class="text-bsb-text-secondary">真实姓名</Label>
-                        <Input
-                            v-model="realname"
-                            placeholder="输入真实姓名"
-                            class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary"
-                        />
+                        <Input v-model="realname" placeholder="输入真实姓名" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary" />
                     </div>
                     <p v-if="infoError" class="text-sm text-red-400">{{ infoError }}</p>
-                    <Button
-                        type="submit"
-                        class="bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover"
-                        :disabled="infoLoading"
-                    >
+                    <Button type="submit" class="bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" :disabled="infoLoading">
                         {{ infoLoading ? '保存中…' : '保存' }}
                     </Button>
                 </form>
@@ -124,30 +104,14 @@ async function handleUpdatePassword() {
                 <form class="space-y-4" @submit.prevent="handleUpdatePassword">
                     <div class="space-y-2">
                         <Label class="text-bsb-text-secondary">当前密码</Label>
-                        <Input
-                            v-model="oldPassword"
-                            type="password"
-                            placeholder="输入当前密码"
-                            autocomplete="current-password"
-                            class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary"
-                        />
+                        <Input v-model="oldPassword" type="password" placeholder="输入当前密码" autocomplete="current-password" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary" />
                     </div>
                     <div class="space-y-2">
                         <Label class="text-bsb-text-secondary">新密码</Label>
-                        <Input
-                            v-model="newPassword"
-                            type="password"
-                            placeholder="输入新密码（至少8位）"
-                            autocomplete="new-password"
-                            class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary"
-                        />
+                        <Input v-model="newPassword" type="password" placeholder="输入新密码（至少8位）" autocomplete="new-password" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary" />
                     </div>
                     <p v-if="pwError" class="text-sm text-red-400">{{ pwError }}</p>
-                    <Button
-                        type="submit"
-                        class="bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover"
-                        :disabled="pwLoading"
-                    >
+                    <Button type="submit" class="bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" :disabled="pwLoading">
                         {{ pwLoading ? '修改中…' : '修改密码' }}
                     </Button>
                 </form>

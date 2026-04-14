@@ -42,11 +42,7 @@ watch(() => org.currentOrgId, fetchData);
         <h1 class="text-2xl font-[590] text-bsb-text-primary">试剂管理</h1>
 
         <div v-if="reagents.length > 0" class="space-y-3">
-            <Card
-                v-for="reagent in reagents"
-                :key="reagent.id"
-                class="reagent-card border-bsb-border-standard bg-bsb-bg-panel"
-            >
+            <Card v-for="reagent in reagents" :key="reagent.id" class="reagent-card border-bsb-border-standard bg-bsb-bg-panel">
                 <CardHeader class="flex flex-row items-center justify-between py-3">
                     <CardTitle class="text-sm text-bsb-text-primary">{{ reagent.name }}</CardTitle>
                     <div class="flex items-center gap-2">
@@ -64,8 +60,6 @@ watch(() => org.currentOrgId, fetchData);
             </Card>
         </div>
 
-        <p v-if="reagents.length === 0" class="text-sm text-bsb-text-quaternary">
-            暂无试剂数据
-        </p>
+        <p v-if="reagents.length === 0" class="text-sm text-bsb-text-quaternary">暂无试剂数据</p>
     </div>
 </template>

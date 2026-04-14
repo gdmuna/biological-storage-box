@@ -18,9 +18,7 @@ const grid = computed(() => {
     if (!box.value) return [];
     const rows = box.value.rows;
     const cols = box.value.cols;
-    const cells: (Reagent | null)[][] = Array.from({ length: rows }, () =>
-        Array.from({ length: cols }, () => null),
-    );
+    const cells: (Reagent | null)[][] = Array.from({ length: rows }, () => Array.from({ length: cols }, () => null));
     for (const r of reagents.value) {
         const match = r.position.match(/^(\d+)-(\d+)$/);
         if (match) {
@@ -53,44 +51,21 @@ onMounted(async () => {
                 {{ box.description }}
             </p>
             <div class="mt-2 flex items-center gap-2">
-                <Badge variant="outline" class="text-bsb-text-tertiary">
-                    {{ box.rows }}×{{ box.cols }}
-                </Badge>
+                <Badge variant="outline" class="text-bsb-text-tertiary">{{ box.rows }}×{{ box.cols }}</Badge>
             </div>
         </div>
 
         <Separator class="bg-bsb-border-standard" />
 
         <!-- Grid -->
-        <div
-            v-if="box"
-            class="inline-grid gap-1"
-            :style="{ gridTemplateColumns: `repeat(${box.cols}, minmax(0, 1fr))` }"
-        >
-            <div
-                v-for="(row, ri) in grid"
-                v-bind:key="ri"
-            >
-                <Card
-                    v-for="(cell, ci) in row"
-                    :key="`${ri}-${ci}`"
-                    class="grid-cell size-16 cursor-pointer border transition-colors"
-                    :class="
-                        cell
-                            ? 'border-bsb-accent-brand/30 bg-bsb-accent-brand/10 hover:border-bsb-accent-brand/50'
-                            : 'border-bsb-border-subtle bg-bsb-bg-surface hover:bg-bsb-bg-secondary'
-                    "
-                >
+        <div v-if="box" class="inline-grid gap-1" :style="{ gridTemplateColumns: `repeat(${box.cols}, minmax(0, 1fr))` }">
+            <div v-for="(row, ri) in grid" v-bind:key="ri">
+                <Card v-for="(cell, ci) in row" :key="`${ri}-${ci}`" class="grid-cell size-16 cursor-pointer border transition-colors" :class="cell ? 'border-bsb-accent-brand/30 bg-bsb-accent-brand/10 hover:border-bsb-accent-brand/50' : 'border-bsb-border-subtle bg-bsb-bg-surface hover:bg-bsb-bg-secondary'">
                     <CardContent class="flex h-full items-center justify-center p-1">
-                        <span
-                            v-if="cell"
-                            class="truncate text-[10px] text-bsb-text-secondary"
-                        >
+                        <span v-if="cell" class="truncate text-[10px] text-bsb-text-secondary">
                             {{ cell.name }}
                         </span>
-                        <span v-else class="text-[10px] text-bsb-text-quaternary">
-                            {{ ri + 1 }}-{{ ci + 1 }}
-                        </span>
+                        <span v-else class="text-[10px] text-bsb-text-quaternary">{{ ri + 1 }}-{{ ci + 1 }}</span>
                     </CardContent>
                 </Card>
             </div>
@@ -99,11 +74,7 @@ onMounted(async () => {
         <!-- Reagent list -->
         <div v-if="reagents.length > 0" class="space-y-2">
             <h2 class="text-sm font-[510] text-bsb-text-secondary">试剂列表</h2>
-            <Card
-                v-for="reagent in reagents"
-                :key="reagent.id"
-                class="border-bsb-border-standard bg-bsb-bg-panel"
-            >
+            <Card v-for="reagent in reagents" :key="reagent.id" class="border-bsb-border-standard bg-bsb-bg-panel">
                 <CardHeader class="flex flex-row items-center justify-between py-3">
                     <CardTitle class="text-sm text-bsb-text-primary">{{ reagent.name }}</CardTitle>
                     <Badge variant="outline" class="text-bsb-text-tertiary">

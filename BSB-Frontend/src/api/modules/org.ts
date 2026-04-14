@@ -5,8 +5,7 @@ export const createOrg = (data: CreateOrgForm) => alovaInstance.Post<Org>('/org/
 
 export const deleteOrg = (orgId: string) => alovaInstance.Delete<void>('/org/del', { orgId });
 
-export const getOrg = (orgId: string) =>
-    alovaInstance.Get<Org>('/org/one', { params: { orgId } });
+export const getOrg = (orgId: string) => alovaInstance.Get<Org>('/org/one', { params: { orgId } });
 
 export const listOrgs = () => alovaInstance.Get<Org[]>('/org/list');
 

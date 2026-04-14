@@ -7,15 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useOrgStore } from '@/stores/org';
 import { createOrg, deleteOrg } from '@/api/modules/org';
 import { CreateOrgFormSchema } from '@/schemas/org.schema';
@@ -36,7 +28,7 @@ async function handleCreate() {
     error.value = '';
     const result = CreateOrgFormSchema.safeParse({
         name: newName.value,
-        description: newDesc.value || undefined,
+        description: newDesc.value || undefined
     });
     if (!result.success) {
         error.value = result.error.issues[0].message;
@@ -88,34 +80,20 @@ onMounted(() => {
                 <DialogContent class="border-bsb-border-standard bg-bsb-bg-panel">
                     <DialogHeader>
                         <DialogTitle class="text-bsb-text-primary">创建新组织</DialogTitle>
-                        <DialogDescription class="text-bsb-text-tertiary">
-                            输入组织名称和描述
-                        </DialogDescription>
+                        <DialogDescription class="text-bsb-text-tertiary">输入组织名称和描述</DialogDescription>
                     </DialogHeader>
                     <form class="space-y-4" @submit.prevent="handleCreate">
                         <div class="space-y-2">
                             <Label class="text-bsb-text-secondary">名称</Label>
-                            <Input
-                                v-model="newName"
-                                placeholder="组织名称"
-                                class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary"
-                            />
+                            <Input v-model="newName" placeholder="组织名称" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary" />
                         </div>
                         <div class="space-y-2">
                             <Label class="text-bsb-text-secondary">描述</Label>
-                            <Input
-                                v-model="newDesc"
-                                placeholder="可选描述"
-                                class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary"
-                            />
+                            <Input v-model="newDesc" placeholder="可选描述" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary" />
                         </div>
                         <p v-if="error" class="text-sm text-red-400">{{ error }}</p>
                         <DialogFooter>
-                            <Button
-                                type="submit"
-                                class="bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover"
-                                :disabled="loading"
-                            >
+                            <Button type="submit" class="bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" :disabled="loading">
                                 {{ loading ? '创建中…' : '创建' }}
                             </Button>
                         </DialogFooter>
@@ -128,12 +106,7 @@ onMounted(() => {
 
         <!-- Org list -->
         <div class="space-y-3">
-            <Card
-                v-for="o in org.orgs"
-                :key="o.id"
-                class="org-card border-bsb-border-standard bg-bsb-bg-panel"
-                :class="o.id === org.currentOrgId ? 'ring-1 ring-bsb-accent-brand/40' : ''"
-            >
+            <Card v-for="o in org.orgs" :key="o.id" class="org-card border-bsb-border-standard bg-bsb-bg-panel" :class="o.id === org.currentOrgId ? 'ring-1 ring-bsb-accent-brand/40' : ''">
                 <CardHeader class="flex flex-row items-center justify-between">
                     <div class="cursor-pointer" @click="org.selectOrg(o.id)">
                         <CardTitle class="text-sm text-bsb-text-primary">{{ o.name }}</CardTitle>
@@ -142,16 +115,8 @@ onMounted(() => {
                         </CardDescription>
                     </div>
                     <div class="flex items-center gap-2">
-                        <Badge v-if="o.id === org.currentOrgId" class="bg-bsb-accent-brand/20 text-bsb-accent-brand">
-                            当前
-                        </Badge>
-                        <Button
-                            v-if="isOwner(o)"
-                            variant="ghost"
-                            size="icon"
-                            class="text-bsb-text-quaternary hover:text-red-400"
-                            @click="handleDelete(o)"
-                        >
+                        <Badge v-if="o.id === org.currentOrgId" class="bg-bsb-accent-brand/20 text-bsb-accent-brand">当前</Badge>
+                        <Button v-if="isOwner(o)" variant="ghost" size="icon" class="text-bsb-text-quaternary hover:text-red-400" @click="handleDelete(o)">
                             <Trash2 class="size-4" />
                         </Button>
                     </div>
@@ -159,8 +124,6 @@ onMounted(() => {
             </Card>
         </div>
 
-        <p v-if="org.orgs.length === 0" class="text-sm text-bsb-text-quaternary">
-            暂无组织，点击"创建组织"开始
-        </p>
+        <p v-if="org.orgs.length === 0" class="text-sm text-bsb-text-quaternary">暂无组织，点击"创建组织"开始</p>
     </div>
 </template>
