@@ -3,7 +3,8 @@ import type { Org, CreateOrgForm } from '@/schemas/org.schema';
 
 export const createOrg = (data: CreateOrgForm) => alovaInstance.Post<Org>('/org/create', data);
 
-export const deleteOrg = (orgId: string) => alovaInstance.Delete<void>('/org/del', { orgId });
+export const deleteOrg = (orgId: string) =>
+    alovaInstance.Delete<void>('/org/del', { data: { orgId } });
 
 export const getOrg = (orgId: string) => alovaInstance.Get<Org>('/org/one', { params: { orgId } });
 

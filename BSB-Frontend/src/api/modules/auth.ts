@@ -6,6 +6,6 @@ export const login = (data: LoginForm) => alovaInstance.Post<UserInfo>('/auth/lo
 export const register = (data: RegisterForm) =>
     alovaInstance.Post<UserInfo>('/auth/register', data);
 
-export const logout = () => alovaInstance.Post<void>('/auth/logout');
+export const logout = () => alovaInstance.Get<void>('/auth/clear-cookie');
 
 export const getMyInfo = () => alovaInstance.Get<UserInfo>('/user/info');

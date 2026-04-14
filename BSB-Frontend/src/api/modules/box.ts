@@ -10,7 +10,7 @@ export const createBox = (data: {
     cols?: number;
 }) => alovaInstance.Post<Box>('/box/add', data);
 
-export const deleteBox = (id: string) => alovaInstance.Delete<void>('/box/del', { id });
+export const deleteBox = (id: string) => alovaInstance.Delete<void>('/box/del', { data: { id } });
 
 export const getBox = (id: string) => alovaInstance.Get<Box>('/box/one', { params: { id } });
 
