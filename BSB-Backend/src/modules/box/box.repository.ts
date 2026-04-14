@@ -11,6 +11,7 @@ export class BoxRepository {
     async create(data: {
         orgId: string;
         rootId?: string;
+        nodeId?: string;
         name: string;
         description?: string;
         rows: number;
@@ -28,6 +29,7 @@ export class BoxRepository {
             where: { id },
             include: {
                 root: { select: { id: true, name: true } },
+                node: { select: { id: true, name: true } },
                 aliases: true,
                 _count: { select: { reagents: true, images: true } },
             },
@@ -39,6 +41,7 @@ export class BoxRepository {
             where: { orgId },
             include: {
                 root: { select: { id: true, name: true } },
+                node: { select: { id: true, name: true } },
                 _count: { select: { reagents: true } },
             },
         });
@@ -84,13 +87,21 @@ export class BoxRepository {
                 ],
             },
             take: limit,
-            include: { root: { select: { id: true, name: true } } },
+            include: {
+                root: { select: { id: true, name: true } },
+                node: { select: { id: true, name: true } },
+            },
         });
     }
 
     async update(
         id: string,
-        data: { rootId?: string | null; name?: string; description?: string }
+        data: {
+            rootId?: string | null;
+            nodeId?: string | null;
+            name?: string;
+            description?: string;
+        }
     ) {
         return this.db.box.update({ where: { id }, data });
     }

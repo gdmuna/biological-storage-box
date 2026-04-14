@@ -37,6 +37,7 @@ model Organization {
   owner   User               @relation("OrgOwner", fields: [ownerId], references: [id])
   members OrganizationUser[]
   roots   Root[]
+  nodes   Node[]
   boxes   Box[]
 
   @@index([ownerId])
@@ -70,6 +71,24 @@ enum OrgUserStatus {
   REJECTED
 }
 
+model Node {
+  id          String    @id @default(ulid())
+  orgId       String
+  parentId    String?
+  name        String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  parent   Node?        @relation("NodeTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children Node[]       @relation("NodeTree")
+  boxes    Box[]        @relation("BoxNode")
+
+  @@index([orgId])
+  @@index([parentId])
+}
+
 model Root {
   id          String   @id @default(ulid())
   orgId       String
@@ -88,6 +107,7 @@ model Box {
   id          String   @id @default(ulid())
   orgId       String
   rootId      String?
+  nodeId      String?
   name        String
   description String?
   rows        Int      @default(9)
@@ -97,6 +117,7 @@ model Box {
 
   org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   root     Root?        @relation(fields: [rootId], references: [id], onDelete: SetNull)
+  node     Node?        @relation("BoxNode", fields: [nodeId], references: [id], onDelete: SetNull)
   aliases  BoxAlias[]
   images   BoxImage[]
   logs     BoxLog[]
@@ -104,6 +125,7 @@ model Box {
 
   @@index([orgId])
   @@index([rootId])
+  @@index([nodeId])
 }
 
 model BoxAlias {
@@ -172,4 +194,14 @@ model Feedback {
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId])
+}
+
+model EmailVerification {
+  id        String   @id @default(ulid())
+  email     String
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
 }

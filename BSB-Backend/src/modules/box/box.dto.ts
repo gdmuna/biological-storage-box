@@ -7,6 +7,7 @@ const CreateBoxDtoSchema = z
     .object({
         orgId: z.string().min(1).meta({ title: '组织 ID' }),
         rootId: z.string().optional().meta({ title: 'Root ID' }),
+        nodeId: z.string().optional().meta({ title: 'Node ID（节点归属）' }),
         name: z.string().min(1).max(128).meta({ title: '名称', example: '样本盒 A-01' }),
         description: z.string().max(512).optional().meta({ title: '描述' }),
         rows: z.number().int().min(1).max(99).default(9).meta({ title: '行数' }),
@@ -20,6 +21,7 @@ const UpdateBoxDtoSchema = z
     .object({
         id: z.string().min(1).meta({ title: 'Box ID' }),
         rootId: z.string().optional().nullable().meta({ title: 'Root ID' }),
+        nodeId: z.string().optional().nullable().meta({ title: 'Node ID' }),
         name: z.string().min(1).max(128).optional().meta({ title: '名称' }),
         description: z.string().max(512).optional().meta({ title: '描述' }),
     })

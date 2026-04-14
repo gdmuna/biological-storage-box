@@ -38,6 +38,7 @@ export class BoxService {
         return this.boxRepository.create({
             orgId: dto.orgId,
             rootId: dto.rootId,
+            nodeId: dto.nodeId,
             name: dto.name,
             description: dto.description,
             rows: dto.rows,
@@ -76,6 +77,7 @@ export class BoxService {
         await this.assertOrgAdmin(box.orgId, userId);
         return this.boxRepository.update(dto.id, {
             ...(dto.rootId !== undefined && { rootId: dto.rootId }),
+            ...(dto.nodeId !== undefined && { nodeId: dto.nodeId }),
             ...(dto.name !== undefined && { name: dto.name }),
             ...(dto.description !== undefined && { description: dto.description }),
         });
