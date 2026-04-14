@@ -224,6 +224,17 @@ AI 助手执行修改后，必须**主动验证结果**，而非交由人类反�
 - [ ] 已确认错误码是否已在 `src/constants/error-catalog.constant.ts` 中定义
 - [ ] 已知晓相关 API 的 DTO 结构（查阅 Swagger 或 `*.dto.ts`）
 
+### 每个实现计划的验收清单（必须全部通过才算完成）
+
+- [ ] `pnpm --filter BSB-Backend run build` — 零错误
+- [ ] `pnpm --filter BSB-Backend test` — 全绿
+- [ ] `pnpm --filter BSB-Frontend run build` — 零错误
+- [ ] `pnpm --filter BSB-Frontend run type-check` — 零错误
+- [ ] `pnpm --filter BSB-Frontend test` — 全绿
+- [ ] `docker compose build` — 构建成功
+- [ ] `docker compose up -d && curl http://localhost:3000/health` — 返回 200
+- [ ] API 冒烟：`POST /auth/login → POST /org/create → GET /org/list → DELETE /org/del` 均符合预期
+
 ### 涉及数据库变更时
 
 1. 修改 `prisma/schema.prisma`
