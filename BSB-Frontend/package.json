@@ -13,7 +13,9 @@
     "preview": "vite preview",
     "type-check": "vue-tsc --noEmit",
     "eslint": "eslint . --fix",
-    "prettier": "prettier . --write"
+    "prettier": "prettier . --write",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",
@@ -36,11 +38,14 @@
     "@tailwindcss/postcss": "^4.2.2",
     "@tailwindcss/vite": "^4.2.2",
     "@vitejs/plugin-vue": "^6.0.6",
+    "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.27",
+    "jsdom": "^29.0.2",
     "postcss": "^8.5.9",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2",
     "vite": "^8.0.8",
+    "vitest": "^4.1.4",
     "vue-tsc": "^3.2.6"
   }
 }
