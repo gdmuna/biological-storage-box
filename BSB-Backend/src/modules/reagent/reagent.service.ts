@@ -1,4 +1,4 @@
-import { UpdateReagentDto } from './reagent.dto.js';
+import { UpdateReagentDto, CreateReagentDto } from './reagent.dto.js';
 import { ReagentRepository } from './reagent.repository.js';
 import { ReagentNotFoundException } from './reagent.exception.js';
 
@@ -26,5 +26,17 @@ export class ReagentService {
             ...(dto.name !== undefined && { name: dto.name }),
             ...(dto.description !== undefined && { description: dto.description }),
         });
+    }
+
+    async create(dto: CreateReagentDto) {
+        const created = await this.reagentRepository.create({
+            boxId: dto.boxId,
+            position: dto.position,
+            name: dto.name,
+            description: dto.description,
+            reagentTypeId: dto.reagentTypeId,
+        });
+        if (!created) throw new ReagentNotFoundException();
+        return created;
     }
 }

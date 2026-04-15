@@ -27,3 +27,20 @@ const UpdateReagentDtoSchema = z
     .meta({ description: '更新试剂请求体' });
 
 export class UpdateReagentDto extends createZodDto(UpdateReagentDtoSchema) {}
+
+const CreateReagentDtoSchema = z
+    .object({
+        boxId: z.string().min(1).meta({ title: 'Box ID' }),
+        position: z
+            .string()
+            .min(1)
+            .max(10)
+            .regex(/^\d+-\d+$/, '位置格式应为 row-col，例如 1-3')
+            .meta({ title: '位置', example: '1-3' }),
+        name: z.string().min(1).max(128).meta({ title: '试剂名称' }),
+        description: z.string().max(512).optional().meta({ title: '描述' }),
+        reagentTypeId: z.string().optional().meta({ title: '试剂类型 ID' }),
+    })
+    .meta({ description: '新增试剂请求体' });
+
+export class CreateReagentDto extends createZodDto(CreateReagentDtoSchema) {}

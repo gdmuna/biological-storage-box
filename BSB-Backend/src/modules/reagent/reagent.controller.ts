@@ -1,16 +1,26 @@
-import { UpdateReagentDto, ReagentIdDto, ReagentListDto } from './reagent.dto.js';
+import { UpdateReagentDto, ReagentIdDto, ReagentListDto, CreateReagentDto } from './reagent.dto.js';
 import { ReagentService } from './reagent.service.js';
 import REAGENT_EXCEPTION from './reagent.exception.js';
 
 import { ApiRoute } from '@/common/decorators/index.js';
 
-import { Controller, Get, Put, Body, Query } from '@nestjs/common';
+import { Controller, Get, Put, Post, Body, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('试剂模块')
 @Controller('reagent')
 export class ReagentController {
     constructor(private readonly reagentService: ReagentService) {}
+
+    @Post('add')
+    @ApiRoute({
+        auth: 'required',
+        summary: '在储存盒指定槽位新增试剂',
+        errors: [REAGENT_EXCEPTION.ReagentNotFoundException.code],
+    })
+    async create(@Body() body: CreateReagentDto) {
+        return this.reagentService.create(body);
+    }
 
     @Get('one')
     @ApiRoute({
