@@ -69,6 +69,15 @@ export class BoxController {
         return this.boxService.listGroupedByRoot(query.orgId);
     }
 
+    @Get('node/list')
+    @ApiRoute({
+        auth: 'required',
+        summary: '按 ROOM 节点分组获取储存盒列表',
+    })
+    async listGroupedByNode(@Query() query: BoxRootListDto) {
+        return this.boxService.listGroupedByNode(query.orgId);
+    }
+
     @Get('search')
     @ApiRoute({
         auth: 'required',

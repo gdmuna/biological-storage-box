@@ -67,6 +67,10 @@ export class BoxService {
         return this.boxRepository.listGroupedByRoot(orgId);
     }
 
+    async listGroupedByNode(orgId: string) {
+        return this.boxRepository.listGroupedByNode(orgId);
+    }
+
     async search(dto: BoxSearchDto) {
         return this.boxRepository.search(dto.orgId, dto.keyword, dto.limit);
     }

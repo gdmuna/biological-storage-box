@@ -77,6 +77,36 @@ export class BoxRepository {
         return result;
     }
 
+    async listGroupedByNode(orgId: string) {
+        const rooms = await this.db.node.findMany({
+            where: { orgId, type: 'ROOM' },
+            include: {
+                boxes: {
+                    include: { _count: { select: { reagents: true } } },
+                },
+            },
+            orderBy: { createdAt: 'asc' },
+        });
+
+        const unassigned = await this.db.box.findMany({
+            where: { orgId, nodeId: null },
+            include: { _count: { select: { reagents: true } } },
+        });
+
+        const result: Array<{ nodeId: string | null; nodeName: string | null; boxes: unknown[] }> =
+            rooms.map((room) => ({
+                nodeId: room.id,
+                nodeName: room.name,
+                boxes: room.boxes,
+            }));
+
+        if (unassigned.length > 0) {
+            result.push({ nodeId: null, nodeName: null, boxes: unassigned });
+        }
+
+        return result;
+    }
+
     async search(orgId: string, keyword: string, limit: number) {
         return this.db.box.findMany({
             where: {
