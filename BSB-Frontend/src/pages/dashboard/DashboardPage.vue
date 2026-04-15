@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useOrgStore } from '@/stores/org';
 import { listBoxes } from '@/api/modules/box';
 import { fadeSlideIn } from '@/utils/animation';
+import NodeCanvas from '@/components/node/NodeCanvas.vue';
 
 const org = useOrgStore();
 const boxCount = ref(0);
@@ -82,6 +83,14 @@ watch(
                     <div class="text-sm text-bsb-text-tertiary">选择储存盒查看</div>
                 </CardContent>
             </Card>
+        </div>
+
+        <!-- Node Canvas 缩略版 -->
+        <div v-if="org.currentOrgId" class="space-y-3">
+            <h2 class="text-sm font-[510] text-bsb-text-secondary">节点关系图</h2>
+            <div class="overflow-hidden rounded-xl border border-bsb-border-standard">
+                <NodeCanvas :org-id="org.currentOrgId" height="400px" :compact="true" />
+            </div>
         </div>
     </div>
 </template>
