@@ -34,9 +34,7 @@ describe('org API module', () => {
     describe('deleteOrg', () => {
         it('calls Delete /org/del with orgId in data body', () => {
             deleteOrg('org-1');
-            expect(alovaInstance.Delete).toHaveBeenCalledWith('/org/del', {
-                data: { orgId: 'org-1' },
-            });
+            expect(alovaInstance.Delete).toHaveBeenCalledWith('/org/del', { orgId: 'org-1' });
         });
     });
 

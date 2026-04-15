@@ -43,6 +43,6 @@ describe('root API module', () => {
 
     it('calls Delete /root/del', () => {
         deleteRoot('root-1');
-        expect(alovaInstance.Delete).toHaveBeenCalledWith('/root/del', { data: { id: 'root-1' } });
+        expect(alovaInstance.Delete).toHaveBeenCalledWith('/root/del', { id: 'root-1' });
     });
 });

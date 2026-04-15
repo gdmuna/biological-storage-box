@@ -43,8 +43,6 @@ describe('box-image API module', () => {
 
     it('calls Delete /box/image/del', () => {
         deleteBoxImage('img-1');
-        expect(alovaInstance.Delete).toHaveBeenCalledWith('/box/image/del', {
-            data: { id: 'img-1' },
-        });
+        expect(alovaInstance.Delete).toHaveBeenCalledWith('/box/image/del', { id: 'img-1' });
     });
 });

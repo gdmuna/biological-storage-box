@@ -51,9 +51,7 @@ describe('box API module', () => {
     describe('deleteBox', () => {
         it('calls Delete /box/del with box id in data body', () => {
             deleteBox('box-42');
-            expect(alovaInstance.Delete).toHaveBeenCalledWith('/box/del', {
-                data: { id: 'box-42' },
-            });
+            expect(alovaInstance.Delete).toHaveBeenCalledWith('/box/del', { id: 'box-42' });
         });
     });
 
@@ -151,9 +149,7 @@ describe('box API module', () => {
     describe('deleteBoxAlias', () => {
         it('calls Delete /box/alias/del with alias id in data body', () => {
             deleteBoxAlias('alias-99');
-            expect(alovaInstance.Delete).toHaveBeenCalledWith('/box/alias/del', {
-                data: { id: 'alias-99' },
-            });
+            expect(alovaInstance.Delete).toHaveBeenCalledWith('/box/alias/del', { id: 'alias-99' });
         });
     });
 

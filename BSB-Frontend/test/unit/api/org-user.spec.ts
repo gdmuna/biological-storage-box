@@ -64,7 +64,8 @@ describe('org-user API module', () => {
         it('calls Delete /org/user/del with body data', () => {
             removeMember({ orgId: 'org-1', userId: 'user-3' });
             expect(alovaInstance.Delete).toHaveBeenCalledWith('/org/user/del', {
-                data: { orgId: 'org-1', userId: 'user-3' },
+                orgId: 'org-1',
+                userId: 'user-3',
             });
         });
     });
@@ -124,9 +125,7 @@ describe('org-user API module', () => {
     describe('quitOrg', () => {
         it('calls Delete /org/user/quit with orgId in body', () => {
             quitOrg('org-1');
-            expect(alovaInstance.Delete).toHaveBeenCalledWith('/org/user/quit', {
-                data: { orgId: 'org-1' },
-            });
+            expect(alovaInstance.Delete).toHaveBeenCalledWith('/org/user/quit', { orgId: 'org-1' });
         });
     });
 
