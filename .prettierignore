@@ -1,3 +1,5 @@
 *.md
 pnpm-lock.yaml
 biological-storage-box-service/website/
+BSB-Frontend/test-results/
+BSB-Frontend/test/.auth/
