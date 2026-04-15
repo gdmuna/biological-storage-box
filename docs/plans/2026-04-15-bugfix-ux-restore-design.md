@@ -1,7 +1,7 @@
 # Bug Fix & UX Restore — Design Document
 
-**Date:** 2026-04-15  
-**Scope:** BSB-Frontend only  
+**Date:** 2026-04-15
+**Scope:** BSB-Frontend only
 **Trigger:** Browser testing revealed 7 frontend regressions introduced during the Phase 3–5 implementation sprint.
 
 ---
@@ -40,7 +40,7 @@ Multiple unauthorized changes were made during prior implementation tasks that h
 
 **File:** `BSB-Frontend/src/pages/box/BoxDetailPage.vue`
 
-**Root cause:** `<SelectItem value="">无</SelectItem>` — shadcn-vue/Radix Select treats `""` as the "cleared" sentinel and throws:  
+**Root cause:** `<SelectItem value="">无</SelectItem>` — shadcn-vue/Radix Select treats `""` as the "cleared" sentinel and throws:
 `Error: A <SelectItem /> must have a value prop that is not an empty string.`
 
 **Fix:**
@@ -134,7 +134,7 @@ The header previously showed an org dropdown for switching organizations. It was
 
 **File:** `BSB-Frontend/src/pages/dashboard/DashboardPage.vue`
 
-**Current:** `欢迎回来，{{ org.currentOrg?.name ?? '未选择组织' }}`  
+**Current:** `欢迎回来，{{ org.currentOrg?.name ?? '未选择组织' }}`
 **Correct:** `欢迎回来，{{ auth.user?.nickname ?? auth.user?.username ?? '用户' }}`
 
 **Fix:** Import `useAuthStore`, instantiate it, replace the template expression.

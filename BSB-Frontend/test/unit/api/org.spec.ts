@@ -50,7 +50,7 @@ describe('org API module', () => {
     describe('listOrgs', () => {
         it('calls Get /org/list with no parameters', () => {
             listOrgs();
-            expect(alovaInstance.Get).toHaveBeenCalledWith('/org/list');
+            expect(alovaInstance.Get).toHaveBeenCalledWith('/org/list', { cacheFor: 0 });
         });
     });
 

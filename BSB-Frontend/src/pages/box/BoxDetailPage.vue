@@ -38,7 +38,7 @@ const deleteDialogOpen = ref(false);
 const drawerOpen = ref(false);
 const drawerCell = ref<{ row: number; col: number; reagent: Reagent | null } | null>(null);
 const slotName = ref('');
-const slotTypeId = ref('');
+const slotTypeId = ref('__none__');
 const slotDesc = ref('');
 const slotSaving = ref(false);
 const reagentTypes = ref<ReagentTypeItem[]>([]);
@@ -115,7 +115,7 @@ function openSlotDrawer(rowIdx: number, colIdx: number) {
     const reagent = grid.value[rowIdx]?.[colIdx] ?? null;
     drawerCell.value = { row: rowIdx + 1, col: colIdx + 1, reagent };
     slotName.value = reagent?.name ?? '';
-    slotTypeId.value = reagent?.reagentTypeId ?? '';
+    slotTypeId.value = reagent?.reagentTypeId ?? '__none__';
     slotDesc.value = reagent?.description ?? '';
     drawerOpen.value = true;
 }
@@ -149,7 +149,7 @@ async function handleCreateSlot() {
             position: `${drawerCell.value.row}-${drawerCell.value.col}`,
             name: slotName.value.trim(),
             description: slotDesc.value.trim() || undefined,
-            reagentTypeId: slotTypeId.value || undefined
+            reagentTypeId: slotTypeId.value !== '__none__' ? slotTypeId.value : undefined
         }).send();
         reagents.value = await listReagents(boxId.value).send();
         drawerOpen.value = false;
@@ -328,7 +328,7 @@ async function handleSubmitFeedback() {
                                 <SelectValue placeholder="选择试剂类型（可选）" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">无</SelectItem>
+                                <SelectItem value="__none__">无</SelectItem>
                                 <SelectItem v-for="rt in reagentTypes" :key="rt.id" :value="rt.id">
                                     <div class="flex items-center gap-2">
                                         <span v-if="rt.colorHex" class="inline-block size-3 rounded-full" :style="{ background: rt.colorHex }" />

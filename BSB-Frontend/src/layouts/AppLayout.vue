@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, watch } from 'vue';
 import { RouterView, useRoute, useRouter } from 'vue-router';
-import { LayoutDashboard, Box, Building2, User, FlaskConical, LogOut, PanelLeftClose, PanelLeft, MapPin } from 'lucide-vue-next';
+import { LayoutDashboard, Box, Building2, User, FlaskConical, LogOut, PanelLeftClose, PanelLeft, MapPin, Home, Check, ChevronDown } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -21,6 +21,7 @@ const ui = useUiStore();
 const navItems = [
     { path: '/dashboard', label: '仪表盘', icon: LayoutDashboard },
     { path: '/box', label: '储存盒', icon: Box },
+    { path: '/room', label: '房间', icon: Home },
     { path: '/node', label: '节点管理', icon: MapPin },
     { path: '/reagent', label: '试剂', icon: FlaskConical },
     { path: '/org', label: '组织', icon: Building2 },
@@ -57,7 +58,7 @@ async function handleLogout() {
             <!-- Logo -->
             <div class="flex h-12 items-center gap-2.5 px-4">
                 <img src="/icons/logo.svg" class="size-5 shrink-0" alt="BSB" />
-                <span v-if="!ui.sidebarCollapsed" class="truncate font-display text-[15px] font-bold tracking-tight text-bsb-text-primary">BSB</span>
+                <span v-if="!ui.sidebarCollapsed" class="truncate font-display text-[15px] font-bold tracking-tight text-bsb-text-primary">Biological-Storage-Box</span>
             </div>
 
             <Separator class="bg-bsb-border-standard" />
@@ -95,12 +96,23 @@ async function handleLogout() {
         <div class="flex flex-1 flex-col overflow-hidden">
             <!-- Top bar — pure white with whisper border -->
             <header class="flex h-12 shrink-0 items-center justify-between border-b border-bsb-border-standard bg-white px-5">
-                <!-- Current org breadcrumb -->
-                <div class="flex items-center gap-2">
-                    <span class="text-sm font-medium text-bsb-text-secondary">
-                        {{ org.currentOrg?.name ?? '未选择组织' }}
-                    </span>
-                </div>
+                <!-- Current org selector -->
+                <DropdownMenu>
+                    <DropdownMenuTrigger as-child>
+                        <Button variant="ghost" size="sm" class="gap-1.5 rounded-md px-2 hover:bg-bsb-bg-surface">
+                            <span class="text-sm font-medium text-bsb-text-secondary">
+                                {{ org.currentOrg?.name ?? '未选择组织' }}
+                            </span>
+                            <ChevronDown class="size-3.5 text-bsb-text-quaternary" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" class="w-48">
+                        <DropdownMenuItem v-for="o in org.orgs" :key="o.id" class="flex items-center justify-between" @click="org.selectOrg(o.id)">
+                            <span>{{ o.name }}</span>
+                            <Check v-if="o.id === org.currentOrgId" class="size-3.5 text-bsb-accent-brand" />
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
 
                 <DropdownMenu>
                     <DropdownMenuTrigger as-child>

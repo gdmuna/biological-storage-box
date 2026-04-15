@@ -20,6 +20,10 @@ vi.mock('@/stores/org', () => ({
     useOrgStore: () => orgStore,
 }));
 
+vi.mock('@/stores/auth', () => ({
+    useAuthStore: () => ({ user: { nickname: 'Test', username: 'test' } }),
+}));
+
 vi.mock('@/utils/animation', () => ({
     fadeSlideIn: vi.fn(),
 }));

@@ -154,7 +154,7 @@ watch(() => props.orgId, fetchTree);
 </script>
 
 <template>
-    <div class="flex flex-col" :style="{ minHeight: height }">
+    <div class="flex flex-col overflow-hidden" :style="{ height: height }">
         <!-- Toolbar -->
         <div class="flex flex-wrap items-center gap-2 border-b border-bsb-border-standard bg-white px-4 py-2 overflow-x-auto">
             <!-- Legend -->
@@ -202,7 +202,7 @@ watch(() => props.orgId, fetchTree);
         </div>
 
         <!-- Canvas -->
-        <div class="flex-1 bg-bsb-bg-secondary">
+        <div class="relative flex-1 bg-bsb-bg-secondary">
             <p v-if="loading" class="p-4 text-sm text-bsb-text-secondary">加载中…</p>
             <VueFlow v-else :nodes="vfNodes" :edges="vfEdges" :default-viewport="{ zoom: 0.85, x: 40, y: 40 }" :min-zoom="0.2" :max-zoom="2" fit-view-on-init @node-click="onNodeClick">
                 <Background pattern-color="#e5e7eb" :gap="20" />

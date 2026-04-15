@@ -7,7 +7,7 @@ export const deleteOrg = (orgId: string) => alovaInstance.Delete<void>('/org/del
 
 export const getOrg = (orgId: string) => alovaInstance.Get<Org>('/org/one', { params: { orgId } });
 
-export const listOrgs = () => alovaInstance.Get<Org[]>('/org/list');
+export const listOrgs = () => alovaInstance.Get<Org[]>('/org/list', { cacheFor: 0 });
 
 export const searchOrgs = (params: { keyword: string; limit?: number }) =>
     alovaInstance.Get<Org[]>('/org/search', { params });

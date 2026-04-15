@@ -3,11 +3,13 @@ import { onMounted, ref, watch } from 'vue';
 import { Box, Building2, FlaskConical } from 'lucide-vue-next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useOrgStore } from '@/stores/org';
+import { useAuthStore } from '@/stores/auth';
 import { listBoxes } from '@/api/modules/box';
 import { fadeSlideIn } from '@/utils/animation';
 import NodeCanvas from '@/components/node/NodeCanvas.vue';
 
 const org = useOrgStore();
+const auth = useAuthStore();
 const boxCount = ref(0);
 
 async function refreshBoxCount(orgId: string | null) {
@@ -40,7 +42,7 @@ watch(
     <div class="space-y-6">
         <!-- Welcome header -->
         <div>
-            <h1 class="font-display text-2xl font-bold tracking-tight text-bsb-text-primary">欢迎回来，{{ org.currentOrg?.name ?? '未选择组织' }}</h1>
+            <h1 class="font-display text-2xl font-bold tracking-tight text-bsb-text-primary">欢迎回来，{{ auth.user?.nickname ?? auth.user?.username ?? '用户' }}</h1>
             <p class="mt-1 text-sm text-bsb-text-tertiary">以下是您当前组织的概况。</p>
         </div>
 
