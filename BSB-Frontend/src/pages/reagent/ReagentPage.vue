@@ -2,14 +2,17 @@
 import { onMounted, ref, watch } from 'vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useOrgStore } from '@/stores/org';
 import { listReagents, listBoxes } from '@/api/modules/box';
+import { listReagentLogs } from '@/api/modules/feedback';
 import { staggerListIn } from '@/utils/animation';
 import type { Reagent, Box } from '@/schemas/box.schema';
 
 const org = useOrgStore();
 const reagents = ref<Reagent[]>([]);
 const boxes = ref<Box[]>([]);
+const reagentLogs = ref<Record<string, Array<{ id: string; action?: string; createdAt?: string }>>>({});
 
 async function fetchData() {
     if (!org.currentOrgId) return;
@@ -31,6 +34,15 @@ async function fetchData() {
 
 function getBoxName(boxId: string) {
     return boxes.value.find((b) => b.id === boxId)?.name ?? boxId;
+}
+
+async function handleLoadLogs(reagentId: string) {
+    try {
+        const logs = await listReagentLogs({ reagentId, limit: 20, offset: 0 }).send();
+        reagentLogs.value[reagentId] = logs;
+    } catch {
+        reagentLogs.value[reagentId] = [];
+    }
 }
 
 onMounted(fetchData);
@@ -56,6 +68,12 @@ watch(() => org.currentOrgId, fetchData);
                 </CardHeader>
                 <CardContent v-if="reagent.description" class="pt-0">
                     <p class="text-xs text-bsb-text-quaternary">{{ reagent.description }}</p>
+                </CardContent>
+                <CardContent class="pt-0">
+                    <Button size="sm" variant="outline" @click="handleLoadLogs(reagent.id)">查看日志</Button>
+                    <div v-if="reagentLogs[reagent.id]?.length" class="mt-2 space-y-1">
+                        <p v-for="log in reagentLogs[reagent.id]" :key="log.id" class="text-xs text-bsb-text-quaternary">{{ log.action || '操作' }} {{ log.createdAt }}</p>
+                    </div>
                 </CardContent>
             </Card>
         </div>

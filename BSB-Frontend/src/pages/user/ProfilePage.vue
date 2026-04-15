@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { useAuthStore } from '@/stores/auth';
 import { updateUserInfo, updatePassword } from '@/api/modules/user';
+import EmailSecurityPanel from '@/components/user/EmailSecurityPanel.vue';
 
 const auth = useAuthStore();
+
+type Tab = 'info' | 'password';
+const activeTab = ref<Tab>('info');
 
 const nickname = ref(auth.user?.nickname ?? '');
 const realname = ref(auth.user?.realname ?? '');
@@ -60,14 +63,17 @@ async function handleUpdatePassword() {
 
 <template>
     <div class="max-w-lg space-y-6">
-        <h1 class="text-2xl font-[590] text-bsb-text-primary">个人设置</h1>
+        <h1 class="font-display text-2xl font-bold tracking-tight text-bsb-text-primary">个人设置</h1>
 
-        <!-- Profile info -->
-        <Card class="border-bsb-border-standard bg-bsb-bg-panel">
-            <CardHeader>
-                <CardTitle class="text-sm text-bsb-text-primary">基本信息</CardTitle>
-            </CardHeader>
-            <CardContent>
+        <!-- Tab bar -->
+        <div class="flex gap-1 rounded-lg bg-bsb-bg-surface p-1">
+            <button class="flex-1 rounded-md py-1.5 text-sm font-medium transition-all" :class="activeTab === 'info' ? 'bg-white text-bsb-text-primary shadow-[0_1px_3px_rgba(0,0,0,0.08)] ring-1 ring-[rgba(0,0,0,0.06)]' : 'text-bsb-text-tertiary hover:text-bsb-text-secondary'" @click="activeTab = 'info'">基本信息</button>
+            <button class="flex-1 rounded-md py-1.5 text-sm font-medium transition-all" :class="activeTab === 'password' ? 'bg-white text-bsb-text-primary shadow-[0_1px_3px_rgba(0,0,0,0.08)] ring-1 ring-[rgba(0,0,0,0.06)]' : 'text-bsb-text-tertiary hover:text-bsb-text-secondary'" @click="activeTab = 'password'">修改密码</button>
+        </div>
+
+        <!-- Profile info tab -->
+        <Card v-if="activeTab === 'info'" class="rounded-xl border-bsb-border-standard bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+            <CardContent class="pt-6">
                 <form class="space-y-4" @submit.prevent="handleUpdateInfo">
                     <div class="space-y-2">
                         <Label class="text-bsb-text-secondary">用户名</Label>
@@ -85,7 +91,7 @@ async function handleUpdatePassword() {
                         <Label class="text-bsb-text-secondary">真实姓名</Label>
                         <Input v-model="realname" placeholder="输入真实姓名" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary" />
                     </div>
-                    <p v-if="infoError" class="text-sm text-red-400">{{ infoError }}</p>
+                    <p v-if="infoError" class="text-sm text-red-500">{{ infoError }}</p>
                     <Button type="submit" class="bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" :disabled="infoLoading">
                         {{ infoLoading ? '保存中…' : '保存' }}
                     </Button>
@@ -93,14 +99,9 @@ async function handleUpdatePassword() {
             </CardContent>
         </Card>
 
-        <Separator class="bg-bsb-border-standard" />
-
-        <!-- Change password -->
-        <Card class="border-bsb-border-standard bg-bsb-bg-panel">
-            <CardHeader>
-                <CardTitle class="text-sm text-bsb-text-primary">修改密码</CardTitle>
-            </CardHeader>
-            <CardContent>
+        <!-- Change password tab -->
+        <Card v-if="activeTab === 'password'" class="rounded-xl border-bsb-border-standard bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+            <CardContent class="pt-6">
                 <form class="space-y-4" @submit.prevent="handleUpdatePassword">
                     <div class="space-y-2">
                         <Label class="text-bsb-text-secondary">当前密码</Label>
@@ -110,11 +111,17 @@ async function handleUpdatePassword() {
                         <Label class="text-bsb-text-secondary">新密码</Label>
                         <Input v-model="newPassword" type="password" placeholder="输入新密码（至少8位）" autocomplete="new-password" class="border-bsb-border-standard bg-bsb-bg-surface text-bsb-text-primary" />
                     </div>
-                    <p v-if="pwError" class="text-sm text-red-400">{{ pwError }}</p>
+                    <p v-if="pwError" class="text-sm text-red-500">{{ pwError }}</p>
                     <Button type="submit" class="bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" :disabled="pwLoading">
                         {{ pwLoading ? '修改中…' : '修改密码' }}
                     </Button>
                 </form>
+            </CardContent>
+        </Card>
+
+        <Card class="rounded-xl border-bsb-border-standard bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+            <CardContent class="pt-6">
+                <EmailSecurityPanel />
             </CardContent>
         </Card>
     </div>

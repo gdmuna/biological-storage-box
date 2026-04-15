@@ -8,6 +8,11 @@ const routes = [
         meta: { public: true },
     },
     {
+        path: '/login/email',
+        component: () => import('@/pages/auth/EmailLoginPage.vue'),
+        meta: { public: true },
+    },
+    {
         path: '/register',
         component: () => import('@/pages/auth/RegisterPage.vue'),
         meta: { public: true },
@@ -26,12 +31,20 @@ const routes = [
                 component: () => import('@/pages/box/BoxListPage.vue'),
             },
             {
+                path: 'box/new',
+                component: () => import('@/pages/box/BoxCreatePage.vue'),
+            },
+            {
                 path: 'box/:id',
                 component: () => import('@/pages/box/BoxDetailPage.vue'),
             },
             {
                 path: 'org',
                 component: () => import('@/pages/org/OrgManagePage.vue'),
+            },
+            {
+                path: 'node',
+                component: () => import('@/pages/node/NodePage.vue'),
             },
             {
                 path: 'user',

@@ -25,3 +25,24 @@ export const RegisterFormSchema = z.object({
 });
 
 export type RegisterForm = z.infer<typeof RegisterFormSchema>;
+
+export const EmailCodeFormSchema = z.object({
+    email: z.string().email(),
+});
+
+export type EmailCodeForm = z.infer<typeof EmailCodeFormSchema>;
+
+export const EmailLoginFormSchema = z.object({
+    email: z.string().email(),
+    code: z.string().min(4).max(8),
+});
+
+export type EmailLoginForm = z.infer<typeof EmailLoginFormSchema>;
+
+export const EmailUpdatePasswordFormSchema = z.object({
+    email: z.string().email(),
+    code: z.string().min(4).max(8),
+    newPassword: z.string().min(8),
+});
+
+export type EmailUpdatePasswordForm = z.infer<typeof EmailUpdatePasswordFormSchema>;

@@ -1,9 +1,10 @@
 import { alovaInstance } from '../client';
-import type { Box, Reagent } from '@/schemas/box.schema';
+import type { Box, BoxAlias, Reagent } from '@/schemas/box.schema';
 
 export const createBox = (data: {
     orgId: string;
     rootId?: string;
+    nodeId?: string;
     name: string;
     description?: string;
     rows?: number;
@@ -46,3 +47,16 @@ export const updateReagent = (data: {
     name?: string;
     description?: string;
 }) => alovaInstance.Put<Reagent>('/reagent/update', data);
+
+// Box Aliases
+export const createBoxAlias = (data: { boxId: string; alias: string }) =>
+    alovaInstance.Post<BoxAlias>('/box/alias/add', data);
+
+export const deleteBoxAlias = (id: string) =>
+    alovaInstance.Delete<void>('/box/alias/del', { data: { id } });
+
+export const listBoxAliases = (boxId: string) =>
+    alovaInstance.Get<BoxAlias[]>('/box/alias/list', { params: { boxId } });
+
+export const updateBoxAlias = (data: { id: string; alias: string }) =>
+    alovaInstance.Put<BoxAlias>('/box/alias/update', data);
