@@ -47,12 +47,59 @@ export class OrgRepository {
         });
     }
 
-    async update(id: string, data: { name?: string; description?: string }) {
-        return this.db.organization.update({ where: { id }, data });
+    async update(
+        id: string,
+        data: {
+            name?: string;
+            description?: string;
+            isPublic?: boolean;
+            avatarUrl?: string;
+            settings?: Record<string, unknown>;
+        }
+    ) {
+        return this.db.organization.update({ where: { id }, data: data as any });
     }
 
     async delete(id: string) {
         return this.db.organization.delete({ where: { id } });
+    }
+
+    async explorePublic(keyword?: string, limit = 20, offset = 0) {
+        return this.db.organization.findMany({
+            where: {
+                isPublic: true,
+                ...(keyword && { name: { contains: keyword, mode: 'insensitive' as const } }),
+            },
+            take: limit,
+            skip: offset,
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                avatarUrl: true,
+                _count: { select: { members: { where: { status: 'ACTIVE' } } } },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+
+    async searchMembersInOrg(orgId: string, keyword: string) {
+        return this.db.organizationUser.findMany({
+            where: {
+                orgId,
+                status: 'ACTIVE',
+                user: {
+                    OR: [
+                        { username: { contains: keyword, mode: 'insensitive' as const } },
+                        { email: { contains: keyword, mode: 'insensitive' as const } },
+                    ],
+                },
+            },
+            include: {
+                user: { select: { id: true, username: true, nickname: true, email: true } },
+            },
+            take: 20,
+        });
     }
 
     // ── OrganizationUser queries ──────────────────────────

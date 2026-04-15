@@ -4,6 +4,7 @@ import {
     OrgNotFoundException,
     OrgNotOwnerException,
     OrgNotAdminException,
+    OrgNotMemberException,
 } from './org.exception.js';
 
 import { Injectable } from '@nestjs/common';
@@ -51,6 +52,21 @@ export class OrgService {
         return this.orgRepository.update(dto.orgId, {
             ...(dto.name !== undefined && { name: dto.name }),
             ...(dto.description !== undefined && { description: dto.description }),
+            ...(dto.isPublic !== undefined && { isPublic: dto.isPublic }),
+            ...(dto.avatarUrl !== undefined && { avatarUrl: dto.avatarUrl }),
+            ...(dto.settings !== undefined && { settings: dto.settings }),
         });
+    }
+
+    async explore(keyword?: string, limit = 20, offset = 0) {
+        return this.orgRepository.explorePublic(keyword, limit, offset);
+    }
+
+    async searchMembers(userId: string, orgId: string, keyword: string) {
+        const membership = await this.orgRepository.findMembership(orgId, userId);
+        if (!membership || membership.status !== 'ACTIVE') {
+            throw new OrgNotMemberException();
+        }
+        return this.orgRepository.searchMembersInOrg(orgId, keyword);
     }
 }

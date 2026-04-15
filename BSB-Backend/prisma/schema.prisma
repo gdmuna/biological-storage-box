@@ -21,6 +21,7 @@ model User {
   ownedOrgs      Organization[]     @relation("OrgOwner")
   orgMemberships OrganizationUser[]
   boxLogs        BoxLog[]
+  nodeLogs       NodeLog[]
   feedbacks      Feedback[]
 
   @@index(createdAt)
@@ -31,14 +32,20 @@ model Organization {
   name        String
   description String?
   ownerId     String
+  isPublic    Boolean  @default(false)
+  avatarUrl   String?
+  settings    Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  owner   User               @relation("OrgOwner", fields: [ownerId], references: [id])
-  members OrganizationUser[]
-  roots   Root[]
-  nodes   Node[]
-  boxes   Box[]
+  owner          User               @relation("OrgOwner", fields: [ownerId], references: [id])
+  members        OrganizationUser[]
+  roots          Root[]
+  nodes          Node[]
+  boxes          Box[]
+  ownedShares    ResourceShare[]    @relation("OwnedShares")
+  receivedShares ResourceShare[]    @relation("ReceivedShares")
+  reagentTypes   ReagentType[]
 
   @@index([ownerId])
 }
@@ -71,19 +78,32 @@ enum OrgUserStatus {
   REJECTED
 }
 
+enum NodeType {
+  ROOM
+  BOX
+  CONTAINER
+}
+
 model Node {
   id          String    @id @default(ulid())
   orgId       String
   parentId    String?
   name        String
   description String?
+  type        NodeType  @default(CONTAINER)
+  metadata    Json?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  parent   Node?        @relation("NodeTree", fields: [parentId], references: [id], onDelete: SetNull)
-  children Node[]       @relation("NodeTree")
-  boxes    Box[]        @relation("BoxNode")
+  org         Organization    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  parent      Node?           @relation("NodeTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Node[]          @relation("NodeTree")
+  boxes       Box[]           @relation("BoxNode")
+  gridConfig  NodeGridConfig?
+  reagentsNew Reagent[]       @relation("ReagentNode")
+  aliases     NodeAlias[]
+  images      NodeImage[]
+  logs        NodeLog[]
 
   @@index([orgId])
   @@index([parentId])
@@ -169,20 +189,31 @@ model BoxLog {
 }
 
 model Reagent {
-  id          String   @id @default(ulid())
-  boxId       String
-  orgId       String
-  position    String
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                String    @id @default(ulid())
+  boxId             String
+  nodeId            String?
+  orgId             String
+  position          String
+  name              String
+  description       String?
+  reagentTypeId     String?
+  placedAt          DateTime?
+  lastTakenAt       DateTime?
+  environment       Json?
+  responsibleUserId String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
-  box  Box      @relation(fields: [boxId], references: [id], onDelete: Cascade)
-  logs BoxLog[]
+  box         Box          @relation(fields: [boxId], references: [id], onDelete: Cascade)
+  node        Node?        @relation("ReagentNode", fields: [nodeId], references: [id], onDelete: SetNull)
+  reagentType ReagentType? @relation("ReagentToType", fields: [reagentTypeId], references: [id], onDelete: SetNull)
+  logs        BoxLog[]
+  nodeLogs    NodeLog[]    @relation("NodeLogReagent")
 
   @@index([boxId])
+  @@index([nodeId])
   @@index([orgId])
+  @@index([reagentTypeId])
 }
 
 model Feedback {
@@ -194,6 +225,105 @@ model Feedback {
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId])
+}
+
+model NodeGridConfig {
+  id     String @id @default(ulid())
+  nodeId String @unique
+  rows   Int
+  cols   Int
+
+  node Node @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+}
+
+model NodeAlias {
+  id        String   @id @default(ulid())
+  nodeId    String
+  alias     String
+  createdAt DateTime @default(now())
+
+  node Node @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@index([nodeId])
+}
+
+model NodeImage {
+  id        String   @id @default(ulid())
+  nodeId    String
+  imageUrl  String
+  createdAt DateTime @default(now())
+
+  node Node @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@index([nodeId])
+}
+
+model NodeLog {
+  id            String   @id @default(ulid())
+  nodeId        String
+  userId        String
+  reagentId     String?
+  operationType String
+  detail        String?
+  createdAt     DateTime @default(now())
+
+  node    Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id])
+  reagent Reagent? @relation("NodeLogReagent", fields: [reagentId], references: [id], onDelete: SetNull)
+
+  @@index([nodeId])
+  @@index([userId])
+  @@index([reagentId])
+}
+
+enum ShareResourceType {
+  NODE
+}
+
+enum SharePermission {
+  READ
+  WRITE
+}
+
+enum ShareStatus {
+  PENDING
+  ACTIVE
+  REVOKED
+}
+
+model ResourceShare {
+  id           String            @id @default(ulid())
+  resourceType ShareResourceType
+  resourceId   String
+  ownerOrgId   String
+  granteeOrgId String
+  permission   SharePermission   @default(READ)
+  status       ShareStatus       @default(PENDING)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  ownerOrg   Organization @relation("OwnedShares", fields: [ownerOrgId], references: [id])
+  granteeOrg Organization @relation("ReceivedShares", fields: [granteeOrgId], references: [id])
+
+  @@index([ownerOrgId])
+  @@index([granteeOrgId])
+  @@index([resourceId])
+}
+
+model ReagentType {
+  id          String   @id @default(ulid())
+  orgId       String
+  name        String
+  description String?
+  colorHex    String?
+  unit        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  reagents Reagent[]    @relation("ReagentToType")
+
+  @@index([orgId])
 }
 
 model EmailVerification {

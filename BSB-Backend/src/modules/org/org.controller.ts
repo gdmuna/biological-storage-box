@@ -1,4 +1,11 @@
-import { CreateOrgDto, UpdateOrgDto, OrgIdDto, SearchOrgDto } from './org.dto.js';
+import {
+    CreateOrgDto,
+    UpdateOrgDto,
+    OrgIdDto,
+    SearchOrgDto,
+    ExploreOrgDto,
+    MemberSearchDto,
+} from './org.dto.js';
 import { OrgService } from './org.service.js';
 import ORG_EXCEPTION from './org.exception.js';
 
@@ -68,5 +75,24 @@ export class OrgController {
     })
     async update(@CurrentUser() user: AccessTokenClaim, @Body() body: UpdateOrgDto) {
         return this.orgService.update(user.sub, body);
+    }
+
+    @Get('explore')
+    @ApiRoute({
+        auth: 'required',
+        summary: '探索公开组织列表（支持分页与关键词搜索）',
+    })
+    async explore(@Query() query: ExploreOrgDto) {
+        return this.orgService.explore(query.keyword, query.limit, query.offset);
+    }
+
+    @Get('members/search')
+    @ApiRoute({
+        auth: 'required',
+        summary: '在组织内按 username/email 搜索成员',
+        errors: [ORG_EXCEPTION.OrgNotMemberException.code],
+    })
+    async searchMembers(@CurrentUser() user: AccessTokenClaim, @Query() query: MemberSearchDto) {
+        return this.orgService.searchMembers(user.sub, query.orgId, query.keyword);
     }
 }

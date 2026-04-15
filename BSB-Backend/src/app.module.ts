@@ -22,6 +22,8 @@ import {
     BoxModule,
     NodeModule,
     ReagentModule,
+    ReagentTypeModule,
+    ShareModule,
     FeedbackModule,
 } from '@/modules/index.js';
 
@@ -106,6 +108,8 @@ import pino from 'pino';
         BoxModule,
         NodeModule,
         ReagentModule,
+        ReagentTypeModule,
+        ShareModule,
         FeedbackModule,
     ],
     controllers: [AppController, TestController],

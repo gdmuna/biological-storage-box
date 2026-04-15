@@ -17,6 +17,9 @@ const UpdateOrgDtoSchema = z
         orgId: z.string().min(1).meta({ title: '组织 ID' }),
         name: z.string().min(1).max(128).optional().meta({ title: '组织名称' }),
         description: z.string().max(512).optional().meta({ title: '描述' }),
+        isPublic: z.boolean().optional().meta({ title: '是否公开可见' }),
+        avatarUrl: z.string().url().optional().meta({ title: '组织头像 URL' }),
+        settings: z.record(z.string(), z.unknown()).optional().meta({ title: '组织设置（JSON）' }),
     })
     .meta({ description: '更新组织请求体' });
 
@@ -67,3 +70,22 @@ const OrgUserListDtoSchema = z
     .meta({ description: '组织成员列表查询参数' });
 
 export class OrgUserListDto extends createZodDto(OrgUserListDtoSchema) {}
+
+const ExploreOrgDtoSchema = z
+    .object({
+        keyword: z.string().max(64).optional().meta({ title: '搜索关键词（可选）' }),
+        limit: z.coerce.number().int().min(1).max(50).default(20).meta({ title: '每页数量' }),
+        offset: z.coerce.number().int().min(0).default(0).meta({ title: '偏移量' }),
+    })
+    .meta({ description: '探索公开组织查询参数' });
+
+export class ExploreOrgDto extends createZodDto(ExploreOrgDtoSchema) {}
+
+const MemberSearchDtoSchema = z
+    .object({
+        orgId: z.string().min(1).meta({ title: '组织 ID' }),
+        keyword: z.string().min(1).max(64).meta({ title: '搜索关键词（username 或 email）' }),
+    })
+    .meta({ description: '在组织内搜索成员' });
+
+export class MemberSearchDto extends createZodDto(MemberSearchDtoSchema) {}

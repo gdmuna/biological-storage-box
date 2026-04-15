@@ -6,5 +6,7 @@ export * from './file/file.module.js';
 export * from './node/node.module.js';
 export * from './org/org.module.js';
 export * from './reagent/reagent.module.js';
+export * from './reagent-type/reagent-type.module.js';
 export * from './root/root.module.js';
+export * from './share/share.module.js';
 export * from './user/user.module.js';

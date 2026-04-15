@@ -1,4 +1,13 @@
-import { CreateNodeDto, UpdateNodeDto, NodeIdDto, NodeListDto, NodeTreeDto } from './node.dto.js';
+import {
+    CreateNodeDto,
+    UpdateNodeDto,
+    NodeIdDto,
+    NodeListDto,
+    NodeTreeDto,
+    SetGridConfigDto,
+    RemoveGridConfigDto,
+    NodeFilterDto,
+} from './node.dto.js';
 import { NodeService } from './node.service.js';
 import NODE_EXCEPTION from './node.exception.js';
 import ORG_EXCEPTION from '@/modules/org/org.exception.js';
@@ -77,5 +86,48 @@ export class NodeController {
     })
     async update(@CurrentUser() user: AccessTokenClaim, @Body() body: UpdateNodeDto) {
         return this.nodeService.update(user.sub, body);
+    }
+
+    @Post('grid/set')
+    @ApiRoute({
+        auth: 'required',
+        summary: '设置节点网格配置（使节点可承载试剂槽位）',
+        errors: [
+            NODE_EXCEPTION.NodeNotFoundException.code,
+            ORG_EXCEPTION.OrgNotAdminException.code,
+        ],
+    })
+    async setGridConfig(@CurrentUser() user: AccessTokenClaim, @Body() body: SetGridConfigDto) {
+        return this.nodeService.setGridConfig(user.sub, body);
+    }
+
+    @Delete('grid/remove')
+    @ApiRoute({
+        auth: 'required',
+        summary: '移除节点网格配置',
+        errors: [
+            NODE_EXCEPTION.NodeNotFoundException.code,
+            ORG_EXCEPTION.OrgNotAdminException.code,
+        ],
+    })
+    async removeGridConfig(
+        @CurrentUser() user: AccessTokenClaim,
+        @Body() body: RemoveGridConfigDto
+    ) {
+        await this.nodeService.removeGridConfig(user.sub, body);
+    }
+
+    @Get('filter')
+    @ApiRoute({
+        auth: 'required',
+        summary: '按类型/组织/gridConfig 过滤节点列表（供前端过滤器使用）',
+    })
+    async filter(@Query() query: NodeFilterDto) {
+        return this.nodeService.filter({
+            orgId: query.orgId,
+            type: query.type,
+            hasGrid: query.hasGrid,
+            parentId: query.parentId,
+        });
     }
 }

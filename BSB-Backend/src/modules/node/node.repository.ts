@@ -6,8 +6,15 @@ import { Injectable } from '@nestjs/common';
 export class NodeRepository {
     constructor(private readonly db: DatabaseService) {}
 
-    async create(data: { orgId: string; parentId?: string; name: string; description?: string }) {
-        return this.db.node.create({ data });
+    async create(data: {
+        orgId: string;
+        parentId?: string;
+        name: string;
+        description?: string;
+        type?: string;
+        metadata?: Record<string, unknown>;
+    }) {
+        return this.db.node.create({ data: data as any });
     }
 
     async findById(id: string) {
@@ -59,13 +66,51 @@ export class NodeRepository {
 
     async update(
         id: string,
-        data: { parentId?: string | null; name?: string; description?: string }
+        data: {
+            parentId?: string | null;
+            name?: string;
+            description?: string;
+            type?: string;
+            metadata?: Record<string, unknown>;
+        }
     ) {
-        return this.db.node.update({ where: { id }, data });
+        return this.db.node.update({ where: { id }, data: data as any });
     }
 
     async delete(id: string) {
         return this.db.node.delete({ where: { id } });
+    }
+
+    async setGridConfig(nodeId: string, rows: number, cols: number) {
+        return this.db.nodeGridConfig.upsert({
+            where: { nodeId },
+            create: { nodeId, rows, cols },
+            update: { rows, cols },
+        });
+    }
+
+    async removeGridConfig(nodeId: string) {
+        return this.db.nodeGridConfig.deleteMany({ where: { nodeId } });
+    }
+
+    async filter(
+        orgId: string,
+        opts: { type?: string; hasGrid?: boolean; parentId?: string | null }
+    ) {
+        return this.db.node.findMany({
+            where: {
+                orgId,
+                ...(opts.type && { type: opts.type as any }),
+                ...(opts.hasGrid === true && { gridConfig: { isNot: null } }),
+                ...(opts.hasGrid === false && { gridConfig: null }),
+                ...(opts.parentId !== undefined && { parentId: opts.parentId }),
+            },
+            include: {
+                gridConfig: true,
+                _count: { select: { children: true } },
+            },
+            orderBy: { createdAt: 'asc' },
+        });
     }
 
     /** 检查 candidate 是否是 nodeId 的后代，用于防循环 */

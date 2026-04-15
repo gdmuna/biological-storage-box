@@ -30,6 +30,8 @@ export class NodeService {
             parentId: dto.parentId,
             name: dto.name,
             description: dto.description,
+            type: dto.type,
+            metadata: dto.metadata,
         });
     }
 
@@ -70,6 +72,31 @@ export class NodeService {
             ...(dto.parentId !== undefined && { parentId: dto.parentId }),
             ...(dto.name !== undefined && { name: dto.name }),
             ...(dto.description !== undefined && { description: dto.description }),
+            ...(dto.type !== undefined && { type: dto.type }),
+            ...(dto.metadata !== undefined && { metadata: dto.metadata }),
         });
+    }
+
+    async setGridConfig(userId: string, dto: { nodeId: string; rows: number; cols: number }) {
+        const node = await this.nodeRepository.findById(dto.nodeId);
+        if (!node) throw new NodeNotFoundException();
+        await this.assertOrgAdmin(node.orgId, userId);
+        return this.nodeRepository.setGridConfig(dto.nodeId, dto.rows, dto.cols);
+    }
+
+    async removeGridConfig(userId: string, dto: { nodeId: string }) {
+        const node = await this.nodeRepository.findById(dto.nodeId);
+        if (!node) throw new NodeNotFoundException();
+        await this.assertOrgAdmin(node.orgId, userId);
+        await this.nodeRepository.removeGridConfig(dto.nodeId);
+    }
+
+    async filter(opts: {
+        orgId: string;
+        type?: string;
+        hasGrid?: boolean;
+        parentId?: string | null;
+    }) {
+        return this.nodeRepository.filter(opts.orgId, opts);
     }
 }
