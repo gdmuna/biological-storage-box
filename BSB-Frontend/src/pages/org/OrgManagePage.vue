@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { Plus, Trash2, UserMinus, UserCog, UserPlus } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useOrgStore } from '@/stores/org';
-import { createOrg, deleteOrg } from '@/api/modules/org';
+import { deleteOrg } from '@/api/modules/org';
 import { listOrgMembers, listPendingOrgUsers, removeMember, acceptApply, rejectApply, inviteUser, updateMemberAuthority, quitOrg } from '@/api/modules/org-user';
 import { CreateOrgFormSchema } from '@/schemas/org.schema';
 import type { Org, OrgMember, PendingOrgUser } from '@/schemas/org.schema';
@@ -16,6 +17,7 @@ import { useAuthStore } from '@/stores/auth';
 
 const org = useOrgStore();
 const auth = useAuthStore();
+const router = useRouter();
 
 type PageTab = 'orgs' | 'members' | 'pending';
 const activeTab = ref<PageTab>('orgs');
@@ -50,8 +52,7 @@ async function handleCreate() {
     }
     createLoading.value = true;
     try {
-        await createOrg(result.data).send();
-        await org.fetchOrgs();
+        await org.createAndSwitch(result.data);
         newName.value = '';
         newDesc.value = '';
         dialogOpen.value = false;
@@ -241,7 +242,7 @@ onMounted(() => {
         <div v-if="activeTab === 'orgs'" class="space-y-3">
             <Card v-for="o in org.orgs" :key="o.id" class="rounded-xl border-bsb-border-standard bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)] transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.09)]" :class="o.id === org.currentOrgId ? 'ring-1 ring-bsb-accent-brand/40' : ''">
                 <CardHeader class="flex flex-row items-center justify-between">
-                    <div class="cursor-pointer" @click="org.selectOrg(o.id)">
+                    <div class="cursor-pointer" @click="router.push(`/org/${o.id}`)">
                         <CardTitle class="text-sm font-semibold text-bsb-text-primary">{{ o.name }}</CardTitle>
                         <CardDescription v-if="o.description" class="text-bsb-text-quaternary">
                             {{ o.description }}

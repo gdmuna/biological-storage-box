@@ -54,6 +54,14 @@ export const updateReagent = (data: {
     description?: string;
 }) => alovaInstance.Put<Reagent>('/reagent/update', data);
 
+export const createReagent = (data: {
+    boxId: string;
+    position: string;
+    name: string;
+    description?: string;
+    reagentTypeId?: string;
+}) => alovaInstance.Post<Reagent>('/reagent/add', data);
+
 // Box Aliases
 export const createBoxAlias = (data: { boxId: string; alias: string }) =>
     alovaInstance.Post<BoxAlias>('/box/alias/add', data);

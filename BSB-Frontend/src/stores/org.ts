@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { Org } from '@/schemas/org.schema';
-import { listOrgs } from '@/api/modules/org';
+import { listOrgs, createOrg, exploreOrgs, searchOrgMembers } from '@/api/modules/org';
+import type { CreateOrgForm } from '@/schemas/org.schema';
 
 export const useOrgStore = defineStore('org', () => {
     const orgs = ref<Org[]>([]);
@@ -20,5 +21,32 @@ export const useOrgStore = defineStore('org', () => {
         currentOrgId.value = id;
     }
 
-    return { orgs, currentOrgId, currentOrg, fetchOrgs, selectOrg };
+    /** 创建组织后立即切换到该组织 */
+    async function createAndSwitch(form: CreateOrgForm) {
+        const created = await createOrg(form).send();
+        await fetchOrgs();
+        currentOrgId.value = created.id;
+        return created;
+    }
+
+    /** 搜索公开组织（供 OrgExplorePage 使用） */
+    async function explore(keyword?: string) {
+        return exploreOrgs({ keyword, limit: 20 }).send();
+    }
+
+    /** 组织内搜索成员（供 OrgDetailPage 使用） */
+    async function searchMembers(orgId: string, keyword: string) {
+        return searchOrgMembers({ orgId, keyword }).send();
+    }
+
+    return {
+        orgs,
+        currentOrgId,
+        currentOrg,
+        fetchOrgs,
+        selectOrg,
+        createAndSwitch,
+        explore,
+        searchMembers,
+    };
 });

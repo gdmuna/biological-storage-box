@@ -175,3 +175,14 @@ body {
         @apply font-sans;
     }
 }
+
+/* Vue Flow — edge & controls styling */
+.vue-flow__edge-path {
+    stroke-width: 1.5;
+}
+.vue-flow__controls {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}

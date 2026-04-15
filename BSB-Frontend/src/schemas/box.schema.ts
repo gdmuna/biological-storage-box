@@ -28,6 +28,7 @@ export const ReagentSchema = z.object({
     position: z.string(),
     name: z.string(),
     description: z.string().nullable(),
+    reagentTypeId: z.string().nullable().optional(),
 });
 
 export type Reagent = z.infer<typeof ReagentSchema>;
