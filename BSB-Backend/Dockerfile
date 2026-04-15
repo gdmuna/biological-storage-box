@@ -37,7 +37,7 @@ RUN cd BSB-Backend \
     && pnpm build
 
 # 5. pnpm deploy：将 service 的纯生产依赖提取到独立目录（无 devDeps，无 symlink）
-RUN pnpm --filter BSB-Backend deploy --prod /app/deploy
+RUN pnpm --filter BSB-Backend deploy --prod --legacy /app/deploy
 
 # ===== 运行阶段 =====
 FROM node:22.22-slim AS runner
