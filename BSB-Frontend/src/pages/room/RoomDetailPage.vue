@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ArrowLeft, Home, Plus, Network, Trash2 } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNodeStore } from '@/stores/node';
 import { useOrgStore } from '@/stores/org';
 import { getNode, filterNodes } from '@/api/modules/node';
+import { createBox } from '@/api/modules/box';
 import type { NodeItem } from '@/api/modules/node';
 import { staggerListIn, pageTransitionIn } from '@/utils/animation';
 
@@ -31,6 +33,13 @@ const newDesc = ref('');
 const newType = ref<'BOX' | 'CONTAINER'>('CONTAINER');
 const creating = ref(false);
 const createError = ref('');
+const newRows = ref(9);
+const newCols = ref(9);
+
+const isNarrow = ref(false);
+function updateWidth() {
+    isNarrow.value = window.innerWidth < 768;
+}
 
 const deleteDialogOpen = ref(false);
 
@@ -41,6 +50,8 @@ const typeColorMap: Record<string, string> = {
 };
 
 onMounted(async () => {
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
     const main = document.getElementById('main-content');
     if (main) pageTransitionIn(main);
 
@@ -52,21 +63,40 @@ onMounted(async () => {
     }
 });
 
+onUnmounted(() => window.removeEventListener('resize', updateWidth));
+
 async function handleCreate() {
     if (!newName.value.trim() || !org.currentOrgId) return;
     creating.value = true;
     createError.value = '';
     try {
-        const created = await nodeStore.addNode({
-            orgId: org.currentOrgId,
-            parentId: nodeId.value,
-            name: newName.value.trim(),
-            description: newDesc.value.trim() || undefined,
-            type: newType.value
-        });
-        children.value.push(created);
+        if (newType.value === 'BOX') {
+            await createBox({
+                orgId: org.currentOrgId,
+                nodeId: nodeId.value,
+                name: newName.value.trim(),
+                description: newDesc.value.trim() || undefined,
+                rows: newRows.value,
+                cols: newCols.value
+            }).send();
+            children.value = await filterNodes({
+                orgId: org.currentOrgId,
+                parentId: nodeId.value
+            }).send();
+        } else {
+            const created = await nodeStore.addNode({
+                orgId: org.currentOrgId,
+                parentId: nodeId.value,
+                name: newName.value.trim(),
+                description: newDesc.value.trim() || undefined,
+                type: newType.value
+            });
+            children.value.push(created);
+        }
         newName.value = '';
         newDesc.value = '';
+        newRows.value = 9;
+        newCols.value = 9;
         createDialogOpen.value = false;
         setTimeout(() => staggerListIn('.child-card'), 50);
     } catch (e: unknown) {
@@ -109,11 +139,9 @@ async function handleDelete() {
                     在节点图中查看
                 </Button>
                 <Dialog v-model:open="deleteDialogOpen">
-                    <DialogTrigger as-child>
-                        <Button variant="ghost" size="icon" class="text-bsb-text-quaternary hover:text-red-500">
-                            <Trash2 class="size-4" />
-                        </Button>
-                    </DialogTrigger>
+                    <Button variant="ghost" size="icon" class="text-bsb-text-quaternary hover:text-red-500" @click="deleteDialogOpen = true">
+                        <Trash2 class="size-4" />
+                    </Button>
                     <DialogContent>
                         <DialogHeader><DialogTitle>确认删除房间？</DialogTitle></DialogHeader>
                         <p class="text-sm text-bsb-text-secondary">删除后无法恢复，且会递归删除所有子节点。</p>
@@ -130,53 +158,112 @@ async function handleDelete() {
         <div class="space-y-3">
             <div class="flex items-center justify-between">
                 <h2 class="text-sm font-[510] text-bsb-text-secondary">子节点（{{ children.length }}）</h2>
-                <Dialog v-model:open="createDialogOpen">
-                    <DialogTrigger as-child>
-                        <Button size="sm" variant="outline" class="gap-1.5 border-bsb-border-standard text-bsb-text-secondary hover:text-bsb-text-primary">
-                            <Plus class="size-4" />
-                            添加子节点
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader><DialogTitle>添加子节点</DialogTitle></DialogHeader>
-                        <div class="space-y-3">
-                            <div class="space-y-1.5">
-                                <Label>
-                                    名称
-                                    <span class="text-red-500">*</span>
-                                </Label>
-                                <Input v-model="newName" placeholder="例：A01 货架" class="border-bsb-border-standard" />
-                            </div>
-                            <div class="space-y-1.5">
-                                <Label>类型</Label>
-                                <Select v-model="newType">
-                                    <SelectTrigger class="border-bsb-border-standard">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="BOX">BOX（储存盒）</SelectItem>
-                                        <SelectItem value="CONTAINER">CONTAINER（通用容器）</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div class="space-y-1.5">
-                                <Label>描述</Label>
-                                <Input v-model="newDesc" placeholder="可选" class="border-bsb-border-standard" />
-                            </div>
-                            <p v-if="createError" class="text-xs text-red-500">{{ createError }}</p>
-                        </div>
-                        <DialogFooter>
-                            <Button variant="outline" @click="createDialogOpen = false">取消</Button>
-                            <Button :disabled="creating || !newName.trim()" class="bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" @click="handleCreate">
-                                {{ creating ? '创建中…' : '创建' }}
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                <Button size="sm" variant="outline" class="gap-1.5 border-bsb-border-standard text-bsb-text-secondary hover:text-bsb-text-primary" @click="createDialogOpen = true">
+                    <Plus class="size-4" />
+                    添加子节点
+                </Button>
             </div>
 
+            <!-- Narrow: Drawer -->
+            <Drawer v-if="isNarrow" v-model:open="createDialogOpen">
+                <DrawerContent>
+                    <DrawerHeader><DrawerTitle>添加子节点</DrawerTitle></DrawerHeader>
+                    <div class="space-y-3 p-4">
+                        <div class="space-y-1.5">
+                            <Label>
+                                名称
+                                <span class="text-red-500">*</span>
+                            </Label>
+                            <Input v-model="newName" placeholder="例：A01 货架" class="border-bsb-border-standard" />
+                        </div>
+                        <div class="space-y-1.5">
+                            <Label>类型</Label>
+                            <Select v-model="newType">
+                                <SelectTrigger class="border-bsb-border-standard"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="BOX">BOX（储存盒）</SelectItem>
+                                    <SelectItem value="CONTAINER">CONTAINER（通用容器）</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <template v-if="newType === 'BOX'">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1.5">
+                                    <Label>行数</Label>
+                                    <Input v-model.number="newRows" type="number" min="1" max="99" class="border-bsb-border-standard" />
+                                </div>
+                                <div class="space-y-1.5">
+                                    <Label>列数</Label>
+                                    <Input v-model.number="newCols" type="number" min="1" max="99" class="border-bsb-border-standard" />
+                                </div>
+                            </div>
+                        </template>
+                        <div class="space-y-1.5">
+                            <Label>描述</Label>
+                            <Input v-model="newDesc" placeholder="可选" class="border-bsb-border-standard" />
+                        </div>
+                        <p v-if="createError" class="text-xs text-red-500">{{ createError }}</p>
+                    </div>
+                    <DrawerFooter class="flex gap-2">
+                        <Button variant="outline" @click="createDialogOpen = false">取消</Button>
+                        <Button :disabled="creating || !newName.trim()" class="flex-1 bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" @click="handleCreate">
+                            {{ creating ? '创建中…' : '创建' }}
+                        </Button>
+                    </DrawerFooter>
+                </DrawerContent>
+            </Drawer>
+
+            <!-- Wide: Dialog -->
+            <Dialog v-else v-model:open="createDialogOpen">
+                <DialogContent>
+                    <DialogHeader><DialogTitle>添加子节点</DialogTitle></DialogHeader>
+                    <div class="space-y-3">
+                        <div class="space-y-1.5">
+                            <Label>
+                                名称
+                                <span class="text-red-500">*</span>
+                            </Label>
+                            <Input v-model="newName" placeholder="例：A01 货架" class="border-bsb-border-standard" />
+                        </div>
+                        <div class="space-y-1.5">
+                            <Label>类型</Label>
+                            <Select v-model="newType">
+                                <SelectTrigger class="border-bsb-border-standard"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="BOX">BOX（储存盒）</SelectItem>
+                                    <SelectItem value="CONTAINER">CONTAINER（通用容器）</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <template v-if="newType === 'BOX'">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1.5">
+                                    <Label>行数</Label>
+                                    <Input v-model.number="newRows" type="number" min="1" max="99" class="border-bsb-border-standard" />
+                                </div>
+                                <div class="space-y-1.5">
+                                    <Label>列数</Label>
+                                    <Input v-model.number="newCols" type="number" min="1" max="99" class="border-bsb-border-standard" />
+                                </div>
+                            </div>
+                        </template>
+                        <div class="space-y-1.5">
+                            <Label>描述</Label>
+                            <Input v-model="newDesc" placeholder="可选" class="border-bsb-border-standard" />
+                        </div>
+                        <p v-if="createError" class="text-xs text-red-500">{{ createError }}</p>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" @click="createDialogOpen = false">取消</Button>
+                        <Button :disabled="creating || !newName.trim()" class="bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" @click="handleCreate">
+                            {{ creating ? '创建中…' : '创建' }}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             <div v-if="children.length > 0" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <Card v-for="child in children" :key="child.id" class="child-card cursor-pointer border-bsb-border-standard bg-white transition-all hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]" @click="child.type === 'BOX' ? router.push(`/box/${child.id}`) : undefined">
+                <Card v-for="child in children" :key="child.id" class="child-card cursor-pointer border-bsb-border-standard bg-white transition-all hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]" @click="child.type === 'BOX' ? router.push(`/box/${child.id}`) : router.push(`/room/${child.id}`)">
                     <CardHeader class="pb-2">
                         <CardTitle class="text-sm text-bsb-text-primary">{{ child.name }}</CardTitle>
                     </CardHeader>
