@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ArrowLeft, Home, Plus, Network, Trash2 } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
@@ -49,19 +49,26 @@ const typeColorMap: Record<string, string> = {
     ROOM: 'border-[#213183]/30 text-[#213183] bg-[#f0f2ff]'
 };
 
-onMounted(async () => {
+onMounted(() => {
     updateWidth();
     window.addEventListener('resize', updateWidth);
     const main = document.getElementById('main-content');
     if (main) pageTransitionIn(main);
-
-    try {
-        [roomNode.value, children.value] = await Promise.all([getNode(nodeId.value).send(), filterNodes({ orgId: org.currentOrgId!, parentId: nodeId.value }).send()]);
-        setTimeout(() => staggerListIn('.child-card'), 50);
-    } catch {
-        /* empty */
-    }
 });
+
+watch(
+    () => org.currentOrgId,
+    async (orgId) => {
+        if (!orgId) return;
+        try {
+            [roomNode.value, children.value] = await Promise.all([getNode(nodeId.value).send(), filterNodes({ orgId, parentId: nodeId.value }).send()]);
+            setTimeout(() => staggerListIn('.child-card'), 50);
+        } catch {
+            /* empty */
+        }
+    },
+    { immediate: true }
+);
 
 onUnmounted(() => window.removeEventListener('resize', updateWidth));
 

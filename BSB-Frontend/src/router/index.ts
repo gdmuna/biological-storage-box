@@ -43,6 +43,14 @@ const routes = [
                 component: () => import('@/pages/org/OrgManagePage.vue'),
             },
             {
+                path: 'room',
+                component: () => import('@/pages/room/RoomListPage.vue'),
+            },
+            {
+                path: 'room/:id',
+                component: () => import('@/pages/room/RoomDetailPage.vue'),
+            },
+            {
                 path: 'node',
                 component: () => import('@/pages/node/NodePage.vue'),
             },
