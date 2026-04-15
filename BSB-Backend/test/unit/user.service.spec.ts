@@ -9,6 +9,7 @@ import {
     VerificationCodeExpiredException,
 } from '@/modules/user/user.exception.js';
 import { MailService } from '@/infra/mail/mail.service.js';
+import { TokenService } from '@/modules/auth/services/index.js';
 
 import bcrypt from 'bcryptjs';
 
@@ -40,15 +41,26 @@ describe('UserService', () => {
         get: jest.fn().mockReturnValue(10),
     };
 
+    const mockTokenService: jest.Mocked<Pick<TokenService, 'issueTokenPair'>> = {
+        issueTokenPair: jest
+            .fn()
+            .mockReturnValue({ accessToken: 'access_tok', refreshToken: 'refresh_tok' }),
+    };
+
     let service: UserService;
 
     beforeEach(() => {
         jest.clearAllMocks();
+        mockTokenService.issueTokenPair.mockReturnValue({
+            accessToken: 'access_tok',
+            refreshToken: 'refresh_tok',
+        });
         service = new UserService(
             mockUserRepository as unknown as UserRepository,
             mockEvRepository as unknown as EmailVerificationRepository,
             mockMailService as unknown as MailService,
-            mockConfigService
+            mockConfigService,
+            mockTokenService as unknown as TokenService
         );
     });
 
@@ -203,7 +215,7 @@ describe('UserService', () => {
     });
 
     describe('emailLogin', () => {
-        it('should return user info on valid code', async () => {
+        it('should return accessToken, refreshToken, and user on valid code', async () => {
             const futureDate = new Date(Date.now() + 5 * 60 * 1000);
             mockEvRepository.findLatestByEmail.mockResolvedValue({
                 code: '123456',
@@ -223,6 +235,13 @@ describe('UserService', () => {
 
             const result = await service.emailLogin('test@example.com', '123456');
             expect(result).not.toHaveProperty('passwordHash');
+            expect(result.accessToken).toBe('access_tok');
+            expect(result.refreshToken).toBe('refresh_tok');
+            expect(result.user.id).toBe('u_01');
+            expect(mockTokenService.issueTokenPair).toHaveBeenCalledWith({
+                userId: 'u_01',
+                username: 'test',
+            });
         });
 
         it('should throw VerificationCodeInvalidException on wrong code', async () => {

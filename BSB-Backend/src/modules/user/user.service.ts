@@ -11,6 +11,7 @@ import {
 } from './user.exception.js';
 
 import { MailService } from '@/infra/mail/mail.service.js';
+import { TokenService } from '@/modules/auth/services/index.js';
 
 import { Injectable } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
@@ -23,7 +24,8 @@ export class UserService {
         private readonly userRepository: UserRepository,
         private readonly emailVerificationRepository: EmailVerificationRepository,
         private readonly mailService: MailService,
-        private readonly configService: ConfigService<AllConfig, true>
+        private readonly configService: ConfigService<AllConfig, true>,
+        private readonly tokenService: TokenService
     ) {}
 
     async getMyInfo(userId: string) {
@@ -86,7 +88,11 @@ export class UserService {
         await this.emailVerificationRepository.deleteByEmail(normalizedEmail);
 
         const { passwordHash: _, ...safeUser } = user;
-        return safeUser;
+        const tokenPair = this.tokenService.issueTokenPair({
+            userId: user.id,
+            username: user.username,
+        });
+        return { ...tokenPair, user: safeUser };
     }
 
     /** 验证邮箱验证码，通过返回 void，失败抛出异常。 */

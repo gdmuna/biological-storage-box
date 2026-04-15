@@ -9,3 +9,4 @@ import '@/infra/database/database.exception.js';
 
 import '@/modules/auth/auth.exception.js';
 import '@/modules/exception-catalog/exception-catalog.exception.js';
+import '@/modules/file/file.exception.js';

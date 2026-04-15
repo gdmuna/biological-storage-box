@@ -13,8 +13,10 @@ import USER_EXCEPTION from './user.exception.js';
 
 import { ApiRoute, CurrentUser } from '@/common/decorators/index.js';
 import type { AccessTokenClaim } from '@/modules/auth/services/token.service.js';
+import { REFRESH_TOKEN_COOKIE } from '@/constants/auth.constant.js';
 
-import { Controller, Get, Put, Post, Body, Query } from '@nestjs/common';
+import { Controller, Get, Put, Post, Body, Query, Res } from '@nestjs/common';
+import type { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('用户模块')
@@ -70,9 +72,22 @@ export class UserController {
     @ApiRoute({
         auth: 'public',
         summary: '邮箱验证码登录',
+        errors: [
+            USER_EXCEPTION.UserNotFoundException.code,
+            USER_EXCEPTION.VerificationCodeInvalidException.code,
+            USER_EXCEPTION.VerificationCodeExpiredException.code,
+        ],
     })
-    async emailLogin(@Body() body: EmailLoginDto) {
-        return this.userService.emailLogin(body.email, body.code);
+    async emailLogin(@Body() body: EmailLoginDto, @Res({ passthrough: true }) response: Response) {
+        const result = await this.userService.emailLogin(body.email, body.code);
+        response.cookie(REFRESH_TOKEN_COOKIE.NAME, result.refreshToken, {
+            httpOnly: REFRESH_TOKEN_COOKIE.HTTP_ONLY,
+            sameSite: REFRESH_TOKEN_COOKIE.SAME_SITE,
+            secure: REFRESH_TOKEN_COOKIE.SECURE,
+            path: REFRESH_TOKEN_COOKIE.PATH,
+            maxAge: REFRESH_TOKEN_COOKIE.MAX_AGE_MS,
+        });
+        return { accessToken: result.accessToken, user: result.user };
     }
 
     @Put('update/email')

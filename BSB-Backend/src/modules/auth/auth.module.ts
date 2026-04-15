@@ -15,5 +15,6 @@ import { APP_GUARD } from '@nestjs/core';
         AuthService,
         TokenService,
     ],
+    exports: [TokenService],
 })
 export class AuthModule {}
