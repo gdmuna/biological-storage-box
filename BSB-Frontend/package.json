@@ -19,6 +19,11 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@tanstack/vue-table": "^8.21.3",
+    "@vue-flow/background": "^1.3.2",
+    "@vue-flow/controls": "^1.1.3",
+    "@vue-flow/core": "^1.48.2",
+    "@vue-flow/minimap": "^1.5.4",
     "@vueuse/core": "^14.2.1",
     "alova": "^3.5.1",
     "class-variance-authority": "^0.7.1",
@@ -30,6 +35,7 @@
     "shadcn-vue": "^2.6.2",
     "tailwind-merge": "^3.5.0",
     "tw-animate-css": "^1.4.0",
+    "vaul-vue": "^0.4.1",
     "vue": "^3.5.32",
     "vue-router": "^5.0.4",
     "vue-sonner": "^2.0.9",

@@ -68,6 +68,7 @@ export default [
     // ── BSB-Frontend: Vue 3 + TypeScript ───────
     {
         files: ['BSB-Frontend/src/**/*.{js,ts,vue}'],
+        ignores: ['BSB-Frontend/src/components/ui/**'],
         languageOptions: {
             parser: vueParser,
             parserOptions: {

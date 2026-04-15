@@ -247,7 +247,8 @@ related:
 ### 7.3 可观测性
 
 - [ ] `pnpm type-check` — 通过
-- [ ] `pnpm test` — 通过
+- [ ] `pnpm --filter BSB-Frontend test` — 通过
+- [ ] `pnpm --filter BSB-Frontend test:e2e` — 通过
 - [ ] `pnpm build` — 通过
 - [ ] Browser / Playwright 验证 — 通过
 

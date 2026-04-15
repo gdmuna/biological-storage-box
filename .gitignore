@@ -6,3 +6,5 @@
 **/coverage
 **/logs
 **/.obsidian
+
+dogfood-output/

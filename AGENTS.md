@@ -1,62 +1,7 @@
-## 项目定位
-
-生物样本储存管理系统 monorepo，包含三个工作区：
-- `BSB-Backend` — NestJS 后端服务
-- `BSB-Docsite` — VitePress 文档站
-- `BSB-Frontend` — Vue 3 前端
-
-## 文档导航
-
-> 以下文档按需加载。仅在对应场景触发时才去读取，减少不必要的上下文占用。
-
-| 文档 | 路径 | 何时加载 |
-|------|------|--------|
-| **后端 AI 操作手册** | [BSB-Backend/AGENTS.md](../BSB-Backend/AGENTS.md) | 涉及后端 service 代码时：模块职责、请求流程、架构决策、提交前自我审查 |
-| 后端文档规范 | [BSB-Backend/docs/AGENTS.md](../BSB-Backend/docs/AGENTS.md) | 需要创建或修改后端文档时 |
-| 后端架构设计 | [BSB-Backend/docs/03-architecture/](../BSB-Backend/docs/03-architecture/) | 涉及模块职责、请求流程、技术选型时 |
-| **前端 AI 操作手册** | [BSB-Frontend/AGENTS.md](../BSB-Frontend/AGENTS.md) | 涉及前端任何代码时：组件、store、路由、API 调用、UI/UX、Bug 修复、E2E 测试 |
-
-## 硬性约束
-
-> 以下是工具链与安全层面的操作底线。
-
-- 包管理：只用 `pnpm`，禁止 npm/yarn
-- 后端架构分层：Controller → Service → Repository（Prisma）
-- 前端架构分层：Page → Store（Pinia）→ API（Alova）；状态不绕过 store 直接写
-- 依赖注入：优先使用构造函数注入与控制反转，除非迫不得已才手动 `new`
-- 提交规范：`<type>(<scope>): <subject>`（Conventional Commits）
-- 禁止绕过 Git 钩子（`--no-verify`）
-- 禁止硬编码敏感信息，不假设 `.env` 文件存在
-- 前端 shadcn-vue 组件（`src/components/ui/`）禁止直接手改，通过 shadcn skill 管理
-
-## 常用命令速查
-
-```bash
-# monorepo 根
-pnpm run format          # Prettier 格式化（全工作区）
-pnpm run format:check    # 格式检查
-
-# 后端 service
-pnpm --filter BSB-Backend start:dev      # 热重载开发
-pnpm --filter BSB-Backend build          # 编译 + 类型检查
-pnpm --filter BSB-Backend test           # 单元测试 + E2E
-pnpm --filter BSB-Backend lint:fix       # ESLint 自动修复
-pnpm --filter BSB-Backend db:migrate     # 数据库迁移
-pnpm --filter BSB-Backend db:gen-client  # 重新生成 Prisma Client
-
-# 前端
-pnpm --filter BSB-Frontend dev           # 启动开发服务器（:8081）
-pnpm --filter BSB-Frontend type-check    # vue-tsc 类型检查
-pnpm --filter BSB-Frontend test          # Vitest 单元测试
-pnpm --filter BSB-Frontend test:e2e      # Playwright E2E 测试
-pnpm --filter BSB-Frontend build         # 构建产物
-pnpm --filter BSB-Frontend eslint        # ESLint 自动修复
-```
-
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **biological-storage-box** (1642 symbols, 2446 relationships, 52 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **biological-storage-box** (2108 symbols, 3398 relationships, 62 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
