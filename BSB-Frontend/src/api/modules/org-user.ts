@@ -15,7 +15,7 @@ export const rejectApply = (data: { orgId: string; userId: string }) =>
 
 /** 管理员移除成员 */
 export const removeMember = (data: { orgId: string; userId: string }) =>
-    alovaInstance.Delete<void>('/org/user/del', { data });
+    alovaInstance.Delete<void>('/org/user/del', data);
 
 /** 管理员邀请用户 */
 export const inviteUser = (data: { orgId: string; userId: string }) =>
@@ -38,8 +38,7 @@ export const listOrgMembers = (orgId: string) =>
     alovaInstance.Get<OrgMember[]>('/org/user/member/list', { params: { orgId } });
 
 /** 当前用户退出组织 */
-export const quitOrg = (orgId: string) =>
-    alovaInstance.Delete<void>('/org/user/quit', { data: { orgId } });
+export const quitOrg = (orgId: string) => alovaInstance.Delete<void>('/org/user/quit', { orgId });
 
 /** 修改成员权限（仅 owner 可调用） */
 export const updateMemberAuthority = (data: {

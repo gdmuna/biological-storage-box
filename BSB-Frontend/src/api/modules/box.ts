@@ -11,7 +11,7 @@ export const createBox = (data: {
     cols?: number;
 }) => alovaInstance.Post<Box>('/box/add', data);
 
-export const deleteBox = (id: string) => alovaInstance.Delete<void>('/box/del', { data: { id } });
+export const deleteBox = (id: string) => alovaInstance.Delete<void>('/box/del', { id });
 
 export const getBox = (id: string) => alovaInstance.Get<Box>('/box/one', { params: { id } });
 
@@ -52,8 +52,7 @@ export const updateReagent = (data: {
 export const createBoxAlias = (data: { boxId: string; alias: string }) =>
     alovaInstance.Post<BoxAlias>('/box/alias/add', data);
 
-export const deleteBoxAlias = (id: string) =>
-    alovaInstance.Delete<void>('/box/alias/del', { data: { id } });
+export const deleteBoxAlias = (id: string) => alovaInstance.Delete<void>('/box/alias/del', { id });
 
 export const listBoxAliases = (boxId: string) =>
     alovaInstance.Get<BoxAlias[]>('/box/alias/list', { params: { boxId } });

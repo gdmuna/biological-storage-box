@@ -10,5 +10,4 @@ export const listBoxImages = (boxId: string) =>
 export const compareBoxImage = (data: { boxId: string; imageUrl: string }) =>
     alovaInstance.Post('/box/image/compare', data);
 
-export const deleteBoxImage = (id: string) =>
-    alovaInstance.Delete<void>('/box/image/del', { data: { id } });
+export const deleteBoxImage = (id: string) => alovaInstance.Delete<void>('/box/image/del', { id });

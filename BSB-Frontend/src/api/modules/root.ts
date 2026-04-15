@@ -4,7 +4,7 @@ import type { Root } from '@/schemas/root.schema';
 export const createRoot = (data: { orgId: string; name: string; description?: string }) =>
     alovaInstance.Post<Root>('/root/add', data);
 
-export const deleteRoot = (id: string) => alovaInstance.Delete<void>('/root/del', { data: { id } });
+export const deleteRoot = (id: string) => alovaInstance.Delete<void>('/root/del', { id });
 
 export const getRoot = (id: string) => alovaInstance.Get<Root>('/root/one', { params: { id } });
 

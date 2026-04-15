@@ -5,9 +5,13 @@ export const NodeSchema = z.object({
     orgId: z.string(),
     parentId: z.string().nullable(),
     name: z.string(),
+    type: z.enum(['ROOM', 'BOX', 'CONTAINER']).default('CONTAINER'),
     description: z.string().nullable().optional(),
+    metadata: z.record(z.string(), z.unknown()).nullable().optional(),
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),
+    gridConfig: z.object({ rows: z.number(), cols: z.number() }).nullable().optional(),
+    _count: z.object({ children: z.number() }).optional(),
 });
 
 export const NodeWithChildrenSchema: z.ZodType<NodeWithChildren> = z.lazy(() =>
