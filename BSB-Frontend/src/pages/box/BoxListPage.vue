@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Plus, Search } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useOrgStore } from '@/stores/org';
-import { listBoxesGroupedByRoot, searchBoxes } from '@/api/modules/box';
+import { listBoxesGroupedByNode, searchBoxes } from '@/api/modules/box';
 import { staggerListIn } from '@/utils/animation';
 import type { Box } from '@/schemas/box.schema';
 
@@ -15,14 +15,14 @@ const router = useRouter();
 const org = useOrgStore();
 
 const keyword = ref('');
-const groups = ref<{ rootId: string | null; rootName: string; boxes: Box[] }[]>([]);
+const groups = ref<{ nodeId: string | null; nodeName: string | null; boxes: Box[] }[]>([]);
 const searchResults = ref<Box[]>([]);
 const isSearching = ref(false);
 
 async function fetchBoxes() {
     if (!org.currentOrgId) return;
     try {
-        const data = await listBoxesGroupedByRoot(org.currentOrgId).send();
+        const data = await listBoxesGroupedByNode(org.currentOrgId).send();
         groups.value = data as typeof groups.value;
         setTimeout(() => staggerListIn('.box-card'), 50);
     } catch {
@@ -43,8 +43,13 @@ async function handleSearch() {
     }
 }
 
-onMounted(fetchBoxes);
-watch(() => org.currentOrgId, fetchBoxes);
+watch(
+    () => org.currentOrgId,
+    (newId) => {
+        if (newId) fetchBoxes();
+    },
+    { immediate: true }
+);
 </script>
 
 <template>
@@ -80,8 +85,8 @@ watch(() => org.currentOrgId, fetchBoxes);
 
         <!-- Grouped view -->
         <template v-else>
-            <div v-for="group in groups" :key="group.rootId ?? 'unassigned'" class="space-y-3">
-                <h2 class="text-sm font-[510] text-bsb-text-secondary">{{ group.rootName }}</h2>
+            <div v-for="group in groups" :key="group.nodeId ?? 'unassigned'" class="space-y-3">
+                <h2 class="text-sm font-[510] text-bsb-text-secondary">{{ group.nodeName ?? '未分配房间' }}</h2>
                 <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     <Card v-for="box in group.boxes" :key="box.id" class="box-card cursor-pointer border-bsb-border-standard bg-bsb-bg-panel transition-colors hover:border-bsb-accent-brand/30" @click="router.push(`/box/${box.id}`)">
                         <CardHeader class="pb-2">
