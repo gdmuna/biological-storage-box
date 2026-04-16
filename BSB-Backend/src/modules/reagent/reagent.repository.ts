@@ -12,15 +12,36 @@ export class ReagentRepository {
         });
     }
 
-    async listByNodeId(nodeId: string) {
+    async list(orgId?: string, nodeId?: string) {
         return this.db.reagent.findMany({
-            where: { nodeId },
-            orderBy: { position: 'asc' },
+            where: { orgId, nodeId },
+            include: { reagentType: true },
+            orderBy: { updatedAt: 'desc' },
         });
     }
 
-    async update(id: string, data: { position?: string; name?: string; description?: string }) {
-        return this.db.reagent.update({ where: { id }, data });
+    async update(
+        id: string,
+        data: {
+            position?: string;
+            name?: string;
+            description?: string;
+            reagentTypeId?: string | null;
+        }
+    ) {
+        const { reagentTypeId, ...rest } = data;
+        return this.db.reagent.update({
+            where: { id },
+            data: {
+                ...rest,
+                ...(reagentTypeId !== undefined && {
+                    reagentType:
+                        reagentTypeId === null
+                            ? { disconnect: true }
+                            : { connect: { id: reagentTypeId } },
+                }),
+            },
+        });
     }
 
     async create(data: {
@@ -28,7 +49,7 @@ export class ReagentRepository {
         position: string;
         name: string;
         description?: string;
-        reagentTypeId?: string;
+        reagentTypeId?: string | null;
     }) {
         const node = await this.db.node.findUnique({
             where: { id: data.nodeId },
@@ -45,5 +66,9 @@ export class ReagentRepository {
                 ...(data.reagentTypeId !== undefined && { reagentTypeId: data.reagentTypeId }),
             },
         });
+    }
+
+    async delete(ids: string[]) {
+        return this.db.reagent.deleteMany({ where: { id: { in: ids } } });
     }
 }

@@ -14,8 +14,8 @@ export class ReagentService {
         return reagent;
     }
 
-    async list(nodeId: string) {
-        return this.reagentRepository.listByNodeId(nodeId);
+    async list(orgId?: string, nodeId?: string) {
+        return this.reagentRepository.list(orgId, nodeId);
     }
 
     async update(dto: UpdateReagentDto) {
@@ -25,6 +25,7 @@ export class ReagentService {
             ...(dto.position !== undefined && { position: dto.position }),
             ...(dto.name !== undefined && { name: dto.name }),
             ...(dto.description !== undefined && { description: dto.description }),
+            ...(dto.reagentTypeId !== undefined && { reagentTypeId: dto.reagentTypeId }),
         });
     }
 
@@ -38,5 +39,9 @@ export class ReagentService {
         });
         if (!created) throw new ReagentNotFoundException();
         return created;
+    }
+
+    async delete(ids: string[]) {
+        return await this.reagentRepository.delete(ids);
     }
 }

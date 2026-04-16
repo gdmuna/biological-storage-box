@@ -2,13 +2,12 @@ import { ReagentService } from '@/modules/reagent/reagent.service.js';
 import { ReagentRepository } from '@/modules/reagent/reagent.repository.js';
 import { ReagentNotFoundException } from '@/modules/reagent/reagent.exception.js';
 
-const mockReagentRepository: jest.Mocked<
-    Pick<ReagentRepository, 'findById' | 'listByNodeId' | 'update'>
-> = {
-    findById: jest.fn(),
-    listByNodeId: jest.fn(),
-    update: jest.fn(),
-};
+const mockReagentRepository: jest.Mocked<Pick<ReagentRepository, 'findById' | 'list' | 'update'>> =
+    {
+        findById: jest.fn(),
+        list: jest.fn(),
+        update: jest.fn(),
+    };
 
 const mockReagent = {
     id: 'reagent_1',
@@ -49,10 +48,17 @@ describe('ReagentService', () => {
 
     describe('list', () => {
         it('should return reagents for node', async () => {
-            mockReagentRepository.listByNodeId.mockResolvedValue([mockReagent]);
-            const result = await service.list('node_1');
+            mockReagentRepository.list.mockResolvedValue([mockReagent] as any);
+            const result = await service.list(undefined, 'node_1');
             expect(result).toEqual([mockReagent]);
-            expect(mockReagentRepository.listByNodeId).toHaveBeenCalledWith('node_1');
+            expect(mockReagentRepository.list).toHaveBeenCalledWith(undefined, 'node_1');
+        });
+
+        it('should return reagents for org', async () => {
+            mockReagentRepository.list.mockResolvedValue([mockReagent] as any);
+            const result = await service.list('org_1');
+            expect(result).toEqual([mockReagent]);
+            expect(mockReagentRepository.list).toHaveBeenCalledWith('org_1', undefined);
         });
     });
 
