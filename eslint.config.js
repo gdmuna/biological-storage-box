@@ -90,10 +90,7 @@ export default [
             ...eslint.configs.recommended.rules,
             ...vuePlugin.configs['vue3-recommended'].rules,
             ...commonRules,
-            '@typescript-eslint/no-unused-vars': [
-                'warn',
-                { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
-            ],
+            'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
         },
     },
 
