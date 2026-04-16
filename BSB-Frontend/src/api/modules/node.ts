@@ -5,7 +5,7 @@ import { Node } from '@/schemas/node.schema';
 export type NodeItem = Node & { children?: NodeItem[] };
 
 /** 获取单个节点详情 */
-export const getNode = (id: string) => alovaInstance.Get<Node>('/node/one', { params: { id } });
+// export const getNode = (id: string) => alovaInstance.Get<Node>('/node/one', { params: { id } });
 
 /** 获取组织完整节点树（后端返回扁平数组，前端自行构建树） */
 export const fetchNodeTree = (orgId: string) =>

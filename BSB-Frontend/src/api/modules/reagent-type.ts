@@ -18,8 +18,8 @@ export const createReagentType = (data: {
     unit?: string;
 }) => alovaInstance.Post<ReagentTypeItem>('/reagent-type/add', data);
 
-export const listReagentTypes = (orgId: string) =>
-    alovaInstance.Get<ReagentTypeItem[]>('/reagent-type/list', { params: { orgId } });
+export const listReagentTypes = (params: { orgId?: string; nodeId?: string }) =>
+    alovaInstance.Get<ReagentTypeItem[]>('/reagent-type/list', { params });
 
 export const updateReagentType = (data: {
     id: string;
@@ -29,5 +29,5 @@ export const updateReagentType = (data: {
     unit?: string;
 }) => alovaInstance.Put<ReagentTypeItem>('/reagent-type/update', data);
 
-export const deleteReagentType = (id: string) =>
+export const deleteReagentType = (id: string | string[]) =>
     alovaInstance.Delete<void>('/reagent-type/del', { id });
