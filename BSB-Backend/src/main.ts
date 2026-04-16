@@ -153,7 +153,7 @@ bootstrap()
         // 等待 pino-pretty Worker 线程完成日志输出
         await new Promise((resolve) => setTimeout(resolve, 200));
 
-        const startupBanner = await figlet.text('NestJS-Scaffold', {
+        const startupBanner = await figlet.text('BSB-Backend', {
             font: 'Slant',
             horizontalLayout: 'fitted',
         });
