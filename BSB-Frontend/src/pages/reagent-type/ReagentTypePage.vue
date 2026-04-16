@@ -41,7 +41,7 @@ async function fetchTypes() {
     if (!org.currentOrgId) return;
     loading.value = true;
     try {
-        types.value = await listReagentTypes(org.currentOrgId).send();
+        // types.value = await listReagentTypes(org.currentOrgId).send();
         setTimeout(() => staggerListIn('tr.reagent-type-row'), 50);
     } catch {
         /* empty */
@@ -128,7 +128,7 @@ watch(() => org.currentOrgId, fetchTypes);
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <Tag class="size-5 text-bsb-text-tertiary" />
-                <h1 class="text-2xl font-[590] text-bsb-text-primary">试剂类型</h1>
+                <h1 class="text-2xl font-semibold text-bsb-text-primary">试剂类型</h1>
             </div>
             <Dialog v-model:open="createDialogOpen">
                 <DialogTrigger as-child>

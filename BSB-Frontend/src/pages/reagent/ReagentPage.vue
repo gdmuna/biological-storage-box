@@ -11,21 +11,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Trash2, Plus, FlaskConical, Tag } from 'lucide-vue-next';
 import { useOrgStore } from '@/stores/org';
 import { useNodeStore } from '@/stores/node';
-import { listReagents, createReagent } from '@/api/modules/box';
+import { useReagentStore } from '@/stores/reagent';
+import { storeToRefs } from 'pinia';
 import { listReagentLogs } from '@/api/modules/feedback';
-import { listReagentTypes, createReagentType, deleteReagentType } from '@/api/modules/reagent-type';
-import type { ReagentTypeItem } from '@/api/modules/reagent-type';
-
-import type { Reagent } from '@/schemas/box.schema';
 
 const org = useOrgStore();
 const nodeStore = useNodeStore();
+const reagentStore = useReagentStore();
+const { reagents, reagentTypes } = storeToRefs(reagentStore);
 
 // BOX-type nodes as the "boxes" list
 const boxes = computed(() => nodeStore.nodes.filter((n) => n.type === 'BOX'));
 
 // Reagent tab state
-const reagents = ref<Reagent[]>([]);
 const reagentLogs = ref<Record<string, Array<{ id: string; action?: string; createdAt?: string }>>>({});
 
 // Create reagent dialog
@@ -37,9 +35,6 @@ const newReagentDesc = ref('');
 const newReagentTypeId = ref('__none__');
 const creatingReagent = ref(false);
 
-// Reagent type tab state
-const reagentTypes = ref<ReagentTypeItem[]>([]);
-
 // Create type dialog
 const createTypeOpen = ref(false);
 const newTypeName = ref('');
@@ -48,18 +43,11 @@ const newTypeColor = ref('');
 const newTypeUnit = ref('');
 const creatingType = ref(false);
 
-async function fetchData() {
+async function fetchData(force = false) {
     if (!org.currentOrgId) return;
     try {
-        await nodeStore.fetchByOrg(org.currentOrgId);
-        reagentTypes.value = await listReagentTypes(org.currentOrgId).send();
-
-        const allReagents: Reagent[] = [];
-        for (const box of boxes.value) {
-            const r = await listReagents(box.id).send();
-            if (Array.isArray(r)) allReagents.push(...r);
-        }
-        reagents.value = allReagents;
+        await nodeStore.fetchByOrg(org.currentOrgId, force);
+        await reagentStore.initData(org.currentOrgId, force);
     } catch {
         /* empty */
     }
@@ -88,13 +76,13 @@ async function handleCreateReagent() {
     if (!newReagentBoxId.value || newReagentBoxId.value === '__none__' || !newReagentPosition.value.trim() || !newReagentName.value.trim()) return;
     creatingReagent.value = true;
     try {
-        await createReagent({
+        await reagentStore.addReagent({
             nodeId: newReagentBoxId.value,
             position: newReagentPosition.value.trim(),
             name: newReagentName.value.trim(),
             description: newReagentDesc.value.trim() || undefined,
             reagentTypeId: newReagentTypeId.value !== '__none__' ? newReagentTypeId.value : undefined
-        }).send();
+        });
         newReagentBoxId.value = '__none__';
         newReagentPosition.value = '';
         newReagentName.value = '';
@@ -113,19 +101,18 @@ async function handleCreateType() {
     if (!newTypeName.value.trim() || !org.currentOrgId) return;
     creatingType.value = true;
     try {
-        await createReagentType({
+        await reagentStore.addReagentType({
             orgId: org.currentOrgId,
             name: newTypeName.value.trim(),
             description: newTypeDesc.value.trim() || undefined,
             colorHex: newTypeColor.value.trim() || undefined,
             unit: newTypeUnit.value.trim() || undefined
-        }).send();
+        });
         newTypeName.value = '';
         newTypeDesc.value = '';
         newTypeColor.value = '';
         newTypeUnit.value = '';
         createTypeOpen.value = false;
-        reagentTypes.value = await listReagentTypes(org.currentOrgId).send();
     } catch {
         /* empty */
     } finally {
@@ -133,24 +120,32 @@ async function handleCreateType() {
     }
 }
 
-async function handleDeleteType(id: string) {
+async function handelDelete(id: string) {
     try {
-        await deleteReagentType(id).send();
-        if (org.currentOrgId) {
-            reagentTypes.value = await listReagentTypes(org.currentOrgId).send();
-        }
+        await reagentStore.removeReagent(id);
     } catch {
         /* empty */
     }
 }
 
-onMounted(fetchData);
-watch(() => org.currentOrgId, fetchData);
+async function handleDeleteType(id: string) {
+    try {
+        await reagentStore.removeReagentType(id);
+    } catch {
+        /* empty */
+    }
+}
+
+onMounted(() => fetchData(true));
+watch(
+    () => org.currentOrgId,
+    () => fetchData(true)
+);
 </script>
 
 <template>
     <div class="space-y-6">
-        <h1 class="text-2xl font-[590] text-bsb-text-primary">试剂管理</h1>
+        <h1 class="text-2xl font-semibold text-bsb-text-primary">试剂管理</h1>
 
         <Tabs default-value="reagents">
             <TabsList class="w-full justify-start gap-0 rounded-none border-b border-bsb-border-standard bg-transparent p-0">
@@ -245,29 +240,34 @@ watch(() => org.currentOrgId, fetchData);
 
                 <div v-if="reagents.length > 0" class="space-y-3">
                     <Card v-for="reagent in reagents" :key="reagent.id" class="reagent-card border-bsb-border-standard bg-bsb-bg-panel">
-                        <CardHeader class="flex flex-row items-center justify-between py-3">
+                        <CardHeader class="flex flex-row items-center justify-between">
                             <CardTitle class="text-sm text-bsb-text-primary">{{ reagent.name }}</CardTitle>
-                            <div class="flex items-center gap-2">
-                                <Badge variant="outline" class="text-bsb-text-tertiary">
-                                    {{ reagent.position }}
-                                </Badge>
-                                <Badge class="bg-bsb-bg-surface text-bsb-text-quaternary">
-                                    {{ getBoxName(reagent.nodeId) }}
-                                </Badge>
-                                <Badge v-if="getTypeName(reagent.reagentTypeId)" variant="outline" class="border-bsb-accent-brand/30 text-bsb-accent-brand">
-                                    {{ getTypeName(reagent.reagentTypeId) }}
-                                </Badge>
+                            <div class="flex flex-col space-y-1">
+                                <Button variant="ghost" size="icon" class="ml-auto text-bsb-text-quaternary hover:text-red-500 cursor-pointer" @click="handelDelete(reagent.id)">
+                                    <Trash2 class="size-4" />
+                                </Button>
+                                <div class="flex items-center gap-2">
+                                    <Badge variant="outline" class="text-bsb-text-tertiary">
+                                        {{ reagent.position }}
+                                    </Badge>
+                                    <Badge class="bg-bsb-bg-surface text-bsb-text-quaternary">
+                                        {{ getBoxName(reagent.nodeId) }}
+                                    </Badge>
+                                    <Badge v-if="getTypeName(reagent.reagentTypeId)" variant="outline" class="border-bsb-accent-brand/30 text-bsb-accent-brand">
+                                        {{ getTypeName(reagent.reagentTypeId) }}
+                                    </Badge>
+                                </div>
                             </div>
                         </CardHeader>
                         <CardContent v-if="reagent.description" class="pt-0">
                             <p class="text-xs text-bsb-text-quaternary">{{ reagent.description }}</p>
                         </CardContent>
-                        <CardContent class="pt-0">
+                        <!-- <CardContent class="pt-0">
                             <Button size="sm" variant="outline" @click="handleLoadLogs(reagent.id)">查看日志</Button>
                             <div v-if="reagentLogs[reagent.id]?.length" class="mt-2 space-y-1">
                                 <p v-for="log in reagentLogs[reagent.id]" :key="log.id" class="text-xs text-bsb-text-quaternary">{{ log.action || '操作' }} {{ log.createdAt }}</p>
                             </div>
-                        </CardContent>
+                        </CardContent> -->
                     </Card>
                 </div>
                 <p v-else class="text-sm text-bsb-text-quaternary">暂无试剂数据</p>

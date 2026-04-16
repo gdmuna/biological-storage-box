@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Plus, Home, ChevronRight } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
@@ -48,7 +48,13 @@ onMounted(async () => {
     const main = document.getElementById('main-content');
     if (main) pageTransitionIn(main);
 });
-// watch(() => org.currentOrgId, fetchRooms);
+
+watch(
+    () => org.currentOrgId,
+    () => {
+        if (org.currentOrgId) nodeStore.fetchByOrg(org.currentOrgId);
+    }
+);
 </script>
 
 <template>
@@ -56,7 +62,7 @@ onMounted(async () => {
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <Home class="size-5 text-bsb-text-tertiary" />
-                <h1 class="text-2xl font-[590] text-bsb-text-primary">房间</h1>
+                <h1 class="text-2xl font-semibold text-bsb-text-primary">房间</h1>
             </div>
             <Dialog v-model:open="createDialogOpen">
                 <DialogTrigger as-child>
@@ -95,28 +101,27 @@ onMounted(async () => {
 
         <!-- Room grid -->
         <div v-if="nodeStore.nodes.length > 0" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <Card v-for="room in nodeStore.nodes" :key="room.id" class="room-card cursor-pointer border-bsb-border-standard bg-white transition-all hover:border-[#0075de]/30 hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]" @click="router.push(`/room/${room.id}`)">
+            <Card v-for="node in nodeStore.rootNodes" :key="node.id" class="room-card cursor-pointer border-bsb-border-standard bg-white transition-all hover:border-[#0075de]/30 hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]" @click="router.push(`/room/${node.id}`)">
                 <CardHeader class="pb-2">
                     <div class="flex items-start justify-between">
                         <div class="flex items-center gap-2.5">
                             <div class="flex size-8 items-center justify-center rounded-lg bg-[#f2f9ff] text-bsb-accent-brand">
                                 <Home class="size-4" />
                             </div>
-                            <CardTitle class="text-sm text-bsb-text-primary">{{ room.name }}</CardTitle>
+                            <CardTitle class="text-sm text-bsb-text-primary">{{ node.name }}</CardTitle>
                         </div>
                         <ChevronRight class="size-4 text-bsb-text-quaternary" />
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <p v-if="room.description" class="line-clamp-2 text-xs text-bsb-text-tertiary">{{ room.description }}</p>
+                    <p v-if="node.description" class="line-clamp-2 text-xs text-bsb-text-tertiary">{{ node.description }}</p>
                     <p v-else class="text-xs text-bsb-text-quaternary">暂无描述</p>
                     <div class="mt-2 flex items-center gap-1">
-                        <Badge variant="outline" class="text-xs text-bsb-text-quaternary">{{ room._count?.children ?? 0 }} 个子节点</Badge>
+                        <Badge variant="outline" class="text-xs text-bsb-text-quaternary">{{ node._count?.children ?? 0 }} 个子节点</Badge>
                     </div>
                 </CardContent>
             </Card>
         </div>
-
         <div v-else-if="!nodeStore.loading" class="flex flex-col items-center justify-center py-16 text-center">
             <Home class="mb-3 size-10 text-bsb-text-quaternary" />
             <p class="text-sm font-medium text-bsb-text-secondary">暂无房间</p>

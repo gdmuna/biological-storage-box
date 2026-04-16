@@ -10,7 +10,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from '
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getNode, setGridConfig } from '@/api/modules/node';
+import { setGridConfig } from '@/api/modules/node';
 import type { NodeItem } from '@/api/modules/node';
 import { useNodeStore } from '@/stores/node';
 import { useOrgStore } from '@/stores/org';
@@ -21,7 +21,7 @@ const router = useRouter();
 const nodeStore = useNodeStore();
 const org = useOrgStore();
 
-const nodeId = computed(() => route.params.id as string);
+const nodeId = computed(() => String(route.params.id));
 
 const roomNode = ref<NodeItem | null>(null);
 const children = ref<NodeItem[]>([]);
@@ -48,11 +48,23 @@ const typeColorMap: Record<string, string> = {
     ROOM: 'border-[#213183]/30 text-[#213183] bg-[#f0f2ff]'
 };
 
+function updateNodeData() {
+    const detail = nodeStore.getNodeDetail(nodeId.value);
+    if (detail) {
+        roomNode.value = detail;
+        children.value = detail.children ?? [];
+    } else {
+        roomNode.value = null;
+        children.value = [];
+    }
+}
+
 onMounted(() => {
     updateWidth();
     window.addEventListener('resize', updateWidth);
     const main = document.getElementById('main-content');
     if (main) pageTransitionIn(main);
+    if (org.currentOrgId) nodeStore.fetchByOrg(org.currentOrgId);
 });
 
 watch(
@@ -60,16 +72,22 @@ watch(
     async (orgId) => {
         if (!orgId) return;
         try {
-            const [node] = await Promise.all([getNode(nodeId.value).send(), nodeStore.fetchByOrg(orgId)]);
-            roomNode.value = node;
-            children.value = nodeStore.nodes.filter((n) => n.parentId === nodeId.value);
+            nodeStore.fetchByOrg(orgId, true);
+            updateNodeData();
             setTimeout(() => staggerListIn('.child-card'), 50);
         } catch {
             /* empty */
         }
-    },
+    }
+);
+
+watch(
+    () => nodeId.value,
+    () => updateNodeData(),
     { immediate: true }
 );
+
+const currentNode = computed(() => nodeStore.getNodeDetail(nodeId.value));
 
 onUnmounted(() => window.removeEventListener('resize', updateWidth));
 
@@ -119,13 +137,19 @@ async function handleDelete() {
         /* empty */
     }
 }
+
+function handleRouterBack() {
+    const parentId = currentNode.value?.parentId;
+    if (parentId) return router.push(`/room/${parentId}`);
+    return router.push('/room');
+}
 </script>
 
 <template>
     <div class="space-y-6">
         <!-- Header -->
         <div class="flex items-center gap-3">
-            <Button variant="ghost" size="icon" class="shrink-0 text-bsb-text-tertiary hover:text-bsb-text-primary" @click="router.push('/room')">
+            <Button variant="ghost" size="icon" class="shrink-0 text-bsb-text-tertiary hover:text-bsb-text-primary" @click="handleRouterBack">
                 <ArrowLeft class="size-4" />
             </Button>
             <div class="flex items-center gap-2.5">
@@ -133,7 +157,7 @@ async function handleDelete() {
                     <Home class="size-4" />
                 </div>
                 <div>
-                    <h1 class="text-2xl font-[590] text-bsb-text-primary">{{ roomNode?.name ?? '加载中…' }}</h1>
+                    <h1 class="text-2xl font-semibold text-bsb-text-primary">{{ roomNode?.name ?? '加载中…' }}</h1>
                     <p v-if="roomNode?.description" class="text-xs text-bsb-text-tertiary">{{ roomNode.description }}</p>
                 </div>
             </div>
@@ -162,7 +186,7 @@ async function handleDelete() {
         <!-- Children section -->
         <div class="space-y-3">
             <div class="flex items-center justify-between">
-                <h2 class="text-sm font-[510] text-bsb-text-secondary">子节点（{{ children.length }}）</h2>
+                <h2 class="text-sm font-emphasis text-bsb-text-secondary">子节点（{{ children.length }}）</h2>
                 <Button size="sm" variant="outline" class="gap-1.5 border-bsb-border-standard text-bsb-text-secondary hover:text-bsb-text-primary" @click="createDialogOpen = true">
                     <Plus class="size-4" />
                     添加子节点

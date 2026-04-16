@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useOrgStore } from '@/stores/org';
 import { useNodeStore } from '@/stores/node';
 import { setGridConfig } from '@/api/modules/node';
+import { NodeItem } from '@/api/modules/node';
 
 const router = useRouter();
 const org = useOrgStore();
@@ -19,8 +20,9 @@ const rows = ref(9);
 const cols = ref(9);
 const parentId = ref<string | null>(null);
 
-// Only CONTAINER-type nodes can be parents for BOX
-const containerNodes = computed(() => nodeStore.nodes.filter((n) => n.type === 'CONTAINER'));
+const containerNodes = computed<NodeItem[]>(() => {
+    return [...nodeStore.rootNodes, ...nodeStore.containerNodes];
+});
 
 const loading = ref(false);
 const error = ref('');

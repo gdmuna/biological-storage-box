@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,25 +11,32 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Trash2 } from 'lucide-vue-next';
-import { getNode } from '@/api/modules/node';
 import { useNodeStore } from '@/stores/node';
-import { listReagents, updateReagent, createReagent } from '@/api/modules/box';
 import { uploadFile } from '@/api/modules/file';
 import { createBoxImage, listBoxImages, deleteBoxImage } from '@/api/modules/box-image';
 import { createFeedback, listBoxLogs } from '@/api/modules/feedback';
-import { listReagentTypes } from '@/api/modules/reagent-type';
-import type { ReagentTypeItem } from '@/api/modules/reagent-type';
 import { pageTransitionIn } from '@/utils/animation';
-import type { Node } from '@/schemas/node.schema';
-import type { Reagent, BoxImage } from '@/schemas/box.schema';
+import { Node } from '@/schemas/node.schema';
+import { Reagent, BoxImage } from '@/schemas/box.schema';
+
+import { storeToRefs } from 'pinia';
+import { useOrgStore } from '@/stores/org';
+import { useReagentStore } from '@/stores/reagent';
 
 const route = useRoute();
 const router = useRouter();
-const boxId = computed(() => route.params.id as string);
+const reagentStore = useReagentStore();
+const org = useOrgStore();
+const { reagents, reagentTypes } = storeToRefs(reagentStore);
+
+const boxId = computed(() => String(route.params.id));
+
+const showReagents = computed(() => {
+    return reagents.value.filter((r) => r.nodeId === boxId.value);
+});
 
 const nodeStore = useNodeStore();
 const box = ref<Node | null>(null);
-const reagents = ref<Reagent[]>([]);
 const images = ref<BoxImage[]>([]);
 const boxLogs = ref<{ id: string; action?: string; createdAt?: string }[]>([]);
 const feedbackContent = ref('');
@@ -45,7 +52,6 @@ const slotName = ref('');
 const slotTypeId = ref('__none__');
 const slotDesc = ref('');
 const slotSaving = ref(false);
-const reagentTypes = ref<ReagentTypeItem[]>([]);
 const imageUploading = ref(false);
 const imageUploadMsg = ref('');
 
@@ -55,7 +61,7 @@ const grid = computed(() => {
     const cols = box.value.gridConfig?.cols ?? 0;
     if (!rows || !cols) return [];
     const cells: (Reagent | null)[][] = Array.from({ length: rows }, () => Array.from({ length: cols }, () => null));
-    for (const r of reagents.value) {
+    for (const r of showReagents.value) {
         const match = r.position.match(/^(\d+)-(\d+)$/);
         if (match) {
             const row = parseInt(match[1], 10) - 1;
@@ -68,44 +74,33 @@ const grid = computed(() => {
     return cells;
 });
 
+async function initData(force = false) {
+    if (!org.currentOrgId) return;
+    await nodeStore.fetchByOrg(org.currentOrgId, force);
+
+    box.value = nodeStore.boxNodes.find((n) => n.id === boxId.value) || null;
+    await reagentStore.initData(org.currentOrgId, force);
+    // images.value = await listBoxImages(boxId.value).send(force);
+    boxLogs.value = await listBoxLogs({ boxId: boxId.value, limit: 20, offset: 0 }).send(force);
+}
+
 onMounted(async () => {
     const main = document.getElementById('main-content');
     if (main) pageTransitionIn(main);
 
     try {
-        box.value = await getNode(boxId.value).send();
-        reagents.value = await listReagents(boxId.value).send();
-        images.value = await listBoxImages(boxId.value).send();
-        boxLogs.value = await listBoxLogs({ boxId: boxId.value, limit: 20, offset: 0 }).send();
-
-        if (box.value) {
-            reagentTypes.value = await listReagentTypes(box.value.orgId)
-                .send()
-                .catch(() => []);
-        }
-
-        // Stagger grid rows
-        setTimeout(() => {
-            const rows = document.querySelectorAll<HTMLElement>('.grid-row');
-            rows.forEach((row, i) => {
-                const cells = row.querySelectorAll<HTMLElement>('.grid-cell');
-                cells.forEach((cell) => {
-                    cell.style.opacity = '0';
-                    cell.style.transform = 'translateY(8%)';
-                    cell.style.transition = `opacity 0.22s ease ${i * 0.1}s, transform 0.22s ease ${i * 0.1}s`;
-                    requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            cell.style.opacity = '1';
-                            cell.style.transform = 'translateY(0)';
-                        });
-                    });
-                });
-            });
-        }, 50);
+        await initData(true);
     } catch {
         /* empty */
     }
 });
+
+watch(
+    () => org.currentOrgId,
+    async () => {
+        if (org.currentOrgId) await initData(true);
+    }
+);
 
 async function handleDeleteBox() {
     try {
@@ -130,13 +125,13 @@ async function handleSaveSlot() {
     slotSaving.value = true;
     try {
         if (drawerCell.value.reagent) {
-            await updateReagent({
+            await reagentStore.editReagent({
                 id: drawerCell.value.reagent.id,
                 name: slotName.value || undefined,
-                description: slotDesc.value || undefined
-            }).send();
+                description: slotDesc.value || undefined,
+                reagentTypeId: slotTypeId.value !== '__none__' ? slotTypeId.value : null
+            });
         }
-        reagents.value = await listReagents(boxId.value).send();
         drawerOpen.value = false;
     } catch {
         /* empty */
@@ -149,14 +144,25 @@ async function handleCreateSlot() {
     if (!drawerCell.value || !box.value || !slotName.value.trim()) return;
     slotSaving.value = true;
     try {
-        await createReagent({
+        await reagentStore.addReagent({
             nodeId: boxId.value,
             position: `${drawerCell.value.row}-${drawerCell.value.col}`,
             name: slotName.value.trim(),
             description: slotDesc.value.trim() || undefined,
-            reagentTypeId: slotTypeId.value !== '__none__' ? slotTypeId.value : undefined
-        }).send();
-        reagents.value = await listReagents(boxId.value).send();
+            reagentTypeId: slotTypeId.value !== '__none__' ? slotTypeId.value : null
+        });
+        drawerOpen.value = false;
+    } catch {
+        /* empty */
+    } finally {
+        slotSaving.value = false;
+    }
+}
+
+async function handleDeleteSlot(id: string) {
+    slotSaving.value = true;
+    try {
+        await reagentStore.removeReagent(id);
         drawerOpen.value = false;
     } catch {
         /* empty */
@@ -209,7 +215,7 @@ async function handleSubmitFeedback() {
     <div class="space-y-6">
         <div v-if="box" class="flex items-start justify-between">
             <div>
-                <h1 class="text-2xl font-[590] text-bsb-text-primary">{{ box.name }}</h1>
+                <h1 class="text-2xl font-semibold text-bsb-text-primary">{{ box.name }}</h1>
                 <p v-if="box.description" class="mt-1 text-sm text-bsb-text-tertiary">
                     {{ box.description }}
                 </p>
@@ -219,7 +225,7 @@ async function handleSubmitFeedback() {
             </div>
             <Dialog v-model:open="deleteDialogOpen">
                 <DialogTrigger as-child>
-                    <Button variant="ghost" size="icon" class="text-bsb-text-quaternary hover:text-red-500">
+                    <Button variant="ghost" size="icon" class="text-bsb-text-quaternary cursor-pointer hover:text-red-500">
                         <Trash2 class="size-4" />
                     </Button>
                 </DialogTrigger>
@@ -238,7 +244,7 @@ async function handleSubmitFeedback() {
 
         <!-- Grid -->
         <div v-if="box" class="space-y-1.5">
-            <div v-for="(row, ri) in grid" :key="ri" class="grid-row flex gap-1.5">
+            <div v-for="(row, ri) in grid" :key="ri" class="grid-row flex justify-center gap-1.5">
                 <div
                     v-for="(cell, ci) in row"
                     :key="`${ri}-${ci}`"
@@ -256,14 +262,19 @@ async function handleSubmitFeedback() {
         </div>
 
         <!-- Reagent list -->
-        <div v-if="reagents.length > 0" class="space-y-2">
+        <div v-if="showReagents.length > 0" class="space-y-2">
             <h2 class="text-sm font-medium text-bsb-text-secondary">试剂列表</h2>
-            <Card v-for="reagent in reagents" :key="reagent.id" class="rounded-xl border-bsb-border-standard bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
-                <CardHeader class="flex flex-row items-center justify-between py-3">
+            <Card v-for="reagent in showReagents" :key="reagent.id" class="rounded-xl border-bsb-border-standard bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+                <CardHeader class="flex flex-row items-center justify-between">
                     <CardTitle class="text-sm text-bsb-text-primary">{{ reagent.name }}</CardTitle>
-                    <Badge variant="outline" class="text-bsb-text-tertiary">
-                        {{ reagent.position }}
-                    </Badge>
+                    <div class="flex flex-col space-y-2">
+                        <Button size="icon" class="cursor-pointer bg-red-100 text-red-400 hover:bg-red-200 hover:text-red-500 self-end" @click="handleDeleteSlot(reagent.id)">
+                            <Trash2 class="size-4" />
+                        </Button>
+                        <Badge variant="outline" class="text-bsb-text-tertiary">
+                            {{ reagent.position }}
+                        </Badge>
+                    </div>
                 </CardHeader>
             </Card>
         </div>
@@ -308,14 +319,14 @@ async function handleSubmitFeedback() {
         <Sheet v-model:open="drawerOpen">
             <SheetContent side="right" class="w-80 border-l border-bsb-border-standard bg-white">
                 <SheetHeader>
-                    <SheetTitle class="text-sm font-[590]">
+                    <SheetTitle class="text-sm font-semibold flex items-center">
                         槽位 {{ drawerCell?.row }}-{{ drawerCell?.col }}
                         <span v-if="drawerCell?.reagent" class="ml-2 text-xs font-normal text-bsb-text-tertiary">（编辑试剂）</span>
                         <span v-else class="ml-2 text-xs font-normal text-bsb-text-tertiary">（空槽）</span>
                     </SheetTitle>
                 </SheetHeader>
 
-                <div class="mt-4 space-y-4">
+                <div class="mt-4 space-y-4 px-4">
                     <div class="space-y-1.5">
                         <Label>试剂名称</Label>
                         <Input v-model="slotName" placeholder="输入试剂名称…" class="border-bsb-border-standard" />
@@ -349,6 +360,10 @@ async function handleSubmitFeedback() {
                     </Button>
                     <Button v-else :disabled="slotSaving || !slotName.trim()" class="w-full bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" @click="handleCreateSlot">
                         {{ slotSaving ? '保存中…' : '新增试剂' }}
+                    </Button>
+
+                    <Button v-if="drawerCell?.reagent" class="w-full bg-red-500 hover:bg-red-600 text-white" @click="handleDeleteSlot(drawerCell.reagent.id)">
+                        {{ '删除试剂' }}
                     </Button>
                 </div>
             </SheetContent>
