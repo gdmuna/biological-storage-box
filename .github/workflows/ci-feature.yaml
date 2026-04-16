@@ -1,0 +1,17 @@
+name: CI - Feature Branch
+
+on:
+  push:
+    branches: ['feature/**', 'fix/**', 'refactor/**']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-feature-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci-reusable.yaml
+    secrets: inherit

@@ -1,0 +1,10 @@
+.gitnexus
+**/node_modules
+**/dist
+**/.vitepress/cache
+**/prisma/generated
+**/coverage
+**/logs
+**/.obsidian
+
+dogfood-output/

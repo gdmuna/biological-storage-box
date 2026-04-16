@@ -1,0 +1,43 @@
+{
+  "name": "biological-storage-box",
+  "private": true,
+  "version": "0.1.0",
+  "description": "生物样本储存管理系统 monorepo",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@typescript-eslint/eslint-plugin": "^8.58.1",
+    "@typescript-eslint/parser": "^8.58.1",
+    "eslint": "~9.39.4",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^9.32.0",
+    "globals": "^16.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.2",
+    "vue-eslint-parser": "^9.4.3"
+  },
+  "lint-staged": {
+    "BSB-Backend/**/*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "BSB-Frontend/**/*.{js,ts,vue}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "**/*.{json,yaml,yml,css,scss,html}": [
+      "prettier --write"
+    ]
+  }
+}

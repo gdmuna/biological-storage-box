@@ -1,0 +1,171 @@
+# Auto Tag Release Workflow
+#
+# 重要说明：
+# 为了触发 cd-prod.yaml 工作流，本工作流需要使用 Personal Access Token (PAT)。
+# GitHub Actions 的默认 GITHUB_TOKEN 推送的标签不会触发其他工作流（防止递归执行）。
+#
+# 配置步骤：
+# 1. 创建 PAT（Settings → Developer settings → Personal access tokens → Fine-grained tokens）
+# 2. 权限设置：Repository permissions → Contents = Read and write
+# 3. 将 PAT 添加到仓库 Secrets（Settings → Secrets and variables → Actions → New repository secret）
+# 4. Secret 名称：PAT
+#
+# 如果未配置 PAT，工作流会回退到 GITHUB_TOKEN，但不会触发 CD 流程。
+name: Auto Tag Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+env:
+  TOKEN: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+
+concurrency:
+  group: auto-tag-release-${{ github.event.pull_request.base.ref }}
+  cancel-in-progress: false
+
+jobs:
+  auto-tag:
+    name: Auto tag from release branch
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # 获取完整历史以查找所有tag
+          token: ${{ env.TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Extract version from package.json
+        id: version
+        run: |
+          VERSION=$(node -e "console.log(require('./package.json').version)")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "📦 Application Version: $VERSION"
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          # 配置 Git 凭证（避免认证问题）
+          git config --global credential.helper store
+          echo "https://x-access-token:${{ env.TOKEN }}@github.com" > ~/.git-credentials
+
+      - name: Create release tag
+        id: create_tag
+        env:
+          RELEASE_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: node scripts/create-release-tag.cjs "$RELEASE_BRANCH"
+        continue-on-error: true
+
+      - name: Push tag (with conflict detection)
+        if: steps.create_tag.outputs.version_valid == 'true'
+        id: push_tag
+        run: |
+          TAG_NAME="${{ steps.create_tag.outputs.new_tag }}"
+
+          # 刷新 tag 列表，检测并发推送
+          git fetch origin --tags 2>&1 || true
+
+          # 检查 tag 是否已在远端（并发场景）
+          if git ls-remote origin "refs/tags/${TAG_NAME}" | grep -q "${TAG_NAME}"; then
+            echo "⚠️ Tag ${TAG_NAME} already pushed by another workflow"
+            echo "✅ Concurrent execution handled gracefully"
+            COMMIT_SHA=$(git rev-list -n 1 "${TAG_NAME}" | cut -c1-7)
+            echo "commit_sha=${COMMIT_SHA}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # 推送 tag
+          if git push origin "${TAG_NAME}" 2>&1; then
+            echo "✅ Tag ${TAG_NAME} pushed successfully"
+            # 获取 tag 指向的 commit SHA（7位短哈希）
+            COMMIT_SHA=$(git rev-list -n 1 "${TAG_NAME}" | cut -c1-7)
+            echo "commit_sha=${COMMIT_SHA}" >> "$GITHUB_OUTPUT"
+          else
+            # 推送失败，重新检查是否被其他工作流推送了
+            git fetch origin --tags
+            if git ls-remote origin "refs/tags/${TAG_NAME}" | grep -q "${TAG_NAME}"; then
+              echo "✅ Tag was pushed by concurrent workflow"
+              COMMIT_SHA=$(git rev-list -n 1 "${TAG_NAME}" | cut -c1-7)
+              echo "commit_sha=${COMMIT_SHA}" >> "$GITHUB_OUTPUT"
+              exit 0
+            else
+              echo "❌ Failed to push tag and tag not found remotely"
+              exit 1
+            fi
+          fi
+
+      - name: Generate summary
+        if: always() && github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/')
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          # 转义特殊字符，防止破坏 Markdown
+          PR_TITLE_ESCAPED="${PR_TITLE//$'\n'/ }"
+          PR_TITLE_ESCAPED="${PR_TITLE_ESCAPED//\`/\\\`}"
+          PR_HEAD_REPO_ESCAPED="${PR_HEAD_REPO//\`/\\\`}"
+          PR_HEAD_REF_ESCAPED="${PR_HEAD_REF//\`/\\\`}"
+
+          # 检查版本验证状态
+          VERSION_VALID="${{ steps.create_tag.outputs.version_valid }}"
+
+          if [ "$VERSION_VALID" != "true" ]; then
+            # 版本验证失败的 summary
+            cat >> "$GITHUB_STEP_SUMMARY" << EOF
+          # 🏷️ Auto Tag Release - ❌ Skipped
+          ## ⚠️ 版本验证失败
+          此工作流因 package.json 版本不符合要求而被跳过。
+
+          ## 📋 基本信息
+          - **触发事件**: pull_request
+          - **代码仓库**: [${{ github.repository }}](${{ github.server_url }}/${{ github.repository }})
+          - **PR**: [#${{ github.event.pull_request.number }} - ${PR_TITLE_ESCAPED}](${{ github.event.pull_request.html_url }})
+          - **源分支 → 目标分支**: [${PR_HEAD_REPO_ESCAPED}/${PR_HEAD_REF_ESCAPED} → ${{ github.base_ref }}](${{ github.event.pull_request.html_url }}/changes)
+
+          ## ❌ 版本检查结果
+          - **期望版本**: \`${{ steps.create_tag.outputs.expected_version }}\`
+          - **实际版本**: \`${{ steps.create_tag.outputs.actual_version }}\`
+          - **状态**: ❌ 不匹配
+
+          ## 💡 解决方法
+          1. 在 release PR 中更新 \`package.json\` 的 \`version\` 字段为 \`${{ steps.create_tag.outputs.expected_version }}\`
+          2. 提交并推送更改
+          3. PR 检查会自动重新运行
+
+          ## ⏰ 时间戳
+          - **完成时间 (UTC)**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          - **完成时间 (Asia/Shanghai)**: $(TZ='Asia/Shanghai' date +"%Y-%m-%d %H:%M:%S %Z")
+          EOF
+          else
+            # 正常执行的 summary
+            cat >> "$GITHUB_STEP_SUMMARY" << EOF
+          # 🏷️ Auto Tag Release
+          ## 📋 基本信息
+          - **触发事件**: pull_request
+          - **代码仓库**: [${{ github.repository }}](${{ github.server_url }}/${{ github.repository }})
+          - **PR**: [#${{ github.event.pull_request.number }} - ${PR_TITLE_ESCAPED}](${{ github.event.pull_request.html_url }})
+          - **源分支 → 目标分支**: [${{ github.event.pull_request.head.repo.full_name }}/${PR_HEAD_REF_ESCAPED} → ${{ github.base_ref }}](${{ github.event.pull_request.html_url }}/changes)
+          - **提交哈希**: [${GITHUB_SHA:0:7}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
+          ## 📦 Package version
+          - **源版本 → 新版本**: ${{ steps.version.outputs.version }} → ${{ steps.create_tag.outputs.new_version }}
+          - **提交哈希**: [${{ steps.push_tag.outputs.commit_sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ steps.push_tag.outputs.commit_sha }})
+          ## 🏷️ 创建的标签
+          - **Tag**: [${{ steps.create_tag.outputs.new_tag }}](${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ steps.create_tag.outputs.new_tag }})
+          ## ⏰ 时间戳
+          - **完成时间 (UTC)**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          - **完成时间 (Asia/Shanghai)**: $(TZ='Asia/Shanghai' date +"%Y-%m-%d %H:%M:%S %Z")
+          EOF
+          fi

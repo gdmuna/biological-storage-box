@@ -1,0 +1,13 @@
+packages:
+  - 'BSB-Backend'
+  - 'BSB-Docsite'
+  - 'BSB-Frontend'
+
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@prisma/engines'
+  - '@scarf/scarf'
+  - esbuild
+  - prisma
+  - unrs-resolver
+  - vue-demi
