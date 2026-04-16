@@ -29,7 +29,16 @@ export class NodeRepository {
     async loadTree(orgId: string) {
         return this.db.node.findMany({
             where: { orgId },
-            include: { gridConfig: true },
+            include: {
+                gridConfig: true,
+                children: true,
+                _count: {
+                    select: {
+                        children: true,
+                        reagents: true,
+                    },
+                },
+            },
             orderBy: { createdAt: 'asc' },
         });
     }
