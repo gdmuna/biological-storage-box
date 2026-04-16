@@ -236,7 +236,7 @@ model Reagent {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  node        Node?        @relation(fields: [nodeId], references: [id], onDelete: SetNull)
+  node        Node?        @relation(fields: [nodeId], references: [id], onDelete: Cascade)
   reagentType ReagentType? @relation(fields: [reagentTypeId], references: [id], onDelete: SetNull)
   reagentLogs ReagentLog[]
 
