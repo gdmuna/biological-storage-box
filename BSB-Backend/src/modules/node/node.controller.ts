@@ -2,11 +2,9 @@ import {
     CreateNodeDto,
     UpdateNodeDto,
     NodeIdDto,
-    NodeListDto,
     NodeTreeDto,
     SetGridConfigDto,
     RemoveGridConfigDto,
-    NodeFilterDto,
 } from './node.dto.js';
 import { NodeService } from './node.service.js';
 import NODE_EXCEPTION from './node.exception.js';
@@ -26,7 +24,7 @@ export class NodeController {
     @Post('add')
     @ApiRoute({
         auth: 'required',
-        summary: '创建节点（根节点或子节点）',
+        summary: '创建节点',
         errors: [ORG_EXCEPTION.OrgNotFoundException.code, ORG_EXCEPTION.OrgNotAdminException.code],
     })
     async create(@CurrentUser() user: AccessTokenClaim, @Body() body: CreateNodeDto) {
@@ -46,32 +44,23 @@ export class NodeController {
         await this.nodeService.delete(user.sub, body.id);
     }
 
+    @Get('tree')
+    @ApiRoute({
+        auth: 'required',
+        summary: '获取组织完整节点树（扁平数组，前端自行构建树）',
+    })
+    async getTree(@Query() query: NodeTreeDto) {
+        return this.nodeService.getTree(query.orgId);
+    }
+
     @Get('one')
     @ApiRoute({
         auth: 'required',
-        summary: '获取节点详情（含直接子节点）',
+        summary: '获取单个节点详情',
         errors: [NODE_EXCEPTION.NodeNotFoundException.code],
     })
     async getOne(@Query() query: NodeIdDto) {
         return this.nodeService.getOne(query.id);
-    }
-
-    @Get('list')
-    @ApiRoute({
-        auth: 'required',
-        summary: '获取组织下指定父节点的直接子节点列表',
-    })
-    async list(@Query() query: NodeListDto) {
-        return this.nodeService.list(query.orgId, query.parentId);
-    }
-
-    @Get('tree')
-    @ApiRoute({
-        auth: 'required',
-        summary: '获取组织完整节点树（4 层深度）',
-    })
-    async getTree(@Query() query: NodeTreeDto) {
-        return this.nodeService.getTree(query.orgId);
     }
 
     @Put('update')
@@ -115,19 +104,5 @@ export class NodeController {
         @Body() body: RemoveGridConfigDto
     ) {
         await this.nodeService.removeGridConfig(user.sub, body);
-    }
-
-    @Get('filter')
-    @ApiRoute({
-        auth: 'required',
-        summary: '按类型/组织/gridConfig 过滤节点列表（供前端过滤器使用）',
-    })
-    async filter(@Query() query: NodeFilterDto) {
-        return this.nodeService.filter({
-            orgId: query.orgId,
-            type: query.type,
-            hasGrid: query.hasGrid,
-            parentId: query.parentId,
-        });
     }
 }

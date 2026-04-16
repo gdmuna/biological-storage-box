@@ -9,13 +9,12 @@ export class ReagentRepository {
     async findById(id: string) {
         return this.db.reagent.findUnique({
             where: { id },
-            include: { box: { select: { orgId: true } } },
         });
     }
 
-    async listByBoxId(boxId: string) {
+    async listByNodeId(nodeId: string) {
         return this.db.reagent.findMany({
-            where: { boxId },
+            where: { nodeId },
             orderBy: { position: 'asc' },
         });
     }
@@ -25,21 +24,21 @@ export class ReagentRepository {
     }
 
     async create(data: {
-        boxId: string;
+        nodeId: string;
         position: string;
         name: string;
         description?: string;
         reagentTypeId?: string;
     }) {
-        const box = await this.db.box.findUnique({
-            where: { id: data.boxId },
+        const node = await this.db.node.findUnique({
+            where: { id: data.nodeId },
             select: { orgId: true },
         });
-        if (!box) return null;
+        if (!node) return null;
         return this.db.reagent.create({
             data: {
-                boxId: data.boxId,
-                orgId: box.orgId,
+                nodeId: data.nodeId,
+                orgId: node.orgId,
                 position: data.position,
                 name: data.name,
                 ...(data.description !== undefined && { description: data.description }),

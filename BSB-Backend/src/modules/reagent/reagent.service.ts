@@ -14,8 +14,8 @@ export class ReagentService {
         return reagent;
     }
 
-    async list(boxId: string) {
-        return this.reagentRepository.listByBoxId(boxId);
+    async list(nodeId: string) {
+        return this.reagentRepository.listByNodeId(nodeId);
     }
 
     async update(dto: UpdateReagentDto) {
@@ -30,7 +30,7 @@ export class ReagentService {
 
     async create(dto: CreateReagentDto) {
         const created = await this.reagentRepository.create({
-            boxId: dto.boxId,
+            nodeId: dto.nodeId,
             position: dto.position,
             name: dto.name,
             description: dto.description,

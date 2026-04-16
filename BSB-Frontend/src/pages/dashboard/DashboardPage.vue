@@ -4,7 +4,7 @@ import { Box, Building2, FlaskConical } from 'lucide-vue-next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useOrgStore } from '@/stores/org';
 import { useAuthStore } from '@/stores/auth';
-import { listBoxes } from '@/api/modules/box';
+// import { listBoxes } from '@/api/modules/box';
 import { fadeSlideIn } from '@/utils/animation';
 import NodeCanvas from '@/components/node/NodeCanvas.vue';
 
@@ -18,8 +18,8 @@ async function refreshBoxCount(orgId: string | null) {
         return;
     }
     try {
-        const boxes = await listBoxes(orgId).send();
-        boxCount.value = Array.isArray(boxes) ? boxes.length : 0;
+        // const boxes = await listBoxes(orgId).send();
+        // boxCount.value = Array.isArray(boxes) ? boxes.length : 0;
     } catch {
         boxCount.value = 0;
     }

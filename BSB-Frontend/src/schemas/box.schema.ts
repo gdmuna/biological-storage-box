@@ -23,7 +23,7 @@ export type Box = z.infer<typeof BoxSchema>;
 
 export const ReagentSchema = z.object({
     id: z.string(),
-    boxId: z.string(),
+    nodeId: z.string().nullable(),
     orgId: z.string(),
     position: z.string(),
     name: z.string(),

@@ -63,7 +63,7 @@ describe('Share (E2E)', () => {
         const nodeRes = await request(app.getHttpServer())
             .post('/node/add')
             .set('Authorization', `Bearer ${accessToken}`)
-            .send({ orgId: ownerOrgId, name: 'Shared Node' })
+            .send({ orgId: ownerOrgId, name: 'Shared Node', type: 'CONTAINER' })
             .expect(201);
         nodeId = nodeRes.body.data.id;
     });

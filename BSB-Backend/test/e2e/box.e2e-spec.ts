@@ -6,12 +6,12 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import cookieParser from 'cookie-parser';
 
-describe('Box + Reagent (e2e)', () => {
+describe('Node (BOX) + Reagent (e2e)', () => {
     let app: INestApplication;
     let db: DatabaseService;
     let accessToken: string;
     let orgId: string;
-    let boxId: string;
+    let nodeId: string;
     let reagentId: string;
 
     beforeAll(async () => {
@@ -49,29 +49,29 @@ describe('Box + Reagent (e2e)', () => {
         const orgRes = await request(app.getHttpServer())
             .post('/org/create')
             .set('Authorization', `Bearer ${accessToken}`)
-            .send({ name: 'Box E2E Org' })
+            .send({ name: 'Node BOX E2E Org' })
             .expect(201);
 
         orgId = orgRes.body.data.id;
 
-        // create box
-        const boxRes = await request(app.getHttpServer())
-            .post('/box/add')
+        // create a BOX node
+        const nodeRes = await request(app.getHttpServer())
+            .post('/node/add')
             .set('Authorization', `Bearer ${accessToken}`)
-            .send({ orgId, name: 'E2E Box', rows: 2, cols: 3 })
+            .send({ orgId, name: 'E2E Box Node', type: 'BOX' })
             .expect(201);
 
-        boxId = boxRes.body.data.id;
+        nodeId = nodeRes.body.data.id;
 
-        // seed a reagent directly (no POST endpoint exists)
+        // seed a reagent directly
         const seedReagent = await db.reagent.create({
-            data: { boxId, orgId, position: 'A1', name: 'Seed Reagent' },
+            data: { nodeId, orgId, position: '1-1', name: 'Seed Reagent' },
         });
         reagentId = seedReagent.id;
     });
 
     afterAll(async () => {
-        // cleanup org (cascades to box, reagent)
+        // cleanup org (cascades to nodes, reagents)
         if (orgId) {
             await request(app.getHttpServer())
                 .delete('/org/del')
@@ -81,23 +81,23 @@ describe('Box + Reagent (e2e)', () => {
         await app.close();
     });
 
-    it('GET /box/one should return box detail with reagent count', async () => {
+    it('GET /node/one should return node detail', async () => {
         const res = await request(app.getHttpServer())
-            .get('/box/one')
+            .get('/node/one')
             .set('Authorization', `Bearer ${accessToken}`)
-            .query({ id: boxId })
+            .query({ id: nodeId })
             .expect(200);
 
         expect(res.body.success).toBe(true);
-        expect(res.body.data.id).toBe(boxId);
-        expect(res.body.data._count.reagents).toBe(1); // seeded 1 reagent
+        expect(res.body.data.id).toBe(nodeId);
+        expect(res.body.data.type).toBe('BOX');
     });
 
-    it('GET /reagent/list should return reagents for the box', async () => {
+    it('GET /reagent/list should return reagents for the node', async () => {
         const res = await request(app.getHttpServer())
             .get('/reagent/list')
             .set('Authorization', `Bearer ${accessToken}`)
-            .query({ boxId })
+            .query({ nodeId })
             .expect(200);
 
         expect(res.body.success).toBe(true);
@@ -129,13 +129,13 @@ describe('Box + Reagent (e2e)', () => {
         expect(res.body.data.name).toBe('Sample Alpha');
     });
 
-    it('DELETE /box/del should delete the box', async () => {
+    it('DELETE /node/del should delete the node', async () => {
         await request(app.getHttpServer())
-            .delete('/box/del')
+            .delete('/node/del')
             .set('Authorization', `Bearer ${accessToken}`)
-            .send({ id: boxId })
+            .send({ id: nodeId })
             .expect(200);
 
-        boxId = ''; // prevent afterAll from double-deleting
+        nodeId = ''; // prevent afterAll from double-deleting
     });
 });

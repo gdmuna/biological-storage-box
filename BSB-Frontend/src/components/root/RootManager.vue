@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useOrgStore } from '@/stores/org';
-import { createRoot, listRoots } from '@/api/modules/root';
 
 const emit = defineEmits<{
     created: [];
@@ -18,19 +17,19 @@ const loading = ref(false);
 
 async function fetchRoots() {
     if (!org.currentOrgId) return;
-    const data = await listRoots(org.currentOrgId).send();
-    roots.value = data.map((item) => ({ id: item.id, name: item.name }));
+    // const data = await listRoots(org.currentOrgId).send();
+    // roots.value = data.map((item) => ({ id: item.id, name: item.name }));
 }
 
 async function handleCreateRoot() {
     if (!org.currentOrgId || !name.value.trim()) return;
     loading.value = true;
     try {
-        await createRoot({
-            orgId: org.currentOrgId,
-            name: name.value.trim(),
-            description: description.value.trim() || undefined
-        }).send();
+        // await createRoot({
+        //     orgId: org.currentOrgId,
+        //     name: name.value.trim(),
+        //     description: description.value.trim() || undefined
+        // }).send();
         name.value = '';
         description.value = '';
         await fetchRoots();

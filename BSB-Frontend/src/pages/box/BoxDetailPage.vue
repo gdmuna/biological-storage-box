@@ -11,20 +11,24 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Trash2 } from 'lucide-vue-next';
-import { getBox, listReagents, deleteBox, updateReagent, createReagent } from '@/api/modules/box';
+import { getNode } from '@/api/modules/node';
+import { useNodeStore } from '@/stores/node';
+import { listReagents, updateReagent, createReagent } from '@/api/modules/box';
 import { uploadFile } from '@/api/modules/file';
 import { createBoxImage, listBoxImages, deleteBoxImage } from '@/api/modules/box-image';
 import { createFeedback, listBoxLogs } from '@/api/modules/feedback';
 import { listReagentTypes } from '@/api/modules/reagent-type';
 import type { ReagentTypeItem } from '@/api/modules/reagent-type';
 import { pageTransitionIn } from '@/utils/animation';
-import type { Box, Reagent, BoxImage } from '@/schemas/box.schema';
+import type { Node } from '@/schemas/node.schema';
+import type { Reagent, BoxImage } from '@/schemas/box.schema';
 
 const route = useRoute();
 const router = useRouter();
 const boxId = computed(() => route.params.id as string);
 
-const box = ref<Box | null>(null);
+const nodeStore = useNodeStore();
+const box = ref<Node | null>(null);
 const reagents = ref<Reagent[]>([]);
 const images = ref<BoxImage[]>([]);
 const boxLogs = ref<{ id: string; action?: string; createdAt?: string }[]>([]);
@@ -47,8 +51,9 @@ const imageUploadMsg = ref('');
 
 const grid = computed(() => {
     if (!box.value) return [];
-    const rows = box.value.rows;
-    const cols = box.value.cols;
+    const rows = box.value.gridConfig?.rows ?? 0;
+    const cols = box.value.gridConfig?.cols ?? 0;
+    if (!rows || !cols) return [];
     const cells: (Reagent | null)[][] = Array.from({ length: rows }, () => Array.from({ length: cols }, () => null));
     for (const r of reagents.value) {
         const match = r.position.match(/^(\d+)-(\d+)$/);
@@ -68,7 +73,7 @@ onMounted(async () => {
     if (main) pageTransitionIn(main);
 
     try {
-        box.value = await getBox(boxId.value).send();
+        box.value = await getNode(boxId.value).send();
         reagents.value = await listReagents(boxId.value).send();
         images.value = await listBoxImages(boxId.value).send();
         boxLogs.value = await listBoxLogs({ boxId: boxId.value, limit: 20, offset: 0 }).send();
@@ -104,7 +109,7 @@ onMounted(async () => {
 
 async function handleDeleteBox() {
     try {
-        await deleteBox(boxId.value).send();
+        await nodeStore.removeNode(boxId.value);
         router.push('/box');
     } catch {
         /* empty */
@@ -145,7 +150,7 @@ async function handleCreateSlot() {
     slotSaving.value = true;
     try {
         await createReagent({
-            boxId: boxId.value,
+            nodeId: boxId.value,
             position: `${drawerCell.value.row}-${drawerCell.value.col}`,
             name: slotName.value.trim(),
             description: slotDesc.value.trim() || undefined,
@@ -209,7 +214,7 @@ async function handleSubmitFeedback() {
                     {{ box.description }}
                 </p>
                 <div class="mt-2 flex items-center gap-2">
-                    <Badge variant="outline" class="text-bsb-text-tertiary">{{ box.rows }}×{{ box.cols }}</Badge>
+                    <Badge variant="outline" class="text-bsb-text-tertiary">{{ box.gridConfig?.rows }}×{{ box.gridConfig?.cols }}</Badge>
                 </div>
             </div>
             <Dialog v-model:open="deleteDialogOpen">

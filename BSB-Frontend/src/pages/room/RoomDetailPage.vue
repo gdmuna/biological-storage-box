@@ -10,11 +10,10 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from '
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getNode, setGridConfig } from '@/api/modules/node';
+import type { NodeItem } from '@/api/modules/node';
 import { useNodeStore } from '@/stores/node';
 import { useOrgStore } from '@/stores/org';
-import { getNode, filterNodes } from '@/api/modules/node';
-import { createBox } from '@/api/modules/box';
-import type { NodeItem } from '@/api/modules/node';
 import { staggerListIn, pageTransitionIn } from '@/utils/animation';
 
 const route = useRoute();
@@ -61,7 +60,9 @@ watch(
     async (orgId) => {
         if (!orgId) return;
         try {
-            [roomNode.value, children.value] = await Promise.all([getNode(nodeId.value).send(), filterNodes({ orgId, parentId: nodeId.value }).send()]);
+            const [node] = await Promise.all([getNode(nodeId.value).send(), nodeStore.fetchByOrg(orgId)]);
+            roomNode.value = node;
+            children.value = nodeStore.nodes.filter((n) => n.parentId === nodeId.value);
             setTimeout(() => staggerListIn('.child-card'), 50);
         } catch {
             /* empty */
@@ -78,18 +79,15 @@ async function handleCreate() {
     createError.value = '';
     try {
         if (newType.value === 'BOX') {
-            await createBox({
+            const created = await nodeStore.addNode({
                 orgId: org.currentOrgId,
-                nodeId: nodeId.value,
+                parentId: nodeId.value,
                 name: newName.value.trim(),
                 description: newDesc.value.trim() || undefined,
-                rows: newRows.value,
-                cols: newCols.value
-            }).send();
-            children.value = await filterNodes({
-                orgId: org.currentOrgId,
-                parentId: nodeId.value
-            }).send();
+                type: 'BOX'
+            });
+            await setGridConfig({ nodeId: created.id, rows: newRows.value, cols: newCols.value }).send();
+            children.value.push(created);
         } else {
             const created = await nodeStore.addNode({
                 orgId: org.currentOrgId,

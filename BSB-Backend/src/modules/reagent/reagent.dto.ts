@@ -11,7 +11,7 @@ export class ReagentIdDto extends createZodDto(ReagentIdDtoSchema) {}
 
 const ReagentListDtoSchema = z
     .object({
-        boxId: z.string().min(1).meta({ title: 'Box ID' }),
+        nodeId: z.string().min(1).meta({ title: 'Box ID' }),
     })
     .meta({ description: '试剂列表查询参数' });
 
@@ -30,7 +30,7 @@ export class UpdateReagentDto extends createZodDto(UpdateReagentDtoSchema) {}
 
 const CreateReagentDtoSchema = z
     .object({
-        boxId: z.string().min(1).meta({ title: 'Box ID' }),
+        nodeId: z.string().min(1).meta({ title: 'Box ID' }),
         position: z
             .string()
             .min(1)

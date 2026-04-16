@@ -42,18 +42,14 @@ export class NodeService {
         await this.nodeRepository.delete(id);
     }
 
-    async getOne(id: string) {
-        const node = await this.nodeRepository.findByIdWithChildren(id);
-        if (!node) throw new NodeNotFoundException();
-        return node;
-    }
-
-    async list(orgId: string, parentId?: string) {
-        return this.nodeRepository.listByOrgId(orgId, parentId);
-    }
-
     async getTree(orgId: string) {
         return this.nodeRepository.loadTree(orgId);
+    }
+
+    async getOne(id: string) {
+        const node = await this.nodeRepository.findById(id);
+        if (!node) throw new NodeNotFoundException();
+        return node;
     }
 
     async update(userId: string, dto: UpdateNodeDto) {
@@ -89,14 +85,5 @@ export class NodeService {
         if (!node) throw new NodeNotFoundException();
         await this.assertOrgAdmin(node.orgId, userId);
         await this.nodeRepository.removeGridConfig(dto.nodeId);
-    }
-
-    async filter(opts: {
-        orgId: string;
-        type?: string;
-        hasGrid?: boolean;
-        parentId?: string | null;
-    }) {
-        return this.nodeRepository.filter(opts.orgId, opts);
     }
 }

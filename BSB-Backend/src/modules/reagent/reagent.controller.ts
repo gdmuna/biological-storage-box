@@ -38,7 +38,7 @@ export class ReagentController {
         summary: '获取储存盒内的试剂列表',
     })
     async list(@Query() query: ReagentListDto) {
-        return this.reagentService.list(query.boxId);
+        return this.reagentService.list(query.nodeId);
     }
 
     @Put('update')

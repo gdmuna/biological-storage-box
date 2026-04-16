@@ -63,16 +63,16 @@ describe('P1 Schema Migration — New Models', () => {
         expect(org).toHaveProperty('settings');
     });
 
-    it('should create a Node with type ROOM', async () => {
+    it('should create a Node with type CONTAINER', async () => {
         const node = await prisma.node.create({
             data: {
                 orgId: testOrgId,
-                name: 'Test Room',
-                type: 'ROOM',
+                name: 'Test Container',
+                type: 'CONTAINER',
             },
         });
         expect(node.id).toBeDefined();
-        expect(node.type).toBe('ROOM');
+        expect(node.type).toBe('CONTAINER');
         testNodeId = node.id;
     });
 
@@ -82,14 +82,6 @@ describe('P1 Schema Migration — New Models', () => {
         });
         expect(config.nodeId).toBe(testNodeId);
         expect(config.rows).toBe(9);
-    });
-
-    it('should create NodeAlias for a Node', async () => {
-        const alias = await prisma.nodeAlias.create({
-            data: { nodeId: testNodeId, alias: 'test-alias' },
-        });
-        expect(alias.nodeId).toBe(testNodeId);
-        expect(alias.alias).toBe('test-alias');
     });
 
     it('should create NodeImage for a Node', async () => {
@@ -104,6 +96,7 @@ describe('P1 Schema Migration — New Models', () => {
             data: {
                 orgId: testOrgId,
                 name: 'Test Reagent Type',
+                reagentId: [],
                 colorHex: '#2a9d99',
                 unit: 'mL',
             },
@@ -152,7 +145,6 @@ describe('P1 Schema Migration — New Models', () => {
             where: { orgId: testOrgId, name: 'Test Reagent Type' },
         });
         await prisma.nodeImage.deleteMany({ where: { nodeId: testNodeId } });
-        await prisma.nodeAlias.deleteMany({ where: { nodeId: testNodeId } });
         await prisma.nodeGridConfig.deleteMany({ where: { nodeId: testNodeId } });
         await prisma.node.delete({ where: { id: testNodeId } }).catch(() => {});
         await prisma.organization.delete({ where: { id: testOrgId } }).catch(() => {});

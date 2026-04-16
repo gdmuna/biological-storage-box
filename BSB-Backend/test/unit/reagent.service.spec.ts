@@ -3,19 +3,25 @@ import { ReagentRepository } from '@/modules/reagent/reagent.repository.js';
 import { ReagentNotFoundException } from '@/modules/reagent/reagent.exception.js';
 
 const mockReagentRepository: jest.Mocked<
-    Pick<ReagentRepository, 'findById' | 'listByBoxId' | 'update'>
+    Pick<ReagentRepository, 'findById' | 'listByNodeId' | 'update'>
 > = {
     findById: jest.fn(),
-    listByBoxId: jest.fn(),
+    listByNodeId: jest.fn(),
     update: jest.fn(),
 };
 
 const mockReagent = {
     id: 'reagent_1',
-    boxId: 'box_1',
+    nodeId: 'node_1',
+    orgId: 'org_1',
     position: 'A1',
     name: null,
     description: null,
+    reagentTypeId: null,
+    placedAt: null,
+    lastTakenAt: null,
+    environment: null,
+    responsibleUserId: null,
     createdAt: new Date(),
     updatedAt: new Date(),
 };
@@ -42,11 +48,11 @@ describe('ReagentService', () => {
     });
 
     describe('list', () => {
-        it('should return reagents for box', async () => {
-            mockReagentRepository.listByBoxId.mockResolvedValue([mockReagent]);
-            const result = await service.list('box_1');
+        it('should return reagents for node', async () => {
+            mockReagentRepository.listByNodeId.mockResolvedValue([mockReagent]);
+            const result = await service.list('node_1');
             expect(result).toEqual([mockReagent]);
-            expect(mockReagentRepository.listByBoxId).toHaveBeenCalledWith('box_1');
+            expect(mockReagentRepository.listByNodeId).toHaveBeenCalledWith('node_1');
         });
     });
 

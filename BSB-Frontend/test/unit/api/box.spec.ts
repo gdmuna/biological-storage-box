@@ -11,16 +11,10 @@ vi.mock('@/api/client', () => ({
 
 import { alovaInstance } from '@/api/client';
 import {
-    createBox,
-    deleteBox,
-    getBox,
-    listBoxes,
-    listBoxesGroupedByRoot,
-    searchBoxes,
-    updateBox,
     getReagent,
     listReagents,
     updateReagent,
+    createReagent,
     createBoxAlias,
     deleteBoxAlias,
     listBoxAliases,
@@ -32,86 +26,10 @@ describe('box API module', () => {
         vi.clearAllMocks();
     });
 
-    // ── Box CRUD ──────────────────────────────────────────────────────────
-
-    describe('createBox', () => {
-        it('calls Post /box/add with full payload', () => {
-            const data = { orgId: 'org-1', name: 'Box A', rows: 9, cols: 9 };
-            createBox(data);
-            expect(alovaInstance.Post).toHaveBeenCalledWith('/box/add', data);
-        });
-
-        it('calls Post /box/add with minimal payload', () => {
-            const data = { orgId: 'org-1', name: 'Box B' };
-            createBox(data);
-            expect(alovaInstance.Post).toHaveBeenCalledWith('/box/add', data);
-        });
-    });
-
-    describe('deleteBox', () => {
-        it('calls Delete /box/del with box id in data body', () => {
-            deleteBox('box-42');
-            expect(alovaInstance.Delete).toHaveBeenCalledWith('/box/del', { id: 'box-42' });
-        });
-    });
-
-    describe('getBox', () => {
-        it('calls Get /box/one with id as query param', () => {
-            getBox('box-1');
-            expect(alovaInstance.Get).toHaveBeenCalledWith('/box/one', { params: { id: 'box-1' } });
-        });
-    });
-
-    describe('listBoxes', () => {
-        it('calls Get /box/list with orgId', () => {
-            listBoxes('org-1');
-            expect(alovaInstance.Get).toHaveBeenCalledWith('/box/list', {
-                params: { orgId: 'org-1' },
-            });
-        });
-    });
-
-    describe('listBoxesGroupedByRoot', () => {
-        it('calls Get /box/root/list with orgId', () => {
-            listBoxesGroupedByRoot('org-1');
-            expect(alovaInstance.Get).toHaveBeenCalledWith('/box/root/list', {
-                params: { orgId: 'org-1' },
-            });
-        });
-    });
-
-    describe('searchBoxes', () => {
-        it('calls Get /box/search with orgId and keyword', () => {
-            const params = { orgId: 'org-1', keyword: 'cryo' };
-            searchBoxes(params);
-            expect(alovaInstance.Get).toHaveBeenCalledWith('/box/search', { params });
-        });
-
-        it('calls Get /box/search with optional limit', () => {
-            const params = { orgId: 'org-1', keyword: 'cryo', limit: 10 };
-            searchBoxes(params);
-            expect(alovaInstance.Get).toHaveBeenCalledWith('/box/search', { params });
-        });
-    });
-
-    describe('updateBox', () => {
-        it('calls Put /box/update with update payload', () => {
-            const data = { id: 'box-1', name: 'Updated Name' };
-            updateBox(data);
-            expect(alovaInstance.Put).toHaveBeenCalledWith('/box/update', data);
-        });
-
-        it('passes null rootId to clear parent', () => {
-            const data = { id: 'box-1', rootId: null };
-            updateBox(data);
-            expect(alovaInstance.Put).toHaveBeenCalledWith('/box/update', data);
-        });
-    });
-
     // ── Reagent ───────────────────────────────────────────────────────────
 
     describe('getReagent', () => {
-        it('calls Get /reagent/one with reagent id', () => {
+        it('calls Get /reagent/one with id as query param', () => {
             getReagent('reagent-1');
             expect(alovaInstance.Get).toHaveBeenCalledWith('/reagent/one', {
                 params: { id: 'reagent-1' },
@@ -120,10 +38,10 @@ describe('box API module', () => {
     });
 
     describe('listReagents', () => {
-        it('calls Get /reagent/list with boxId', () => {
-            listReagents('box-1');
+        it('calls Get /reagent/list with nodeId', () => {
+            listReagents('node-1');
             expect(alovaInstance.Get).toHaveBeenCalledWith('/reagent/list', {
-                params: { boxId: 'box-1' },
+                params: { nodeId: 'node-1' },
             });
         });
     });
@@ -133,6 +51,26 @@ describe('box API module', () => {
             const data = { id: 'reagent-1', name: 'Sample X', position: '1-1' };
             updateReagent(data);
             expect(alovaInstance.Put).toHaveBeenCalledWith('/reagent/update', data);
+        });
+    });
+
+    describe('createReagent', () => {
+        it('calls Post /reagent/add with full payload', () => {
+            const data = { nodeId: 'node-1', position: '1-1', name: 'Sample A' };
+            createReagent(data);
+            expect(alovaInstance.Post).toHaveBeenCalledWith('/reagent/add', data);
+        });
+
+        it('calls Post /reagent/add with optional fields', () => {
+            const data = {
+                nodeId: 'node-1',
+                position: '2-3',
+                name: 'Sample B',
+                description: 'desc',
+                reagentTypeId: 'type-1',
+            };
+            createReagent(data);
+            expect(alovaInstance.Post).toHaveBeenCalledWith('/reagent/add', data);
         });
     });
 

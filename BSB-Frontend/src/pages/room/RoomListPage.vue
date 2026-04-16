@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Plus, Home, ChevronRight } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
@@ -22,12 +22,6 @@ const newDesc = ref('');
 const creating = ref(false);
 const createError = ref('');
 
-async function fetchRooms() {
-    if (!org.currentOrgId) return;
-    await nodeStore.fetchRooms(org.currentOrgId);
-    setTimeout(() => staggerListIn('.room-card'), 50);
-}
-
 async function handleCreate() {
     if (!newName.value.trim() || !org.currentOrgId) return;
     creating.value = true;
@@ -37,7 +31,7 @@ async function handleCreate() {
             orgId: org.currentOrgId,
             name: newName.value.trim(),
             description: newDesc.value.trim() || undefined,
-            type: 'ROOM'
+            type: 'ROOT'
         });
         newName.value = '';
         newDesc.value = '';
@@ -53,9 +47,8 @@ async function handleCreate() {
 onMounted(async () => {
     const main = document.getElementById('main-content');
     if (main) pageTransitionIn(main);
-    await fetchRooms();
 });
-watch(() => org.currentOrgId, fetchRooms);
+// watch(() => org.currentOrgId, fetchRooms);
 </script>
 
 <template>

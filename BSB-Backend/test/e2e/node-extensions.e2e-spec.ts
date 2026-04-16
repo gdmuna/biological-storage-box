@@ -59,16 +59,39 @@ describe('Node Extensions (E2E)', () => {
         await app.close();
     });
 
-    it('POST /node/add — should create node with type ROOM', async () => {
+    it('POST /node/add — should create node with type CONTAINER', async () => {
         const res = await request(app.getHttpServer())
             .post('/node/add')
             .set('Authorization', `Bearer ${accessToken}`)
-            .send({ orgId, name: 'Test Room', type: 'ROOM' })
+            .send({ orgId, name: 'Test Container', type: 'CONTAINER' })
             .expect(201);
 
         expect(res.body.success).toBe(true);
-        expect(res.body.data.type).toBe('ROOM');
+        expect(res.body.data.type).toBe('CONTAINER');
         nodeId = res.body.data.id;
+    });
+
+    it('GET /node/tree — should return flat array containing created node', async () => {
+        const res = await request(app.getHttpServer())
+            .get('/node/tree')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .query({ orgId })
+            .expect(200);
+
+        expect(res.body.success).toBe(true);
+        expect(Array.isArray(res.body.data)).toBe(true);
+        expect(res.body.data.some((n: any) => n.id === nodeId)).toBe(true);
+    });
+
+    it('PUT /node/update — should update node name', async () => {
+        const res = await request(app.getHttpServer())
+            .put('/node/update')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({ id: nodeId, name: 'Updated Container' })
+            .expect(200);
+
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.name).toBe('Updated Container');
     });
 
     it('POST /node/grid/set — should set gridConfig', async () => {
@@ -83,34 +106,19 @@ describe('Node Extensions (E2E)', () => {
         expect(res.body.data.cols).toBe(9);
     });
 
-    it('GET /node/filter — should filter by type', async () => {
-        const res = await request(app.getHttpServer())
-            .get('/node/filter')
-            .set('Authorization', `Bearer ${accessToken}`)
-            .query({ orgId, type: 'ROOM' })
-            .expect(200);
-
-        expect(res.body.success).toBe(true);
-        expect(res.body.data.length).toBeGreaterThan(0);
-        expect(res.body.data[0].type).toBe('ROOM');
-    });
-
-    it('GET /node/filter — should filter by hasGrid=true', async () => {
-        const res = await request(app.getHttpServer())
-            .get('/node/filter')
-            .set('Authorization', `Bearer ${accessToken}`)
-            .query({ orgId, hasGrid: 'true' })
-            .expect(200);
-
-        expect(res.body.success).toBe(true);
-        expect(res.body.data.every((n: any) => n.gridConfig !== null)).toBe(true);
-    });
-
     it('DELETE /node/grid/remove — should remove gridConfig', async () => {
         await request(app.getHttpServer())
             .delete('/node/grid/remove')
             .set('Authorization', `Bearer ${accessToken}`)
             .send({ nodeId })
+            .expect(200);
+    });
+
+    it('DELETE /node/del — should delete node', async () => {
+        await request(app.getHttpServer())
+            .delete('/node/del')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({ id: nodeId })
             .expect(200);
     });
 });

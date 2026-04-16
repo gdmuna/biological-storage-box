@@ -8,36 +8,36 @@ export class FeedbackRepository {
 
     // ── BoxLog ──────────────────────────────────────
 
-    async listBoxLogs(boxId: string, limit: number, offset: number) {
+    async listBoxLogs(nodeId: string, limit: number, offset: number) {
         const [items, total] = await Promise.all([
-            this.db.boxLog.findMany({
-                where: { boxId },
+            this.db.nodeLog.findMany({
+                where: { nodeId },
                 orderBy: { createdAt: 'desc' },
                 take: limit,
                 skip: offset,
                 include: {
                     user: { select: { id: true, username: true, nickname: true } },
-                    reagent: { select: { id: true, name: true, position: true } },
+                    // reagent: { select: { id: true, name: true, position: true } },
                 },
             }),
-            this.db.boxLog.count({ where: { boxId } }),
+            this.db.nodeLog.count({ where: { nodeId } }),
         ]);
         return { items, total, limit, offset };
     }
 
     async listReagentLogs(reagentId: string, limit: number, offset: number) {
         const [items, total] = await Promise.all([
-            this.db.boxLog.findMany({
+            this.db.reagentLog.findMany({
                 where: { reagentId },
                 orderBy: { createdAt: 'desc' },
                 take: limit,
                 skip: offset,
                 include: {
                     user: { select: { id: true, username: true, nickname: true } },
-                    box: { select: { id: true, name: true } },
+                    // node: { select: { id: true, name: true } },
                 },
             }),
-            this.db.boxLog.count({ where: { reagentId } }),
+            this.db.reagentLog.count({ where: { reagentId } }),
         ]);
         return { items, total, limit, offset };
     }

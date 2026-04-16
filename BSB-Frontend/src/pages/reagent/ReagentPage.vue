@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,18 +10,22 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Trash2, Plus, FlaskConical, Tag } from 'lucide-vue-next';
 import { useOrgStore } from '@/stores/org';
-import { listReagents, listBoxes, createReagent } from '@/api/modules/box';
+import { useNodeStore } from '@/stores/node';
+import { listReagents, createReagent } from '@/api/modules/box';
 import { listReagentLogs } from '@/api/modules/feedback';
 import { listReagentTypes, createReagentType, deleteReagentType } from '@/api/modules/reagent-type';
 import type { ReagentTypeItem } from '@/api/modules/reagent-type';
-import { staggerListIn } from '@/utils/animation';
-import type { Reagent, Box } from '@/schemas/box.schema';
+
+import type { Reagent } from '@/schemas/box.schema';
 
 const org = useOrgStore();
+const nodeStore = useNodeStore();
+
+// BOX-type nodes as the "boxes" list
+const boxes = computed(() => nodeStore.nodes.filter((n) => n.type === 'BOX'));
 
 // Reagent tab state
 const reagents = ref<Reagent[]>([]);
-const boxes = ref<Box[]>([]);
 const reagentLogs = ref<Record<string, Array<{ id: string; action?: string; createdAt?: string }>>>({});
 
 // Create reagent dialog
@@ -47,9 +51,8 @@ const creatingType = ref(false);
 async function fetchData() {
     if (!org.currentOrgId) return;
     try {
-        const [boxList, typeList] = await Promise.all([listBoxes(org.currentOrgId).send(), listReagentTypes(org.currentOrgId).send()]);
-        boxes.value = Array.isArray(boxList) ? boxList : [];
-        reagentTypes.value = Array.isArray(typeList) ? typeList : [];
+        await nodeStore.fetchByOrg(org.currentOrgId);
+        reagentTypes.value = await listReagentTypes(org.currentOrgId).send();
 
         const allReagents: Reagent[] = [];
         for (const box of boxes.value) {
@@ -57,14 +60,14 @@ async function fetchData() {
             if (Array.isArray(r)) allReagents.push(...r);
         }
         reagents.value = allReagents;
-        setTimeout(() => staggerListIn('.reagent-card'), 50);
     } catch {
         /* empty */
     }
 }
 
-function getBoxName(boxId: string) {
-    return boxes.value.find((b) => b.id === boxId)?.name ?? boxId;
+function getBoxName(nodeId: string | null | undefined) {
+    if (!nodeId) return '未知';
+    return nodeStore.nodes.find((n) => n.id === nodeId)?.name ?? nodeId;
 }
 
 function getTypeName(typeId: string | null | undefined) {
@@ -86,7 +89,7 @@ async function handleCreateReagent() {
     creatingReagent.value = true;
     try {
         await createReagent({
-            boxId: newReagentBoxId.value,
+            nodeId: newReagentBoxId.value,
             position: newReagentPosition.value.trim(),
             name: newReagentName.value.trim(),
             description: newReagentDesc.value.trim() || undefined,
@@ -249,7 +252,7 @@ watch(() => org.currentOrgId, fetchData);
                                     {{ reagent.position }}
                                 </Badge>
                                 <Badge class="bg-bsb-bg-surface text-bsb-text-quaternary">
-                                    {{ getBoxName(reagent.boxId) }}
+                                    {{ getBoxName(reagent.nodeId) }}
                                 </Badge>
                                 <Badge v-if="getTypeName(reagent.reagentTypeId)" variant="outline" class="border-bsb-accent-brand/30 text-bsb-accent-brand">
                                     {{ getTypeName(reagent.reagentTypeId) }}

@@ -1,4 +1,5 @@
 import { DatabaseService } from '@/infra/database/database.service.js';
+import { NodeType } from '@root/prisma/generated/enums.js';
 
 import { Injectable } from '@nestjs/common';
 
@@ -11,55 +12,24 @@ export class NodeRepository {
         parentId?: string;
         name: string;
         description?: string;
-        type?: string;
-        metadata?: Record<string, unknown>;
+        type: NodeType;
+        metadata?: Record<string, any>;
     }) {
         return this.db.node.create({ data: data as any });
     }
 
     async findById(id: string) {
-        return this.db.node.findUnique({ where: { id } });
-    }
-
-    async findByIdWithChildren(id: string) {
-        return this.db.node.findUnique({
-            where: { id },
-            include: {
-                children: { include: { _count: { select: { children: true, boxes: true } } } },
-                _count: { select: { boxes: true } },
-            },
-        });
-    }
-
-    async listByOrgId(orgId: string, parentId?: string) {
-        return this.db.node.findMany({
-            where: {
-                orgId,
-                parentId: parentId ?? null,
-            },
-            include: { _count: { select: { children: true, boxes: true } } },
-            orderBy: { createdAt: 'asc' },
-        });
+        return this.db.node.findUnique({ where: { id }, include: { gridConfig: true } });
     }
 
     /**
-     * 递归加载整棵树（深度优先）。
-     * 适用于节点数量合理的场景（< 500 节点），否则应分批查询。
+     * 平铺查询整棵树后返回，前端负责构建树结构。
+     * 适用于节点数量合理的场景（< 1000 节点）。
      */
     async loadTree(orgId: string) {
         return this.db.node.findMany({
-            where: { orgId, parentId: null },
-            include: {
-                children: {
-                    include: {
-                        children: {
-                            include: {
-                                children: true,
-                            },
-                        },
-                    },
-                },
-            },
+            where: { orgId },
+            include: { gridConfig: true },
             orderBy: { createdAt: 'asc' },
         });
     }
@@ -93,42 +63,22 @@ export class NodeRepository {
         return this.db.nodeGridConfig.deleteMany({ where: { nodeId } });
     }
 
-    async filter(
-        orgId: string,
-        opts: { type?: string; hasGrid?: boolean; parentId?: string | null }
-    ) {
-        return this.db.node.findMany({
-            where: {
-                orgId,
-                ...(opts.type && { type: opts.type as any }),
-                ...(opts.hasGrid === true && { gridConfig: { isNot: null } }),
-                ...(opts.hasGrid === false && { gridConfig: null }),
-                ...(opts.parentId !== undefined && { parentId: opts.parentId }),
-            },
-            include: {
-                gridConfig: true,
-                _count: { select: { children: true } },
-            },
-            orderBy: { createdAt: 'asc' },
-        });
-    }
-
-    /** 检查 candidate 是否是 nodeId 的后代，用于防循环 */
+    /**
+     * 检查 candidateId 是否是 nodeId 的后代，防止循环引用。
+     * 使用单条递归 CTE，无论树深度多少只执行一次数据库往返。
+     */
     async isDescendant(nodeId: string, candidateId: string): Promise<boolean> {
-        let current: { id: string; parentId: string | null } | null = await this.db.node.findUnique(
-            {
-                where: { id: candidateId },
-                select: { id: true, parentId: true },
-            }
-        );
-
-        while (current && current.parentId) {
-            if (current.parentId === nodeId) return true;
-            current = await this.db.node.findUnique({
-                where: { id: current.parentId },
-                select: { id: true, parentId: true },
-            });
-        }
-        return false;
+        const rows = await this.db.$queryRaw<Array<{ exists: boolean }>>`
+            WITH RECURSIVE ancestors AS (
+                SELECT id, "parentId" FROM "Node" WHERE id = ${candidateId}
+                UNION ALL
+                SELECT n.id, n."parentId" FROM "Node" n
+                INNER JOIN ancestors a ON n.id = a."parentId"
+            )
+            SELECT EXISTS (
+                SELECT 1 FROM ancestors WHERE id = ${nodeId} AND id <> ${candidateId}
+            ) AS exists
+        `;
+        return Boolean(rows[0]?.exists);
     }
 }

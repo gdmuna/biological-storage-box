@@ -49,7 +49,7 @@ describe('BoxSchema', () => {
 describe('ReagentSchema', () => {
     const validReagent = {
         id: 'reagent-1',
-        boxId: 'box-1',
+        nodeId: 'node-1',
         orgId: 'org-1',
         position: 'A1',
         name: 'Sample X',
@@ -71,9 +71,9 @@ describe('ReagentSchema', () => {
         expect(ReagentSchema.safeParse(noPos).success).toBe(false);
     });
 
-    it('rejects reagent missing boxId', () => {
-        const { boxId: _b, ...noBox } = validReagent;
-        expect(ReagentSchema.safeParse(noBox).success).toBe(false);
+    it('rejects reagent missing nodeId', () => {
+        const { nodeId: _n, ...noNode } = validReagent;
+        expect(ReagentSchema.safeParse(noNode).success).toBe(false);
     });
 });
 

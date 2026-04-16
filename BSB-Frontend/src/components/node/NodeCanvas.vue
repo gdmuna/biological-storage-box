@@ -5,12 +5,14 @@ import { VueFlow, useVueFlow } from '@vue-flow/core';
 import { MiniMap } from '@vue-flow/minimap';
 import { Controls } from '@vue-flow/controls';
 import { Background } from '@vue-flow/background';
+import { storeToRefs } from 'pinia';
+import { useNodeStore } from '@/stores/node';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getNodeTree, getNode } from '@/api/modules/node';
-import type { NodeWithChildren } from '@/schemas/node.schema';
+import type { Node } from '@/schemas/node.schema';
+import type { NodeItem } from '@/api/modules/node';
 import type { Node as FlowNode, Edge } from '@vue-flow/core';
 
 interface Props {
@@ -24,11 +26,11 @@ const props = withDefaults(defineProps<Props>(), {
     compact: false
 });
 
+const nodeStore = useNodeStore();
+const { treeNodes, loading } = storeToRefs(nodeStore);
+
 const router = useRouter();
 const { fitView } = useVueFlow();
-
-const treeNodes = ref<NodeWithChildren[]>([]);
-const loading = ref(false);
 
 // Filters
 const filterType = ref('all');
@@ -36,22 +38,24 @@ const filterGrid = ref('all');
 
 // Drawer state
 const drawerOpen = ref(false);
-const selectedNode = ref<NodeWithChildren | null>(null);
-const selectedNodeDetail = ref<NodeWithChildren | null>(null);
+const selectedNode = ref<Node | null>(null);
+const selectedNodeDetail = ref<NodeItem | null>(null);
 
 const typeColorMap: Record<string, string> = {
-    ROOM: '#213183',
+    ROOT: '#213183',
+    CONTAINER: '#2a9d99',
     BOX: '#0075de',
-    CONTAINER: '#2a9d99'
+    BOX_SLOT: '#0075ff'
 };
 
 const typeBgMap: Record<string, string> = {
-    ROOM: '#f0f2ff',
+    ROOT: '#f0f2ff',
+    CONTAINER: '#f0fafa',
     BOX: '#f2f9ff',
-    CONTAINER: '#f0fafa'
+    BOX_SLOT: '#f2f9de'
 };
 
-function flattenTree(nodes: NodeWithChildren[], parentId: string | null = null, depth = 0): { flowNodes: FlowNode[]; edges: Edge[] } {
+function flattenTree(nodes: NodeItem[], parentId: string | null = null, depth = 0): { flowNodes: FlowNode[]; edges: Edge[] } {
     const flowNodes: FlowNode[] = [];
     const edges: Edge[] = [];
 
@@ -99,7 +103,7 @@ function flattenTree(nodes: NodeWithChildren[], parentId: string | null = null, 
 }
 
 const filteredTree = computed(() => {
-    function filterRecursive(nodes: NodeWithChildren[]): NodeWithChildren[] {
+    function filterRecursive(nodes: NodeItem[]): NodeItem[] {
         return nodes
             .filter((n) => {
                 if (filterType.value !== 'all' && n.type !== filterType.value) {
@@ -128,25 +132,19 @@ const vfEdges = computed(() => flowData.value.edges);
 
 async function fetchTree() {
     if (!props.orgId) return;
-    loading.value = true;
     try {
-        treeNodes.value = await getNodeTree(props.orgId).send();
+        await nodeStore.fetchByOrg(props.orgId);
         setTimeout(() => fitView({ padding: 0.2 }), 100);
     } catch {
         /* empty */
-    } finally {
-        loading.value = false;
     }
 }
 
 async function onNodeClick({ node }: { node: FlowNode }) {
-    selectedNode.value = node.data as NodeWithChildren;
+    selectedNode.value = node.data as Node;
     drawerOpen.value = true;
-    try {
-        selectedNodeDetail.value = await getNode((node.data as NodeWithChildren).id).send();
-    } catch {
-        selectedNodeDetail.value = null;
-    }
+    // Load children from treeNodes computed
+    selectedNodeDetail.value = treeNodes.value.find((n) => n.id === selectedNode.value?.id) ?? null;
 }
 
 onMounted(fetchTree);
@@ -159,17 +157,9 @@ watch(() => props.orgId, fetchTree);
         <div class="flex flex-wrap items-center gap-2 border-b border-bsb-border-standard bg-white px-4 py-2 overflow-x-auto">
             <!-- Legend -->
             <div class="flex items-center gap-3 text-[11px] text-bsb-text-tertiary">
-                <span class="flex items-center gap-1">
-                    <span class="inline-block size-2.5 rounded-full" style="background: #213183" />
-                    ROOM
-                </span>
-                <span class="flex items-center gap-1">
-                    <span class="inline-block size-2.5 rounded-full" style="background: #0075de" />
-                    BOX
-                </span>
-                <span class="flex items-center gap-1">
-                    <span class="inline-block size-2.5 rounded-full" style="background: #2a9d99" />
-                    CONTAINER
+                <span v-for="(color, type) in typeColorMap" :key="type" class="flex items-center gap-1">
+                    <span class="inline-block size-2.5 rounded-full" :style="`background:${color}`" />
+                    {{ type }}
                 </span>
             </div>
 
@@ -182,9 +172,10 @@ watch(() => props.orgId, fetchTree);
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">全部类型</SelectItem>
-                        <SelectItem value="ROOM">ROOM</SelectItem>
-                        <SelectItem value="BOX">BOX</SelectItem>
+                        <SelectItem value="ROOT">ROOT</SelectItem>
                         <SelectItem value="CONTAINER">CONTAINER</SelectItem>
+                        <SelectItem value="BOX">BOX</SelectItem>
+                        <SelectItem value="BOX_SLOT">BOX_SLOT</SelectItem>
                     </SelectContent>
                 </Select>
 
@@ -215,7 +206,7 @@ watch(() => props.orgId, fetchTree);
         <Sheet v-model:open="drawerOpen">
             <SheetContent side="right" class="w-80 border-l border-bsb-border-standard bg-white p-4">
                 <SheetHeader>
-                    <SheetTitle class="text-sm font-[590]">
+                    <SheetTitle class="text-sm font-semibold">
                         {{ selectedNode?.name ?? '节点' }}
                     </SheetTitle>
                 </SheetHeader>

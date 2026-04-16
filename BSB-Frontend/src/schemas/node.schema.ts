@@ -5,7 +5,7 @@ export const NodeSchema = z.object({
     orgId: z.string(),
     parentId: z.string().nullable(),
     name: z.string(),
-    type: z.enum(['ROOM', 'BOX', 'CONTAINER']).default('CONTAINER'),
+    type: z.enum(['ROOT', 'CONTAINER', 'BOX', 'BOX_SLOT']).default('CONTAINER'),
     description: z.string().nullable().optional(),
     metadata: z.record(z.string(), z.unknown()).nullable().optional(),
     createdAt: z.string().optional(),

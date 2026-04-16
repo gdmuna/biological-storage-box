@@ -1,29 +1,29 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
-import { filterNodes, deleteNode, createNode, updateNode } from '@/api/modules/node';
+import { ref, computed } from 'vue';
+import { fetchNodeTree, deleteNode, createNode, updateNode } from '@/api/modules/node';
 import type { NodeItem } from '@/api/modules/node';
+import type { Node } from '@/schemas/node.schema';
+
+function buildTree(flat: Node[]): NodeItem[] {
+    const map = new Map<string, NodeItem>();
+    for (const n of flat) map.set(n.id, { ...n, children: [] });
+    const roots: NodeItem[] = [];
+    for (const n of flat) {
+        const item = map.get(n.id)!;
+        if (n.parentId) {
+            map.get(n.parentId)?.children?.push(item);
+        } else {
+            roots.push(item);
+        }
+    }
+    return roots;
+}
 
 export const useNodeStore = defineStore('node', () => {
-    const nodes = ref<NodeItem[]>([]);
+    const nodes = ref<Node[]>([]);
     const loading = ref(false);
 
-    async function fetchByOrg(orgId: string) {
-        loading.value = true;
-        try {
-            nodes.value = await filterNodes({ orgId }).send();
-        } finally {
-            loading.value = false;
-        }
-    }
-
-    async function fetchRooms(orgId: string) {
-        loading.value = true;
-        try {
-            nodes.value = await filterNodes({ orgId, type: 'ROOM' }).send();
-        } finally {
-            loading.value = false;
-        }
-    }
+    const treeNodes = computed<NodeItem[]>(() => buildTree(nodes.value));
 
     async function addNode(data: Parameters<typeof createNode>[0]) {
         const created = await createNode(data).send();
@@ -43,5 +43,16 @@ export const useNodeStore = defineStore('node', () => {
         return updated;
     }
 
-    return { nodes, loading, fetchByOrg, fetchRooms, addNode, removeNode, editNode };
+    async function fetchByOrg(orgId: string, force = false) {
+        loading.value = true;
+        try {
+            const flat = await fetchNodeTree(orgId).send(force);
+            nodes.value = flat;
+        } finally {
+            loading.value = false;
+        }
+        return nodes.value;
+    }
+
+    return { nodes, treeNodes, loading, addNode, removeNode, editNode, fetchByOrg };
 });
