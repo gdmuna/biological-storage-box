@@ -43,6 +43,7 @@ model Organization {
   nodes          Node[]
   ownedShares    ResourceShare[]    @relation("OwnedShares")
   receivedShares ResourceShare[]    @relation("ReceivedShares")
+  reagents       Reagent[]
   reagentTypes   ReagentType[]
 
   @@index([ownerId])
@@ -236,6 +237,7 @@ model Reagent {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
+  ownerOrg    Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   node        Node?        @relation(fields: [nodeId], references: [id], onDelete: Cascade)
   reagentType ReagentType? @relation(fields: [reagentTypeId], references: [id], onDelete: SetNull)
   reagentLogs ReagentLog[]
