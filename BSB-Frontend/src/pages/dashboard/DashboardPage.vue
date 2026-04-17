@@ -4,35 +4,32 @@ import { Box, Building2, FlaskConical } from 'lucide-vue-next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useOrgStore } from '@/stores/org';
 import { useAuthStore } from '@/stores/auth';
-// import { listBoxes } from '@/api/modules/box';
+import { useNodeStore } from '@/stores/node';
+import { useReagentStore } from '@/stores/reagent';
 import { fadeSlideIn } from '@/utils/animation';
 import NodeCanvas from '@/components/node/NodeCanvas.vue';
 
 const org = useOrgStore();
 const auth = useAuthStore();
+const nodeStore = useNodeStore();
+const reagentStore = useReagentStore();
 const boxCount = ref(0);
 
-async function refreshBoxCount(orgId: string | null) {
-    if (!orgId) {
-        boxCount.value = 0;
-        return;
-    }
-    try {
-        // const boxes = await listBoxes(orgId).send();
-        // boxCount.value = Array.isArray(boxes) ? boxes.length : 0;
-    } catch {
-        boxCount.value = 0;
-    }
-}
-
-onMounted(() => {
+onMounted(async () => {
     fadeSlideIn('.dashboard-card');
+    await org.fetchOrgs();
 });
 
 watch(
     () => org.currentOrgId,
     async (orgId) => {
-        await refreshBoxCount(orgId);
+        if (!orgId) {
+            boxCount.value = 0;
+            return;
+        }
+        await nodeStore.fetchByOrg(orgId, true);
+        boxCount.value = nodeStore.boxNodes.length;
+        await reagentStore.initData(orgId, true);
     },
     { immediate: true }
 );
@@ -82,14 +79,14 @@ watch(
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div class="text-sm text-bsb-text-tertiary">选择储存盒查看</div>
+                    <div class="text-3xl font-bold text-bsb-text-primary">{{ reagentStore.reagents.length }}</div>
                 </CardContent>
             </Card>
         </div>
 
         <!-- Node Canvas 缩略版 -->
         <div v-if="org.currentOrgId" class="space-y-3">
-            <h2 class="text-sm font-[510] text-bsb-text-secondary">节点关系图</h2>
+            <h2 class="text-sm font-emphasis text-bsb-text-secondary">节点关系图</h2>
             <div class="overflow-hidden rounded-xl border border-bsb-border-standard">
                 <NodeCanvas :org-id="org.currentOrgId" height="400px" :compact="true" />
             </div>

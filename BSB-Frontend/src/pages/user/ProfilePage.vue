@@ -63,7 +63,7 @@ async function handleUpdatePassword() {
 
 <template>
     <div class="max-w-lg space-y-6">
-        <h1 class="font-display text-2xl font-bold tracking-tight text-bsb-text-primary">个人设置</h1>
+        <h1 class="font-display text-2xl font-bold tracking-tight text-bsb-text-primary">账号信息</h1>
 
         <!-- Tab bar -->
         <div class="flex gap-1 rounded-lg bg-bsb-bg-surface p-1">

@@ -61,19 +61,18 @@ watch(
     <div class="space-y-6">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <Home class="size-5 text-bsb-text-tertiary" />
-                <h1 class="text-2xl font-semibold text-bsb-text-primary">房间</h1>
+                <h1 class="text-2xl font-semibold text-bsb-text-primary">库室</h1>
             </div>
             <Dialog v-model:open="createDialogOpen">
                 <DialogTrigger as-child>
                     <Button class="gap-2 bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover">
                         <Plus class="size-4" />
-                        新建房间
+                        新建库室
                     </Button>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>新建房间</DialogTitle>
+                        <DialogTitle>新建库室</DialogTitle>
                     </DialogHeader>
                     <div class="space-y-3">
                         <div class="space-y-1.5">
@@ -124,8 +123,8 @@ watch(
         </div>
         <div v-else-if="!nodeStore.loading" class="flex flex-col items-center justify-center py-16 text-center">
             <Home class="mb-3 size-10 text-bsb-text-quaternary" />
-            <p class="text-sm font-medium text-bsb-text-secondary">暂无房间</p>
-            <p class="mt-1 text-xs text-bsb-text-quaternary">点击"新建房间"创建第一个储存空间</p>
+            <p class="text-sm font-medium text-bsb-text-secondary">暂无库室</p>
+            <p class="mt-1 text-xs text-bsb-text-quaternary">点击"新建库室"创建第一个储存空间</p>
         </div>
 
         <div v-if="nodeStore.loading" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
