@@ -11,8 +11,14 @@ export const useOrgStore = defineStore('org', () => {
     const currentOrg = computed(() => orgs.value.find((o) => o.id === currentOrgId.value) ?? null);
 
     async function fetchOrgs() {
-        orgs.value = await listOrgs().send();
+        const res = await listOrgs().send(true);
+        orgs.value = res;
+        console.log('Fetched orgs:', res);
         if (!currentOrgId.value && orgs.value.length > 0) {
+            currentOrgId.value = orgs.value[0].id;
+        } else if (!orgs.value.length) {
+            currentOrgId.value = null;
+        } else if (currentOrgId.value && !orgs.value.some((o) => o.id === currentOrgId.value)) {
             currentOrgId.value = orgs.value[0].id;
         }
     }

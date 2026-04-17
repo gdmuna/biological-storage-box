@@ -37,21 +37,21 @@ export const useAuthStore = defineStore('auth', () => {
     async function doLogin(form: LoginForm) {
         const result = await login(form).send();
         setAccessToken(result.accessToken);
-        user.value = await getMyInfo().send();
+        user.value = await getMyInfo().send(true);
         initialized.value = true;
     }
 
     async function doRegister(form: RegisterForm) {
         const result = await register(form).send();
         setAccessToken(result.accessToken);
-        user.value = await getMyInfo().send();
+        user.value = await getMyInfo().send(true);
         initialized.value = true;
     }
 
     async function doEmailLogin(payload: { email: string; code: string }) {
         const result = await emailLogin(payload).send();
         setAccessToken(result.accessToken);
-        user.value = await getMyInfo().send();
+        user.value = await getMyInfo().send(true);
         initialized.value = true;
     }
 
