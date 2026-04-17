@@ -91,5 +91,5 @@ category: guide
 
 本项目为社区维护的开源模板，**与 NestJS 官方团队无关联**。
 
-项目基于 [MIT 许可证](https://github.com/gdmuna/NestJS-Scaffold/blob/main/LICENSE) 开源，可自由用于个人或商业项目。
+项目基于 [GNU Affero General Public License v3.0](https://github.com/gdmuna/biological-storage-box/blob/main/LICENSE) 开源。
 

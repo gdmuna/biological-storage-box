@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.7.4",
   "description": "生物样本储存管理系统 — 后端服务",
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "type": "module",
   "keywords": [],
   "author": "Maiturin",

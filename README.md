@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Prisma-7.x-2D3748?logo=prisma&logoColor=white" alt="Prisma" />
   <img src="https://img.shields.io/badge/pnpm-workspace-F69220?logo=pnpm&logoColor=white" alt="pnpm workspace" />
-  <img src="https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache&logoColor=white" alt="License" />
+  <img src="https://img.shields.io/badge/License-AGPL--3.0-blue?logo=gnu&logoColor=white" alt="License" />
 </p>
 
 </div>
@@ -107,4 +107,4 @@ pnpm --filter BSB-Frontend test:e2e
 
 ## License
 
-本项目基于 [Apache License 2.0](LICENSE) 开源。
+本项目基于 [GNU Affero General Public License v3.0](LICENSE) 开源。

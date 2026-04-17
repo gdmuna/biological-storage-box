@@ -152,7 +152,7 @@ export default defineConfig({
 
         footer: {
             message:
-                '基于 <a href="https://github.com/gdmuna/NestJS-Scaffold/blob/main/LICENSE">MIT 许可</a> 发布',
+                '基于 <a href="https://github.com/gdmuna/biological-storage-box/blob/main/LICENSE">AGPL-3.0 许可</a> 发布',
             copyright: `版权所有 © 2026-至今 <a href="https://github.com/gdmuna">GDMU-NA & GDMU-ACM</a>`,
         },
 

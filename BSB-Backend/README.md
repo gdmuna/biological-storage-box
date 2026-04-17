@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Prisma-7.x-2D3748?logo=prisma&logoColor=white" alt="Prisma" />
   <img src="https://img.shields.io/badge/pnpm-8.x-F69220?logo=pnpm&logoColor=white" alt="pnpm" />
-  <img src="https://img.shields.io/badge/License-MIT-success?logo=opensourceinitiative&logoColor=white" alt="License" />
+  <img src="https://img.shields.io/badge/License-AGPL--3.0-blue?logo=gnu&logoColor=white" alt="License" />
 </p>
 
 </div>
@@ -46,4 +46,4 @@ NestJS 后端开发基线模板，提供认证系统、分层架构、AOP 切面
 
 本项目为社区维护的开源模板，**与 NestJS 官方团队无关联**。
 
-项目基于 [MIT 许可证](https://github.com/gdmuna/NestJS-Scaffold/blob/main/LICENSE) 开源，可自由用于个人或商业项目。
+项目基于 [GNU Affero General Public License v3.0](LICENSE) 开源。
