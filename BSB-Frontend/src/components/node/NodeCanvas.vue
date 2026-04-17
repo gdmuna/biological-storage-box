@@ -22,7 +22,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    height: 'calc(100vh - 48px)',
+    height: '100%',
     compact: false
 });
 
@@ -179,7 +179,7 @@ watch(() => props.orgId, fetchTree);
                     </SelectContent>
                 </Select>
 
-                <Select v-model="filterGrid">
+                <!-- <Select v-model="filterGrid">
                     <SelectTrigger class="h-7 w-32 border-bsb-border-standard text-xs">
                         <SelectValue placeholder="网格筛选" />
                     </SelectTrigger>
@@ -188,7 +188,7 @@ watch(() => props.orgId, fetchTree);
                         <SelectItem value="yes">有网格配置</SelectItem>
                         <SelectItem value="no">无网格配置</SelectItem>
                     </SelectContent>
-                </Select>
+                </Select> -->
             </template>
         </div>
 
