@@ -232,7 +232,7 @@ onMounted(() => {
                 v-for="tab in ['orgs', 'members', 'pending'] as PageTab[]"
                 :key="tab"
                 class="rounded-md px-4 py-1.5 text-sm font-medium transition-all"
-                :class="activeTab === tab ? 'bg-white text-bsb-text-primary shadow-[0_1px_3px_rgba(0,0,0,0.08)] ring-1 ring-[rgba(0,0,0,0.06)]' : 'text-bsb-text-tertiary hover:text-bsb-text-secondary'"
+                :class="activeTab === tab ? 'bg-white text-bsb-text-primary shadow-[0_1px_3px_rgba(0,0,0,0.08)] ring-1 ring-bsb-border-subtle' : 'text-bsb-text-tertiary hover:text-bsb-text-secondary'"
                 @click="switchTab(tab)">
                 {{ tab === 'orgs' ? '我的组织' : tab === 'members' ? '成员列表' : '待处理' }}
             </button>

@@ -131,7 +131,7 @@ async function handleDelete() {
                 <ArrowLeft class="size-4" />
             </Button>
             <div>
-                <h1 class="text-2xl font-[590] text-bsb-text-primary">{{ orgData?.name ?? '加载中…' }}</h1>
+                <h1 class="text-2xl font-semibold text-bsb-text-primary">{{ orgData?.name ?? '加载中…' }}</h1>
                 <p v-if="orgData?.description" class="mt-0.5 text-sm text-bsb-text-tertiary">{{ orgData.description }}</p>
             </div>
             <Badge v-if="(orgData as any)?.isPublic" variant="outline" class="ml-auto text-xs text-bsb-accent-brand border-bsb-accent-brand/30">公开</Badge>
@@ -226,7 +226,7 @@ async function handleDelete() {
         <template v-else-if="activeTab === 'shares'">
             <div class="space-y-6">
                 <div>
-                    <h3 class="mb-3 text-sm font-[510] text-bsb-text-secondary">已共享给他人</h3>
+                    <h3 class="mb-3 text-sm font-emphasis text-bsb-text-secondary">已共享给他人</h3>
                     <div class="divide-y divide-bsb-border-standard rounded-lg border border-bsb-border-standard bg-white">
                         <div v-for="s in outboundShares" :key="s.id" class="flex items-center justify-between px-4 py-3">
                             <div>
@@ -242,7 +242,7 @@ async function handleDelete() {
                     </div>
                 </div>
                 <div>
-                    <h3 class="mb-3 text-sm font-[510] text-bsb-text-secondary">获得的共享</h3>
+                    <h3 class="mb-3 text-sm font-emphasis text-bsb-text-secondary">获得的共享</h3>
                     <div class="divide-y divide-bsb-border-standard rounded-lg border border-bsb-border-standard bg-white">
                         <div v-for="s in inboundShares" :key="s.id" class="flex items-center justify-between px-4 py-3">
                             <div>
