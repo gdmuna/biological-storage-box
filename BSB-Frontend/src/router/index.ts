@@ -19,7 +19,7 @@ const routes = [
     },
     {
         path: '/',
-        component: () => import('@/layouts/AppLayout.vue'),
+        component: () => import('@/layouts/newLayout.vue'),
         children: [
             { path: '', redirect: '/dashboard' },
             {
