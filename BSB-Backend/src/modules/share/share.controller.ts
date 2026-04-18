@@ -1,4 +1,12 @@
-import { GrantShareDto, RespondShareDto, RevokeShareDto, ShareListDto } from './share.dto.js';
+import {
+    GrantShareDto,
+    RespondShareDto,
+    RevokeShareDto,
+    ShareListDto,
+    ShareVo,
+    ShareOutboundItemVo,
+    ShareInboundItemVo,
+} from './share.dto.js';
 import { ShareService } from './share.service.js';
 import SHARE_EXCEPTION from './share.exception.js';
 import ORG_EXCEPTION from '@/modules/org/org.exception.js';
@@ -18,6 +26,7 @@ export class ShareController {
     @ApiRoute({
         auth: 'required',
         summary: '主动授权：归属组织将资源共享给目标组织',
+        responseType: ShareVo,
         errors: [
             ORG_EXCEPTION.OrgNotAdminException.code,
             SHARE_EXCEPTION.ShareAlreadyExistsException.code,
@@ -31,6 +40,7 @@ export class ShareController {
     @ApiRoute({
         auth: 'required',
         summary: '响应共享申请（批准或拒绝）',
+        responseType: ShareVo,
         errors: [
             SHARE_EXCEPTION.ShareNotFoundException.code,
             SHARE_EXCEPTION.ShareNotOwnerException.code,
@@ -57,6 +67,7 @@ export class ShareController {
     @ApiRoute({
         auth: 'required',
         summary: '获取我的组织已共享出去的资源列表',
+        responseType: [ShareOutboundItemVo],
     })
     async listOutbound(@Query() query: ShareListDto) {
         return this.shareService.listOutbound(query.orgId);
@@ -66,6 +77,7 @@ export class ShareController {
     @ApiRoute({
         auth: 'required',
         summary: '获取我的组织获得的共享资源列表',
+        responseType: [ShareInboundItemVo],
     })
     async listInbound(@Query() query: ShareListDto) {
         return this.shareService.listInbound(query.orgId);

@@ -1,4 +1,11 @@
-import { UpdateReagentDto, ReagentIdDto, ReagentListDto, CreateReagentDto } from './reagent.dto.js';
+import {
+    UpdateReagentDto,
+    ReagentIdDto,
+    ReagentListDto,
+    CreateReagentDto,
+    ReagentVo,
+    DeleteReagentResultVo,
+} from './reagent.dto.js';
 import { ReagentService } from './reagent.service.js';
 import REAGENT_EXCEPTION from './reagent.exception.js';
 
@@ -16,6 +23,7 @@ export class ReagentController {
     @ApiRoute({
         auth: 'required',
         summary: '在储存盒指定槽位新增试剂',
+        responseType: ReagentVo,
         errors: [REAGENT_EXCEPTION.ReagentNotFoundException.code],
     })
     async create(@Body() body: CreateReagentDto) {
@@ -26,6 +34,7 @@ export class ReagentController {
     @ApiRoute({
         auth: 'required',
         summary: '获取试剂详情',
+        responseType: ReagentVo,
         errors: [REAGENT_EXCEPTION.ReagentNotFoundException.code],
     })
     async getOne(@Query() query: ReagentIdDto) {
@@ -36,6 +45,7 @@ export class ReagentController {
     @ApiRoute({
         auth: 'required',
         summary: '获取储存盒内的试剂列表',
+        responseType: [ReagentVo],
     })
     async list(@Query() query: ReagentListDto) {
         return this.reagentService.list(query.orgId, query.nodeId);
@@ -45,6 +55,7 @@ export class ReagentController {
     @ApiRoute({
         auth: 'required',
         summary: '更新试剂信息',
+        responseType: ReagentVo,
         errors: [REAGENT_EXCEPTION.ReagentNotFoundException.code],
     })
     async update(@Body() body: UpdateReagentDto) {
@@ -55,6 +66,7 @@ export class ReagentController {
     @ApiRoute({
         auth: 'required',
         summary: '删除试剂',
+        responseType: DeleteReagentResultVo,
     })
     async delete(@Body('id') id: string | string[]) {
         if (!Array.isArray(id)) id = [id];

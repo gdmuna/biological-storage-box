@@ -5,6 +5,12 @@ import {
     SearchOrgDto,
     ExploreOrgDto,
     MemberSearchDto,
+    OrgVo,
+    OrgDetailVo,
+    OrgListItemVo,
+    OrgSearchResultVo,
+    OrgExploreItemVo,
+    OrgMemberWithUserVo,
 } from './org.dto.js';
 import { OrgService } from './org.service.js';
 import ORG_EXCEPTION from './org.exception.js';
@@ -24,6 +30,7 @@ export class OrgController {
     @ApiRoute({
         auth: 'required',
         summary: '创建组织',
+        responseType: OrgVo,
     })
     async create(@CurrentUser() user: AccessTokenClaim, @Body() body: CreateOrgDto) {
         return this.orgService.create(user.sub, body);
@@ -43,6 +50,7 @@ export class OrgController {
     @ApiRoute({
         auth: 'required',
         summary: '获取组织详情',
+        responseType: OrgDetailVo,
         errors: [ORG_EXCEPTION.OrgNotFoundException.code],
     })
     async getOne(@Query() query: OrgIdDto) {
@@ -53,6 +61,7 @@ export class OrgController {
     @ApiRoute({
         auth: 'required',
         summary: '获取用户所属组织列表',
+        responseType: [OrgListItemVo],
     })
     async list(@CurrentUser() user: AccessTokenClaim) {
         return this.orgService.list(user.sub);
@@ -62,6 +71,7 @@ export class OrgController {
     @ApiRoute({
         auth: 'required',
         summary: '搜索组织',
+        responseType: [OrgSearchResultVo],
     })
     async search(@Query() query: SearchOrgDto) {
         return this.orgService.search(query.keyword, query.limit);
@@ -71,6 +81,7 @@ export class OrgController {
     @ApiRoute({
         auth: 'required',
         summary: '更新组织信息',
+        responseType: OrgVo,
         errors: [ORG_EXCEPTION.OrgNotFoundException.code, ORG_EXCEPTION.OrgNotAdminException.code],
     })
     async update(@CurrentUser() user: AccessTokenClaim, @Body() body: UpdateOrgDto) {
@@ -81,6 +92,7 @@ export class OrgController {
     @ApiRoute({
         auth: 'required',
         summary: '探索公开组织列表（支持分页与关键词搜索）',
+        responseType: [OrgExploreItemVo],
     })
     async explore(@Query() query: ExploreOrgDto) {
         return this.orgService.explore(query.keyword, query.limit, query.offset);
@@ -90,6 +102,7 @@ export class OrgController {
     @ApiRoute({
         auth: 'required',
         summary: '在组织内按 username/email 搜索成员',
+        responseType: [OrgMemberWithUserVo],
         errors: [ORG_EXCEPTION.OrgNotMemberException.code],
     })
     async searchMembers(@CurrentUser() user: AccessTokenClaim, @Query() query: MemberSearchDto) {

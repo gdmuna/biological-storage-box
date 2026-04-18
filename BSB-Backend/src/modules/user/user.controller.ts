@@ -7,7 +7,10 @@ import {
     EmailLoginDto,
     UpdateEmailDto,
     EmailUpdatePasswordDto,
+    SendEmailCodeVo,
+    SearchUserResultVo,
 } from './user.dto.js';
+import { AuthResponseDto } from '@/modules/auth/auth.dto.js';
 import { UserService } from './user.service.js';
 import USER_EXCEPTION from './user.exception.js';
 
@@ -63,6 +66,7 @@ export class UserController {
     @ApiRoute({
         auth: 'public',
         summary: '发送邮箱验证码',
+        responseType: SendEmailCodeVo,
     })
     async sendEmailCode(@Query() query: EmailCodeQueryDto) {
         return this.userService.sendEmailCode(query.email);
@@ -72,6 +76,7 @@ export class UserController {
     @ApiRoute({
         auth: 'public',
         summary: '邮箱验证码登录',
+        responseType: AuthResponseDto,
         errors: [
             USER_EXCEPTION.UserNotFoundException.code,
             USER_EXCEPTION.VerificationCodeInvalidException.code,
@@ -115,6 +120,7 @@ export class UserController {
     @ApiRoute({
         auth: 'required',
         summary: '搜索用户',
+        responseType: [SearchUserResultVo],
     })
     async searchUsers(@CurrentUser() user: AccessTokenClaim, @Query() query: SearchUserDto) {
         return this.userService.searchUsers(query.keyword, user.sub, query.limit);

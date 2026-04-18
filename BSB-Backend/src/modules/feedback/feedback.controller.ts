@@ -1,4 +1,11 @@
-import { BoxLogListDto, BoxLogReagentListDto, CreateFeedbackDto } from './feedback.dto.js';
+import {
+    BoxLogListDto,
+    BoxLogReagentListDto,
+    CreateFeedbackDto,
+    BoxLogPaginatedVo,
+    ReagentLogPaginatedVo,
+    FeedbackVo,
+} from './feedback.dto.js';
 import { FeedbackService } from './feedback.service.js';
 
 import { ApiRoute, CurrentUser } from '@/common/decorators/index.js';
@@ -16,6 +23,7 @@ export class FeedbackController {
     @ApiRoute({
         auth: 'required',
         summary: '获取储存盒操作日志',
+        responseType: BoxLogPaginatedVo,
     })
     async listBoxLogs(@Query() query: BoxLogListDto) {
         return this.feedbackService.listBoxLogs(query.boxId, query.limit, query.offset);
@@ -25,6 +33,7 @@ export class FeedbackController {
     @ApiRoute({
         auth: 'required',
         summary: '获取试剂操作日志',
+        responseType: ReagentLogPaginatedVo,
     })
     async listReagentLogs(@Query() query: BoxLogReagentListDto) {
         return this.feedbackService.listReagentLogs(query.reagentId, query.limit, query.offset);
@@ -34,6 +43,7 @@ export class FeedbackController {
     @ApiRoute({
         auth: 'required',
         summary: '提交反馈',
+        responseType: FeedbackVo,
     })
     async createFeedback(@CurrentUser() user: AccessTokenClaim, @Body() body: CreateFeedbackDto) {
         return this.feedbackService.createFeedback(user.sub, body.content);

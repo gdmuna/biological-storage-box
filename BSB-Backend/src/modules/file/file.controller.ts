@@ -1,6 +1,7 @@
 import { FileService } from './file.service.js';
 import type { UploadFileInput } from './file.service.js';
 import { FileExceptionCode } from './file.exception.js';
+import { FileUploadVo } from './file.dto.js';
 
 import { ApiRoute } from '@/common/decorators/index.js';
 
@@ -17,6 +18,7 @@ export class FileController {
     @ApiRoute({
         auth: 'required',
         summary: '文件上传',
+        responseType: FileUploadVo,
         consumes: ['multipart/form-data'],
         errors: [FileExceptionCode.SCENE_INVALID, FileExceptionCode.UPLOAD_FAILED],
     })

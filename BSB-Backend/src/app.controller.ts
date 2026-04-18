@@ -1,6 +1,6 @@
 import { AppService } from './app.service.js';
 
-import { ChangeLoggerLevelDto } from './app.dto.js';
+import { ChangeLoggerLevelDto, HealthCheckVo } from './app.dto.js';
 
 import { DatabaseService } from '@/infra/database/database.service.js';
 
@@ -22,6 +22,7 @@ export class AppController {
         auth: 'public',
         summary: '健康检查',
         description: '检查应用的运行状态，返回基本的健康信息。',
+        responseType: HealthCheckVo,
     })
     getHealth() {
         return this.appService.getHealth();
@@ -32,6 +33,7 @@ export class AppController {
         auth: 'required',
         summary: '动态调整日志级别',
         description: '通过此接口可以在运行时动态调整日志记录器的级别，适用于测试或调试场景。',
+        responseType: { type: 'string', example: 'Logger level changed to [debug]' },
     })
     changeLoggerLevel(@Body() body: ChangeLoggerLevelDto) {
         PinoLogger.root.level = body.level;
@@ -54,6 +56,7 @@ export class TestController {
         auth: 'public',
         summary: 'Hello World 测试',
         description: '返回一个简单的 "Hello World" 消息，用于测试基本的路由和控制器功能。',
+        responseType: { type: 'string', example: 'Hello World!' },
     })
     getHello() {
         return this.appService.getHello();
@@ -85,6 +88,7 @@ export class TestController {
         summary: '模拟慢请求',
         description:
             '此接口会模拟一个慢请求，延迟 2 秒后返回响应，用于测试请求超时和性能监控功能。',
+        responseType: { type: 'object', properties: { message: { type: 'string' } } },
     })
     async slowRequest() {
         await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -100,6 +104,7 @@ export class TestController {
         summary: '模拟超慢请求',
         description:
             '此接口会模拟一个超慢请求，延迟 4 秒后返回响应，用于测试请求超时和性能监控功能。',
+        responseType: { type: 'object', properties: { message: { type: 'string' } } },
     })
     async verySlowRequest() {
         await new Promise((resolve) => setTimeout(resolve, 4000));

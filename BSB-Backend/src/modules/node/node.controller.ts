@@ -5,6 +5,8 @@ import {
     NodeTreeDto,
     SetGridConfigDto,
     RemoveGridConfigDto,
+    NodeVo,
+    NodeGridConfigVo,
 } from './node.dto.js';
 import { NodeService } from './node.service.js';
 import NODE_EXCEPTION from './node.exception.js';
@@ -25,6 +27,7 @@ export class NodeController {
     @ApiRoute({
         auth: 'required',
         summary: '创建节点',
+        responseType: NodeVo,
         errors: [ORG_EXCEPTION.OrgNotFoundException.code, ORG_EXCEPTION.OrgNotAdminException.code],
     })
     async create(@CurrentUser() user: AccessTokenClaim, @Body() body: CreateNodeDto) {
@@ -48,6 +51,7 @@ export class NodeController {
     @ApiRoute({
         auth: 'required',
         summary: '获取组织完整节点树（扁平数组，前端自行构建树）',
+        responseType: [NodeVo],
     })
     async getTree(@Query() query: NodeTreeDto) {
         return this.nodeService.getTree(query.orgId);
@@ -57,6 +61,7 @@ export class NodeController {
     @ApiRoute({
         auth: 'required',
         summary: '获取单个节点详情',
+        responseType: NodeVo,
         errors: [NODE_EXCEPTION.NodeNotFoundException.code],
     })
     async getOne(@Query() query: NodeIdDto) {
@@ -67,6 +72,7 @@ export class NodeController {
     @ApiRoute({
         auth: 'required',
         summary: '更新节点信息（可移动到其他父节点）',
+        responseType: NodeVo,
         errors: [
             NODE_EXCEPTION.NodeNotFoundException.code,
             NODE_EXCEPTION.NodeCircularReferenceException.code,
@@ -81,6 +87,7 @@ export class NodeController {
     @ApiRoute({
         auth: 'required',
         summary: '设置节点网格配置（使节点可承载试剂槽位）',
+        responseType: NodeGridConfigVo,
         errors: [
             NODE_EXCEPTION.NodeNotFoundException.code,
             ORG_EXCEPTION.OrgNotAdminException.code,

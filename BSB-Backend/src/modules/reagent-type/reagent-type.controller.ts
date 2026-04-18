@@ -3,6 +3,7 @@ import {
     UpdateReagentTypeDto,
     ReagentTypeIdDto,
     ListReagentTypeDto,
+    ReagentTypeVo,
 } from './reagent-type.dto.js';
 import { ReagentTypeService } from './reagent-type.service.js';
 import REAGENT_TYPE_EXCEPTION from './reagent-type.exception.js';
@@ -22,6 +23,7 @@ export class ReagentTypeController {
     @ApiRoute({
         auth: 'required',
         summary: '创建试剂类型预设',
+        responseType: ReagentTypeVo,
         errors: [REAGENT_TYPE_EXCEPTION.ReagentTypeNotAdminException.code],
     })
     async create(@CurrentUser() user: AccessTokenClaim, @Body() body: CreateReagentTypeDto) {
@@ -32,6 +34,7 @@ export class ReagentTypeController {
     @ApiRoute({
         auth: 'required',
         summary: '获取组织内所有试剂类型',
+        responseType: [ReagentTypeVo],
     })
     async list(@Query() query: ListReagentTypeDto) {
         return this.reagentTypeService.list(query.orgId);
@@ -41,6 +44,7 @@ export class ReagentTypeController {
     @ApiRoute({
         auth: 'required',
         summary: '更新试剂类型',
+        responseType: ReagentTypeVo,
         errors: [
             REAGENT_TYPE_EXCEPTION.ReagentTypeNotFoundException.code,
             REAGENT_TYPE_EXCEPTION.ReagentTypeNotAdminException.code,

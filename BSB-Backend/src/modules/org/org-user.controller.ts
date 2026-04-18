@@ -1,4 +1,11 @@
-import { OrgUserActionDto, UpdateAuthorityDto, OrgUserListDto, OrgIdDto } from './org.dto.js';
+import {
+    OrgUserActionDto,
+    UpdateAuthorityDto,
+    OrgUserListDto,
+    OrgIdDto,
+    OrgMembershipVo,
+    OrgMemberWithUserVo,
+} from './org.dto.js';
 import { OrgUserService } from './org-user.service.js';
 import ORG_EXCEPTION from './org.exception.js';
 
@@ -17,6 +24,7 @@ export class OrgUserController {
     @ApiRoute({
         auth: 'required',
         summary: '申请加入组织',
+        responseType: OrgMembershipVo,
         errors: [
             ORG_EXCEPTION.OrgNotFoundException.code,
             ORG_EXCEPTION.OrgAlreadyMemberException.code,
@@ -30,6 +38,7 @@ export class OrgUserController {
     @ApiRoute({
         auth: 'required',
         summary: '接受申请',
+        responseType: OrgMembershipVo,
         errors: [
             ORG_EXCEPTION.OrgNotAdminException.code,
             ORG_EXCEPTION.ApplicationNotFoundException.code,
@@ -43,6 +52,7 @@ export class OrgUserController {
     @ApiRoute({
         auth: 'required',
         summary: '拒绝申请',
+        responseType: OrgMembershipVo,
         errors: [
             ORG_EXCEPTION.OrgNotAdminException.code,
             ORG_EXCEPTION.ApplicationNotFoundException.code,
@@ -66,6 +76,7 @@ export class OrgUserController {
     @ApiRoute({
         auth: 'required',
         summary: '邀请用户加入组织',
+        responseType: OrgMembershipVo,
         errors: [
             ORG_EXCEPTION.OrgNotAdminException.code,
             ORG_EXCEPTION.OrgAlreadyMemberException.code,
@@ -79,6 +90,7 @@ export class OrgUserController {
     @ApiRoute({
         auth: 'required',
         summary: '接受邀请',
+        responseType: OrgMembershipVo,
         errors: [ORG_EXCEPTION.ApplicationNotFoundException.code],
     })
     async acceptInvite(@CurrentUser() user: AccessTokenClaim, @Body() body: OrgIdDto) {
@@ -89,6 +101,7 @@ export class OrgUserController {
     @ApiRoute({
         auth: 'required',
         summary: '拒绝邀请',
+        responseType: OrgMembershipVo,
         errors: [ORG_EXCEPTION.ApplicationNotFoundException.code],
     })
     async rejectInvite(@CurrentUser() user: AccessTokenClaim, @Body() body: OrgIdDto) {
@@ -99,6 +112,7 @@ export class OrgUserController {
     @ApiRoute({
         auth: 'required',
         summary: '获取待处理的申请/邀请列表',
+        responseType: [OrgMemberWithUserVo],
     })
     async listPending(@Query() query: OrgUserListDto) {
         return this.orgUserService.listPending(query.orgId);
@@ -108,6 +122,7 @@ export class OrgUserController {
     @ApiRoute({
         auth: 'required',
         summary: '获取已加入成员列表',
+        responseType: [OrgMemberWithUserVo],
     })
     async listMembers(@Query() query: OrgUserListDto) {
         return this.orgUserService.listMembers(query.orgId);
@@ -127,6 +142,7 @@ export class OrgUserController {
     @ApiRoute({
         auth: 'required',
         summary: '修改成员权限',
+        responseType: OrgMembershipVo,
         errors: [
             ORG_EXCEPTION.OrgNotOwnerException.code,
             ORG_EXCEPTION.CannotPromoteOwnerException.code,
