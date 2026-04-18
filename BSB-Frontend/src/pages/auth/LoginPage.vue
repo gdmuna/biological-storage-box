@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,6 +36,10 @@ async function handleLogin() {
         loading.value = false;
     }
 }
+
+onMounted(() => {
+    console.log('baseUrl:', import.meta.env.VITE_API_BASE_URL);
+});
 </script>
 
 <template>
