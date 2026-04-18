@@ -5,7 +5,7 @@ export const containerClass = 'w-full h-full';
 </script>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from 'vue';
+import { watch, onMounted, computed } from 'vue';
 import { RouterView, useRoute } from 'vue-router';
 import AppSidebar from '@/components/AppSidebar.vue';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
@@ -48,10 +48,10 @@ const activeNavData = computed(() => {
 </script>
 
 <template>
-    <SidebarProvider>
+    <SidebarProvider id="sidebar-provider">
         <AppSidebar />
-        <SidebarInset>
-            <header class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <SidebarInset id="sidebar-inset">
+            <header class="flex sticky top-0 z-10 bg-white border-b border-bsb-border-standard h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
                 <div class="flex items-center gap-2 px-4">
                     <SidebarTrigger class="-ml-1" />
                     <Separator orientation="vertical" class="mr-2 h-6 my-auto" />
@@ -68,7 +68,7 @@ const activeNavData = computed(() => {
                     </Breadcrumb>
                 </div>
             </header>
-            <main id="main-content" class="flex-1 overflow-y-auto bg-bsb-bg-marketing p-6">
+            <main id="main-content" class="bg-bsb-bg-marketing p-6 flex-1">
                 <RouterView />
             </main>
         </SidebarInset>

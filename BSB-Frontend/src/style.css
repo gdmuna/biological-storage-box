@@ -80,8 +80,8 @@ html {
 }
 
 body {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -174,6 +174,10 @@ body {
         @apply bg-background text-foreground;
         @apply font-sans;
     }
+}
+
+#app {
+    scrollbar-gutter: stable both-edges;
 }
 
 /* Vue Flow — edge & controls styling */

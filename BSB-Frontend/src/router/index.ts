@@ -1,66 +1,80 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import LoginPage from '@/pages/auth/LoginPage.vue';
+import EmailLoginPage from '@/pages/auth/EmailLoginPage.vue';
+import RegisterPage from '@/pages/auth/RegisterPage.vue';
+import NewLayout from '@/layouts/newLayout.vue';
+import DashboardPage from '@/pages/dashboard/DashboardPage.vue';
+import BoxListPage from '@/pages/box/BoxListPage.vue';
+import BoxCreatePage from '@/pages/box/BoxCreatePage.vue';
+import BoxDetailPage from '@/pages/box/BoxDetailPage.vue';
+import OrgManagePage from '@/pages/org/OrgManagePage.vue';
+import RoomListPage from '@/pages/room/RoomListPage.vue';
+import RoomDetailPage from '@/pages/room/RoomDetailPage.vue';
+import NodePage from '@/pages/node/NodePage.vue';
+import ProfilePage from '@/pages/user/ProfilePage.vue';
+import ReagentPage from '@/pages/reagent/ReagentPage.vue';
 
 const routes = [
     {
         path: '/login',
-        component: () => import('@/pages/auth/LoginPage.vue'),
+        component: LoginPage,
         meta: { public: true },
     },
     {
         path: '/login/email',
-        component: () => import('@/pages/auth/EmailLoginPage.vue'),
+        component: EmailLoginPage,
         meta: { public: true },
     },
     {
         path: '/register',
-        component: () => import('@/pages/auth/RegisterPage.vue'),
+        component: RegisterPage,
         meta: { public: true },
     },
     {
         path: '/',
-        component: () => import('@/layouts/newLayout.vue'),
+        component: NewLayout,
         children: [
             { path: '', redirect: '/dashboard' },
             {
                 path: 'dashboard',
-                component: () => import('@/pages/dashboard/DashboardPage.vue'),
+                component: DashboardPage,
             },
             {
                 path: 'box',
-                component: () => import('@/pages/box/BoxListPage.vue'),
+                component: BoxListPage,
             },
             {
                 path: 'box/new',
-                component: () => import('@/pages/box/BoxCreatePage.vue'),
+                component: BoxCreatePage,
             },
             {
                 path: 'box/:id',
-                component: () => import('@/pages/box/BoxDetailPage.vue'),
+                component: BoxDetailPage,
             },
             {
                 path: 'org',
-                component: () => import('@/pages/org/OrgManagePage.vue'),
+                component: OrgManagePage,
             },
             {
                 path: 'room',
-                component: () => import('@/pages/room/RoomListPage.vue'),
+                component: RoomListPage,
             },
             {
                 path: 'room/:id',
-                component: () => import('@/pages/room/RoomDetailPage.vue'),
+                component: RoomDetailPage,
             },
             {
                 path: 'node',
-                component: () => import('@/pages/node/NodePage.vue'),
+                component: NodePage,
             },
             {
                 path: 'user',
-                component: () => import('@/pages/user/ProfilePage.vue'),
+                component: ProfilePage,
             },
             {
                 path: 'reagent',
-                component: () => import('@/pages/reagent/ReagentPage.vue'),
+                component: ReagentPage,
             },
         ],
     },
