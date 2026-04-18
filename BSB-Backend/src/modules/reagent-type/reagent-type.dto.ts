@@ -48,3 +48,24 @@ const ListReagentTypeDtoSchema = z
     .meta({ description: '获取组织试剂类型列表参数' });
 
 export class ListReagentTypeDto extends createZodDto(ListReagentTypeDtoSchema) {}
+
+// ── 响应 VO ───────────────────────────────────────────────
+
+const ReagentTypeVoSchema = z
+    .object({
+        id: z.string().meta({ title: '试剂类型 ID' }),
+        orgId: z.string().meta({ title: '组织 ID' }),
+        name: z.string().meta({ title: '试剂类型名称' }),
+        description: z.string().nullable().optional().meta({ title: '描述' }),
+        colorHex: z
+            .string()
+            .nullable()
+            .optional()
+            .meta({ title: '颜色（HEX）', example: '#2a9d99' }),
+        unit: z.string().nullable().optional().meta({ title: '单位', example: 'mL' }),
+        createdAt: z.string().meta({ title: '创建时间' }),
+        updatedAt: z.string().meta({ title: '更新时间' }),
+    })
+    .meta({ description: '试剂类型信息' });
+
+export class ReagentTypeVo extends createZodDto(ReagentTypeVoSchema) {}

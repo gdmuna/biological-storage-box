@@ -48,15 +48,16 @@ export interface ApiRouteOptions {
     description?: string;
 
     /**
-     * 成功响应类型，支持两种形式：
-     * - DTO 类（`createZodDto` 产物）：适用于 object 类型响应
+     * 成功响应类型，支持三种形式：
+     * - DTO 类（`createZodDto` 产物）：适用于 object 类型响应，例如 `UserDto`
+     * - DTO 类数组（单元素数组）：适用于数组类型响应，例如 `[UserDto]`
      * - 原始 OpenAPI schema 对象：适用于 primitive 类型（string、number、boolean 等），
      *   例如 `{ type: 'string', example: 'ok' }`
      *
      * 装饰器将自动包裹入 ResponseFormatInterceptor 的统一包络：
      * `{ success: true, data: <responseType>, timestamp, context }`
      */
-    responseType?: Type<unknown> | Record<string, unknown>;
+    responseType?: Type<unknown> | [Type<unknown>] | Record<string, unknown>;
 
     /** 成功响应的 HTTP 状态码（默认 200） */
     successStatus?: number;
@@ -146,12 +147,21 @@ export const ApiRoute = (options: ApiRouteOptions) => {
  * 包络结构由 wrapSuccessResponses 文档后处理统一注入，此处只声明裸数据类型。
  *
  * - DTO 类 → 使用 `type: dto`（@nestjs/swagger 通过反射读取 schema）
+ * - 单元素 DTO 数组 `[DtoClass]` → 使用 `type: dto, isArray: true`（文档化数组响应）
  * - 原始 schema 对象 → 使用 `schema`（直接嵌入，适用于 string/number/boolean 等 primitive）
  */
 function buildSuccessApiResponse(
-    responseType: Type<unknown> | Record<string, unknown>,
+    responseType: Type<unknown> | [Type<unknown>] | Record<string, unknown>,
     status: number
 ) {
+    if (Array.isArray(responseType)) {
+        return ApiResponse({
+            status,
+            type: responseType[0],
+            isArray: true,
+            description: '操作成功',
+        });
+    }
     if (typeof responseType === 'function') {
         return ApiResponse({ status, type: responseType, description: '操作成功' });
     }

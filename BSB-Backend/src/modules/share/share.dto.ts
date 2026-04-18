@@ -47,3 +47,60 @@ const ShareListDtoSchema = z
     .meta({ description: '共享列表查询参数' });
 
 export class ShareListDto extends createZodDto(ShareListDtoSchema) {}
+
+// ── 响应 VO ───────────────────────────────────────────────
+
+const ShareVoSchema = z
+    .object({
+        id: z.string().meta({ title: '共享记录 ID' }),
+        resourceType: z.enum(['NODE']).meta({ title: '资源类型' }),
+        resourceId: z.string().meta({ title: '资源 ID' }),
+        ownerOrgId: z.string().meta({ title: '归属组织 ID' }),
+        granteeOrgId: z.string().meta({ title: '被授权组织 ID' }),
+        permission: z.enum(['READ', 'WRITE']).meta({ title: '权限级别' }),
+        status: z.enum(['PENDING', 'ACTIVE', 'REVOKED']).meta({ title: '状态' }),
+        createdAt: z.string().meta({ title: '创建时间' }),
+        updatedAt: z.string().meta({ title: '更新时间' }),
+    })
+    .meta({ description: '共享记录' });
+
+export class ShareVo extends createZodDto(ShareVoSchema) {}
+
+const OrgRefSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+});
+
+const ShareOutboundItemVoSchema = z
+    .object({
+        id: z.string().meta({ title: '共享记录 ID' }),
+        resourceType: z.enum(['NODE']).meta({ title: '资源类型' }),
+        resourceId: z.string().meta({ title: '资源 ID' }),
+        ownerOrgId: z.string().meta({ title: '归属组织 ID' }),
+        granteeOrgId: z.string().meta({ title: '被授权组织 ID' }),
+        permission: z.enum(['READ', 'WRITE']).meta({ title: '权限级别' }),
+        status: z.enum(['PENDING', 'ACTIVE', 'REVOKED']).meta({ title: '状态' }),
+        createdAt: z.string().meta({ title: '创建时间' }),
+        updatedAt: z.string().meta({ title: '更新时间' }),
+        granteeOrg: OrgRefSchema.meta({ title: '被授权组织信息' }),
+    })
+    .meta({ description: '已共享出去的资源列表项' });
+
+export class ShareOutboundItemVo extends createZodDto(ShareOutboundItemVoSchema) {}
+
+const ShareInboundItemVoSchema = z
+    .object({
+        id: z.string().meta({ title: '共享记录 ID' }),
+        resourceType: z.enum(['NODE']).meta({ title: '资源类型' }),
+        resourceId: z.string().meta({ title: '资源 ID' }),
+        ownerOrgId: z.string().meta({ title: '归属组织 ID' }),
+        granteeOrgId: z.string().meta({ title: '被授权组织 ID' }),
+        permission: z.enum(['READ', 'WRITE']).meta({ title: '权限级别' }),
+        status: z.enum(['PENDING', 'ACTIVE', 'REVOKED']).meta({ title: '状态' }),
+        createdAt: z.string().meta({ title: '创建时间' }),
+        updatedAt: z.string().meta({ title: '更新时间' }),
+        ownerOrg: OrgRefSchema.meta({ title: '归属组织信息' }),
+    })
+    .meta({ description: '获得的共享资源列表项' });
+
+export class ShareInboundItemVo extends createZodDto(ShareInboundItemVoSchema) {}

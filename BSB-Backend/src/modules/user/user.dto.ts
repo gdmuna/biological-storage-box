@@ -80,3 +80,24 @@ const EmailCodeQueryDtoSchema = z
     .meta({ description: '发送邮箱验证码查询参数' });
 
 export class EmailCodeQueryDto extends createZodDto(EmailCodeQueryDtoSchema) {}
+
+// ── 追加响应 VO ───────────────────────────────────────────
+
+const SendEmailCodeVoSchema = z
+    .object({
+        sent: z.boolean().meta({ title: '是否发送成功', example: true }),
+    })
+    .meta({ description: '发送验证码响应' });
+
+export class SendEmailCodeVo extends createZodDto(SendEmailCodeVoSchema) {}
+
+const SearchUserResultVoSchema = z
+    .object({
+        id: z.string().meta({ title: '用户 ID' }),
+        username: z.string().meta({ title: '用户名' }),
+        nickname: z.string().nullable().optional().meta({ title: '昵称' }),
+        email: z.email().meta({ title: '邮箱' }),
+    })
+    .meta({ description: '搜索用户结果项' });
+
+export class SearchUserResultVo extends createZodDto(SearchUserResultVoSchema) {}

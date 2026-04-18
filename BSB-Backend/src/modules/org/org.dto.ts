@@ -89,3 +89,119 @@ const MemberSearchDtoSchema = z
     .meta({ description: '在组织内搜索成员' });
 
 export class MemberSearchDto extends createZodDto(MemberSearchDtoSchema) {}
+
+// ── 响应 VO ───────────────────────────────────────────────
+
+const OrgVoSchema = z
+    .object({
+        id: z.string().meta({ title: '组织 ID' }),
+        name: z.string().meta({ title: '组织名称' }),
+        description: z.string().nullable().optional().meta({ title: '描述' }),
+        ownerId: z.string().meta({ title: '创建者 ID' }),
+        isPublic: z.boolean().meta({ title: '是否公开' }),
+        avatarUrl: z.string().nullable().optional().meta({ title: '头像 URL' }),
+        settings: z.record(z.string(), z.unknown()).nullable().optional().meta({ title: '设置' }),
+        createdAt: z.string().meta({ title: '创建时间' }),
+        updatedAt: z.string().meta({ title: '更新时间' }),
+    })
+    .meta({ description: '组织信息' });
+
+export class OrgVo extends createZodDto(OrgVoSchema) {}
+
+const OrgDetailVoSchema = z
+    .object({
+        id: z.string().meta({ title: '组织 ID' }),
+        name: z.string().meta({ title: '组织名称' }),
+        description: z.string().nullable().optional().meta({ title: '描述' }),
+        ownerId: z.string().meta({ title: '创建者 ID' }),
+        isPublic: z.boolean().meta({ title: '是否公开' }),
+        avatarUrl: z.string().nullable().optional().meta({ title: '头像 URL' }),
+        settings: z.record(z.string(), z.unknown()).nullable().optional().meta({ title: '设置' }),
+        createdAt: z.string().meta({ title: '创建时间' }),
+        updatedAt: z.string().meta({ title: '更新时间' }),
+        owner: z
+            .object({
+                id: z.string(),
+                username: z.string(),
+                nickname: z.string().nullable().optional(),
+            })
+            .meta({ title: '所有者信息' }),
+    })
+    .meta({ description: '组织详情（含所有者）' });
+
+export class OrgDetailVo extends createZodDto(OrgDetailVoSchema) {}
+
+const OrgListItemVoSchema = z
+    .object({
+        id: z.string().meta({ title: '组织 ID' }),
+        name: z.string().meta({ title: '组织名称' }),
+        description: z.string().nullable().optional().meta({ title: '描述' }),
+        ownerId: z.string().meta({ title: '创建者 ID' }),
+        isPublic: z.boolean().meta({ title: '是否公开' }),
+        avatarUrl: z.string().nullable().optional().meta({ title: '头像 URL' }),
+        settings: z.record(z.string(), z.unknown()).nullable().optional().meta({ title: '设置' }),
+        createdAt: z.string().meta({ title: '创建时间' }),
+        updatedAt: z.string().meta({ title: '更新时间' }),
+        _count: z.object({ members: z.number().int().meta({ title: '成员数' }) }),
+    })
+    .meta({ description: '组织列表项（含成员数）' });
+
+export class OrgListItemVo extends createZodDto(OrgListItemVoSchema) {}
+
+const OrgSearchResultVoSchema = z
+    .object({
+        id: z.string().meta({ title: '组织 ID' }),
+        name: z.string().meta({ title: '组织名称' }),
+        description: z.string().nullable().optional().meta({ title: '描述' }),
+    })
+    .meta({ description: '组织搜索结果' });
+
+export class OrgSearchResultVo extends createZodDto(OrgSearchResultVoSchema) {}
+
+const OrgExploreItemVoSchema = z
+    .object({
+        id: z.string().meta({ title: '组织 ID' }),
+        name: z.string().meta({ title: '组织名称' }),
+        description: z.string().nullable().optional().meta({ title: '描述' }),
+        avatarUrl: z.string().nullable().optional().meta({ title: '头像 URL' }),
+        _count: z.object({ members: z.number().int().meta({ title: '成员数' }) }),
+    })
+    .meta({ description: '公开组织探索结果' });
+
+export class OrgExploreItemVo extends createZodDto(OrgExploreItemVoSchema) {}
+
+const OrgMembershipVoSchema = z
+    .object({
+        id: z.string().meta({ title: '成员记录 ID' }),
+        orgId: z.string().meta({ title: '组织 ID' }),
+        userId: z.string().meta({ title: '用户 ID' }),
+        role: z.enum(['OWNER', 'ADMIN', 'MEMBER']).meta({ title: '角色' }),
+        status: z.enum(['PENDING', 'ACTIVE', 'REJECTED']).meta({ title: '状态' }),
+        createdAt: z.string().meta({ title: '创建时间' }),
+        updatedAt: z.string().meta({ title: '更新时间' }),
+    })
+    .meta({ description: '组织成员记录' });
+
+export class OrgMembershipVo extends createZodDto(OrgMembershipVoSchema) {}
+
+const OrgMemberWithUserVoSchema = z
+    .object({
+        id: z.string().meta({ title: '成员记录 ID' }),
+        orgId: z.string().meta({ title: '组织 ID' }),
+        userId: z.string().meta({ title: '用户 ID' }),
+        role: z.enum(['OWNER', 'ADMIN', 'MEMBER']).meta({ title: '角色' }),
+        status: z.enum(['PENDING', 'ACTIVE', 'REJECTED']).meta({ title: '状态' }),
+        createdAt: z.string().meta({ title: '创建时间' }),
+        updatedAt: z.string().meta({ title: '更新时间' }),
+        user: z
+            .object({
+                id: z.string(),
+                username: z.string(),
+                nickname: z.string().nullable().optional(),
+                email: z.string().email(),
+            })
+            .meta({ title: '用户信息' }),
+    })
+    .meta({ description: '含用户信息的成员记录' });
+
+export class OrgMemberWithUserVo extends createZodDto(OrgMemberWithUserVoSchema) {}
