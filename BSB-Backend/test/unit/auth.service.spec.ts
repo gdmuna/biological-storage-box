@@ -1,3 +1,4 @@
+import type { Mocked } from 'vitest';
 import { DuplicateUserException, InvalidTokenException } from '@/modules/auth/auth.exception.js';
 
 import { AuthService } from '@/modules/auth/services/auth.service.js';
@@ -11,25 +12,25 @@ describe('AuthService', () => {
 
     const mockDatabaseService: any = {
         user: {
-            findFirst: jest.fn(),
-            create: jest.fn(),
-            findUnique: jest.fn(),
+            findFirst: vi.fn(),
+            create: vi.fn(),
+            findUnique: vi.fn(),
         },
     };
 
-    const mockTokenService: jest.Mocked<Pick<TokenService, 'issueTokenPair' | 'verifyToken'>> = {
-        issueTokenPair: jest.fn(),
-        verifyToken: jest.fn(),
-    };
+    const mockTokenService = {
+        issueTokenPair: vi.fn(),
+        verifyToken: vi.fn(),
+    } as unknown as Mocked<Pick<TokenService, 'issueTokenPair' | 'verifyToken'>>;
 
     const mockConfigService: any = {
-        get: jest.fn().mockReturnValue(10),
+        get: vi.fn().mockReturnValue(10),
     };
 
     let service: AuthService;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         service = new AuthService(
             mockDatabaseService,
             mockTokenService as unknown as TokenService,

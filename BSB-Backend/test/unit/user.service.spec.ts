@@ -1,3 +1,4 @@
+import type { Mocked } from 'vitest';
 import { UserService } from '@/modules/user/user.service.js';
 import { UserRepository } from '@/modules/user/user.repository.js';
 import { EmailVerificationRepository } from '@/modules/user/email-verification.repository.js';
@@ -16,33 +17,33 @@ import bcrypt from 'bcryptjs';
 describe('UserService', () => {
     const passwordHash = bcrypt.hashSync('P@ssw0rd!', 10);
 
-    const mockUserRepository: jest.Mocked<
+    const mockUserRepository: Mocked<
         Pick<UserRepository, 'findById' | 'findByEmail' | 'update' | 'search'>
     > = {
-        findById: jest.fn(),
-        findByEmail: jest.fn(),
-        update: jest.fn(),
-        search: jest.fn(),
+        findById: vi.fn(),
+        findByEmail: vi.fn(),
+        update: vi.fn(),
+        search: vi.fn(),
     };
 
-    const mockEvRepository: jest.Mocked<
+    const mockEvRepository: Mocked<
         Pick<EmailVerificationRepository, 'create' | 'findLatestByEmail' | 'deleteByEmail'>
     > = {
-        create: jest.fn(),
-        findLatestByEmail: jest.fn(),
-        deleteByEmail: jest.fn(),
+        create: vi.fn(),
+        findLatestByEmail: vi.fn(),
+        deleteByEmail: vi.fn(),
     };
 
-    const mockMailService: jest.Mocked<Pick<MailService, 'sendVerificationCode'>> = {
-        sendVerificationCode: jest.fn(),
+    const mockMailService: Mocked<Pick<MailService, 'sendVerificationCode'>> = {
+        sendVerificationCode: vi.fn(),
     };
 
     const mockConfigService: any = {
-        get: jest.fn().mockReturnValue(10),
+        get: vi.fn().mockReturnValue(10),
     };
 
-    const mockTokenService: jest.Mocked<Pick<TokenService, 'issueTokenPair'>> = {
-        issueTokenPair: jest
+    const mockTokenService: Mocked<Pick<TokenService, 'issueTokenPair'>> = {
+        issueTokenPair: vi
             .fn()
             .mockReturnValue({ accessToken: 'access_tok', refreshToken: 'refresh_tok' }),
     };
@@ -50,7 +51,7 @@ describe('UserService', () => {
     let service: UserService;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         mockTokenService.issueTokenPair.mockReturnValue({
             accessToken: 'access_tok',
             refreshToken: 'refresh_tok',

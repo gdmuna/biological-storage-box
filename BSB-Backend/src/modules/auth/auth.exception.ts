@@ -1,4 +1,5 @@
-import { AuthException, ResourceException, RegisterException } from '@/common/exceptions/index.js';
+import { AuthException, ResourceException } from '@/common/exceptions/client.exception.js';
+import { RegisterException } from '@/common/exceptions/exception-registry.js';
 
 export const AuthExceptionCode = {
     USER_DUPLICATE: 'AUTH_USER_DUPLICATE',

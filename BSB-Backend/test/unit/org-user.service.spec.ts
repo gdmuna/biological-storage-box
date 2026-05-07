@@ -1,3 +1,4 @@
+import type { Mocked } from 'vitest';
 import { OrgUserService } from '@/modules/org/org-user.service.js';
 import { OrgRepository } from '@/modules/org/org.repository.js';
 import {
@@ -10,7 +11,7 @@ import {
     ApplicationNotFoundException,
 } from '@/modules/org/org.exception.js';
 
-const mockOrgRepository: jest.Mocked<
+const mockOrgRepository: Mocked<
     Pick<
         OrgRepository,
         | 'findById'
@@ -22,13 +23,13 @@ const mockOrgRepository: jest.Mocked<
         | 'listActiveMembers'
     >
 > = {
-    findById: jest.fn(),
-    findMembership: jest.fn(),
-    createMembership: jest.fn(),
-    updateMembership: jest.fn(),
-    deleteMembership: jest.fn(),
-    listPendingMembers: jest.fn(),
-    listActiveMembers: jest.fn(),
+    findById: vi.fn(),
+    findMembership: vi.fn(),
+    createMembership: vi.fn(),
+    updateMembership: vi.fn(),
+    deleteMembership: vi.fn(),
+    listPendingMembers: vi.fn(),
+    listActiveMembers: vi.fn(),
 };
 
 const mockOrg = {
@@ -71,7 +72,7 @@ describe('OrgUserService', () => {
     let service: OrgUserService;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         service = new OrgUserService(mockOrgRepository as unknown as OrgRepository);
     });
 

@@ -1,13 +1,13 @@
+import type { Mocked } from 'vitest';
 import { ReagentService } from '@/modules/reagent/reagent.service.js';
 import { ReagentRepository } from '@/modules/reagent/reagent.repository.js';
 import { ReagentNotFoundException } from '@/modules/reagent/reagent.exception.js';
 
-const mockReagentRepository: jest.Mocked<Pick<ReagentRepository, 'findById' | 'list' | 'update'>> =
-    {
-        findById: jest.fn(),
-        list: jest.fn(),
-        update: jest.fn(),
-    };
+const mockReagentRepository: Mocked<Pick<ReagentRepository, 'findById' | 'list' | 'update'>> = {
+    findById: vi.fn(),
+    list: vi.fn(),
+    update: vi.fn(),
+};
 
 const mockReagent = {
     id: 'reagent_1',
@@ -29,7 +29,7 @@ describe('ReagentService', () => {
     let service: ReagentService;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         service = new ReagentService(mockReagentRepository as unknown as ReagentRepository);
     });
 

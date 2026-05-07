@@ -1,4 +1,5 @@
-import { RegisterException, InfraException } from '@/common/exceptions/index.js';
+import { InfraException } from '@/common/exceptions/app.exception.js';
+import { RegisterException } from '@/common/exceptions/exception-registry.js';
 
 export const DatabaseExceptionCode = {
     UNIQUE_VIOLATION: 'DB_UNIQUE_VIOLATION',

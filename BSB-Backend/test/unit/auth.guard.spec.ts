@@ -2,11 +2,11 @@ import { AuthGuard } from '@/modules/auth/auth.guard.js';
 
 describe('AuthGuard', () => {
     const reflector = {
-        getAllAndOverride: jest.fn(),
+        getAllAndOverride: vi.fn(),
     };
 
     const tokenService = {
-        verifyToken: jest.fn(),
+        verifyToken: vi.fn(),
     };
 
     const guard = new AuthGuard(reflector as any, tokenService as any);
@@ -21,7 +21,7 @@ describe('AuthGuard', () => {
         }) as any;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('should allow public route without token', () => {

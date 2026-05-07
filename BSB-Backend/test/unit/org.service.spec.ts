@@ -1,3 +1,4 @@
+import type { Mocked } from 'vitest';
 import { OrgService } from '@/modules/org/org.service.js';
 import { OrgRepository } from '@/modules/org/org.repository.js';
 import {
@@ -6,7 +7,7 @@ import {
     OrgNotAdminException,
 } from '@/modules/org/org.exception.js';
 
-const mockOrgRepository: jest.Mocked<
+const mockOrgRepository: Mocked<
     Pick<
         OrgRepository,
         | 'create'
@@ -19,14 +20,14 @@ const mockOrgRepository: jest.Mocked<
         | 'findMembership'
     >
 > = {
-    create: jest.fn(),
-    findById: jest.fn(),
-    findByIdWithOwner: jest.fn(),
-    listByUserId: jest.fn(),
-    search: jest.fn(),
-    update: jest.fn(),
-    delete: jest.fn(),
-    findMembership: jest.fn(),
+    create: vi.fn(),
+    findById: vi.fn(),
+    findByIdWithOwner: vi.fn(),
+    listByUserId: vi.fn(),
+    search: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    findMembership: vi.fn(),
 };
 
 const mockOrg = {
@@ -42,7 +43,7 @@ describe('OrgService', () => {
     let service: OrgService;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         service = new OrgService(mockOrgRepository as unknown as OrgRepository);
     });
 

@@ -1,3 +1,4 @@
+import type { Mocked } from 'vitest';
 import { NodeService } from '../../src/modules/node/node.service.js';
 import { NodeRepository } from '../../src/modules/node/node.repository.js';
 import { OrgRepository } from '../../src/modules/org/org.repository.js';
@@ -9,7 +10,7 @@ import { OrgNotFoundException, OrgNotAdminException } from '../../src/modules/or
 
 describe('NodeService', () => {
     let service: NodeService;
-    let nodeRepo: jest.Mocked<
+    let nodeRepo: Mocked<
         Pick<
             NodeRepository,
             | 'create'
@@ -22,7 +23,7 @@ describe('NodeService', () => {
             | 'removeGridConfig'
         >
     >;
-    let orgRepo: jest.Mocked<Pick<OrgRepository, 'findById' | 'findMembership'>>;
+    let orgRepo: Mocked<Pick<OrgRepository, 'findById' | 'findMembership'>>;
 
     const userId = 'user_01';
     const orgId = 'org_01';
@@ -30,18 +31,18 @@ describe('NodeService', () => {
 
     beforeEach(() => {
         nodeRepo = {
-            create: jest.fn(),
-            findById: jest.fn(),
-            loadTree: jest.fn(),
-            update: jest.fn(),
-            delete: jest.fn(),
-            isDescendant: jest.fn(),
-            setGridConfig: jest.fn(),
-            removeGridConfig: jest.fn(),
+            create: vi.fn(),
+            findById: vi.fn(),
+            loadTree: vi.fn(),
+            update: vi.fn(),
+            delete: vi.fn(),
+            isDescendant: vi.fn(),
+            setGridConfig: vi.fn(),
+            removeGridConfig: vi.fn(),
         };
         orgRepo = {
-            findById: jest.fn(),
-            findMembership: jest.fn(),
+            findById: vi.fn(),
+            findMembership: vi.fn(),
         };
         service = new NodeService(nodeRepo as any, orgRepo as any);
     });

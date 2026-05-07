@@ -6,20 +6,20 @@ import { REFRESH_TOKEN_COOKIE } from '@/constants/index.js';
 import { AlsService } from '@/infra/index.js';
 
 const mockAuthService = {
-    register: jest.fn(),
-    login: jest.fn(),
-    rotateRefreshToken: jest.fn(),
+    register: vi.fn(),
+    login: vi.fn(),
+    rotateRefreshToken: vi.fn(),
 };
 
 const mockAlsService = {
-    get: jest.fn(),
+    get: vi.fn(),
 };
 
 describe('AuthController (unit)', () => {
     let controller: AuthController;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         controller = new AuthController(
             mockAuthService as unknown as AuthService,
             mockAlsService as unknown as AlsService
@@ -27,7 +27,7 @@ describe('AuthController (unit)', () => {
     });
 
     it('register should set refresh cookie and return auth response', async () => {
-        const response: any = { cookie: jest.fn() };
+        const response: any = { cookie: vi.fn() };
         mockAuthService.register.mockResolvedValue({
             accessToken: 'at-register',
             refreshToken: 'rt-register',
@@ -57,7 +57,7 @@ describe('AuthController (unit)', () => {
     });
 
     it('login should set refresh cookie and return auth response', async () => {
-        const response: any = { cookie: jest.fn() };
+        const response: any = { cookie: vi.fn() };
         mockAuthService.login.mockResolvedValue({
             accessToken: 'at-login',
             refreshToken: 'rt-login',
@@ -84,7 +84,7 @@ describe('AuthController (unit)', () => {
     // Cookie 缺失时的验证由 CookieValidationPipe 负责，不在 controller 层测试
 
     it('refresh-token should rotate tokens and set cookie', async () => {
-        const response: any = { cookie: jest.fn() };
+        const response: any = { cookie: vi.fn() };
         mockAuthService.rotateRefreshToken.mockResolvedValue({
             accessToken: 'at-new',
             refreshToken: 'rt-new',
@@ -99,7 +99,7 @@ describe('AuthController (unit)', () => {
     });
 
     it('logout should clear cookie', async () => {
-        const response: any = { clearCookie: jest.fn() };
+        const response: any = { clearCookie: vi.fn() };
 
         const result = await controller.logout(response);
 

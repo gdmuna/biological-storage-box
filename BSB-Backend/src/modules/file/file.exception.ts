@@ -1,4 +1,5 @@
-import { ClientException, InfraException, RegisterException } from '@/common/exceptions/index.js';
+import { ClientException, InfraException } from '@/common/exceptions/app.exception.js';
+import { RegisterException } from '@/common/exceptions/exception-registry.js';
 
 export const FileExceptionCode = {
     SCENE_INVALID: 'FILE_SCENE_INVALID',

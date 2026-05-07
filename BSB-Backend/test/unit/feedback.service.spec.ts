@@ -1,12 +1,13 @@
+import type { Mocked } from 'vitest';
 import { FeedbackService } from '@/modules/feedback/feedback.service.js';
 import { FeedbackRepository } from '@/modules/feedback/feedback.repository.js';
 
-const mockFeedbackRepository: jest.Mocked<
+const mockFeedbackRepository: Mocked<
     Pick<FeedbackRepository, 'listBoxLogs' | 'listReagentLogs' | 'createFeedback'>
 > = {
-    listBoxLogs: jest.fn(),
-    listReagentLogs: jest.fn(),
-    createFeedback: jest.fn(),
+    listBoxLogs: vi.fn(),
+    listReagentLogs: vi.fn(),
+    createFeedback: vi.fn(),
 };
 
 const mockBoxLog = {
@@ -34,7 +35,7 @@ describe('FeedbackService', () => {
     let service: FeedbackService;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         service = new FeedbackService(mockFeedbackRepository as unknown as FeedbackRepository);
     });
 

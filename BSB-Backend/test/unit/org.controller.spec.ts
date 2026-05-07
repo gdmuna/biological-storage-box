@@ -1,15 +1,16 @@
+import type { Mocked } from 'vitest';
 import { OrgController } from '@/modules/org/org.controller.js';
 import { OrgService } from '@/modules/org/org.service.js';
 
-const mockOrgService: jest.Mocked<
+const mockOrgService: Mocked<
     Pick<OrgService, 'create' | 'delete' | 'getOne' | 'list' | 'search' | 'update'>
 > = {
-    create: jest.fn(),
-    delete: jest.fn(),
-    getOne: jest.fn(),
-    list: jest.fn(),
-    search: jest.fn(),
-    update: jest.fn(),
+    create: vi.fn(),
+    delete: vi.fn(),
+    getOne: vi.fn(),
+    list: vi.fn(),
+    search: vi.fn(),
+    update: vi.fn(),
 };
 
 const mockUser = { sub: 'user_1', username: 'test', iat: 0, exp: 0 } as any;
@@ -27,7 +28,7 @@ describe('OrgController', () => {
     let controller: OrgController;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         controller = new OrgController(mockOrgService as unknown as OrgService);
     });
 

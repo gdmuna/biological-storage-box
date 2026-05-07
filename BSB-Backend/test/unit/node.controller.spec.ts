@@ -1,9 +1,10 @@
+import type { Mocked } from 'vitest';
 import { NodeController } from '../../src/modules/node/node.controller.js';
 import { NodeService } from '../../src/modules/node/node.service.js';
 
 describe('NodeController', () => {
     let controller: NodeController;
-    let service: jest.Mocked<
+    let service: Mocked<
         Pick<
             NodeService,
             'create' | 'delete' | 'getTree' | 'update' | 'setGridConfig' | 'removeGridConfig'
@@ -13,12 +14,12 @@ describe('NodeController', () => {
 
     beforeEach(() => {
         service = {
-            create: jest.fn(),
-            delete: jest.fn(),
-            getTree: jest.fn(),
-            update: jest.fn(),
-            setGridConfig: jest.fn(),
-            removeGridConfig: jest.fn(),
+            create: vi.fn(),
+            delete: vi.fn(),
+            getTree: vi.fn(),
+            update: vi.fn(),
+            setGridConfig: vi.fn(),
+            removeGridConfig: vi.fn(),
         };
         controller = new NodeController(service as any);
     });

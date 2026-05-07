@@ -1,7 +1,7 @@
 packages:
-  - 'BSB-Backend'
-  - 'BSB-Docsite'
-  - 'BSB-Frontend'
+  - './BSB-Backend'
+  - './BSB-Docsite'
+  - './BSB-Frontend'
 
 onlyBuiltDependencies:
   - '@nestjs/core'

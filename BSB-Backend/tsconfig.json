@@ -68,7 +68,7 @@
     // 每个文件作为单独的模块编译（提高兼容性）
     "isolatedModules": true,
 
-    // 引入 Jest 全局类型（describe、it、expect 等）
-    "types": ["jest", "node"]
+    // 引入 node 全局类型（describe、it、expect 等由 tsconfig.test.json 提供）
+    "types": ["node"]
   }
 }
