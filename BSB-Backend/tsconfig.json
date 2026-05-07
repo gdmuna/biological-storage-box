@@ -69,6 +69,6 @@
     "isolatedModules": true,
 
     // 引入 node 全局类型（describe、it、expect 等由 tsconfig.test.json 提供）
-    "types": ["node"]
+    "types": ["node", "vitest/globals"]
   }
 }
