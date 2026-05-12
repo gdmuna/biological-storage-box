@@ -88,7 +88,7 @@ export default [
         },
         rules: {
             ...eslint.configs.recommended.rules,
-            ...vuePlugin.configs['vue3-recommended'].rules,
+            ...vuePlugin.configs['recommended'].rules,
             ...commonRules,
             'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
         },

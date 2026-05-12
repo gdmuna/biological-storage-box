@@ -35,6 +35,9 @@
   "files.encoding": "utf8", // 文件编码：UTF-8
   "files.eol": "\n", // 行结束符：Unix 风格（\n）
 
+  // ===== Rust 配置 =====
+  "rust-analyzer.linkedProjects": ["BSB-Frontend/src-tauri/Cargo.toml"],
+
   // ===== NPM 配置 =====
   "npm.exclude": "**/dist" // 排除 dist 目录下的 package.json
 }
