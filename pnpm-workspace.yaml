@@ -3,6 +3,14 @@ packages:
   - './BSB-Docsite'
   - './BSB-Frontend'
 
+allowBuilds:
+  '@nestjs/core': true
+  '@prisma/engines': true
+  '@scarf/scarf': true
+  esbuild: true
+  prisma: true
+  vue-demi: true
+
 onlyBuiltDependencies:
   - '@nestjs/core'
   - '@prisma/engines'
