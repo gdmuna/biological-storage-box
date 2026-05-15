@@ -16,6 +16,13 @@ export const badgeVariants = cva(
                     'border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground',
                 ghost: 'hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50',
                 link: 'text-primary underline-offset-4 hover:underline',
+                // BSB semantic variants
+                success:
+                    'border-bsb-badge-success-border bg-bsb-badge-success-bg text-bsb-badge-success-text',
+                warning:
+                    'border-bsb-badge-warning-border bg-bsb-badge-warning-bg text-bsb-badge-warning-text',
+                danger: 'border-bsb-badge-danger-border bg-bsb-badge-danger-bg text-bsb-badge-danger-text',
+                info: 'border-bsb-badge-info-border bg-bsb-badge-info-bg text-bsb-badge-info-text',
             },
         },
         defaultVariants: {

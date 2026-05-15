@@ -1,262 +1,221 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
-import { Plus, Trash2, Edit3, Tag } from 'lucide-vue-next';
+import { ref, onMounted, watch } from 'vue';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Trash2, Plus, Pencil, Tag } from 'lucide-vue-next';
+import EmptyState from '@/components/EmptyState.vue';
 import { useOrgStore } from '@/stores/org';
-import { createReagentType, listReagentTypes, updateReagentType, deleteReagentType } from '@/api/modules/reagent-type';
-import type { ReagentTypeItem } from '@/api/modules/reagent-type';
-import { pageTransitionIn, staggerListIn } from '@/utils/animation';
+import { useReagentStore } from '@/stores/reagent';
+import { storeToRefs } from 'pinia';
 
 const org = useOrgStore();
+const reagentStore = useReagentStore();
+const { reagentTypes } = storeToRefs(reagentStore);
 
-const types = ref<ReagentTypeItem[]>([]);
-const loading = ref(false);
-
-// Create
-const createDialogOpen = ref(false);
+// Create dialog
+const createOpen = ref(false);
 const newName = ref('');
 const newDesc = ref('');
-const newColor = ref('#0075de');
+const newColor = ref('');
 const newUnit = ref('');
 const creating = ref(false);
-const createError = ref('');
 
-// Edit
-const editDialogOpen = ref(false);
-const editTarget = ref<ReagentTypeItem | null>(null);
+// Edit dialog
+const editOpen = ref(false);
+const editId = ref('');
 const editName = ref('');
 const editDesc = ref('');
 const editColor = ref('');
 const editUnit = ref('');
-const editSaving = ref(false);
+const editing = ref(false);
 
-const COLOR_PRESETS = ['#0075de', '#2a9d99', '#1aae39', '#dd5b00', '#ff64c8', '#391c57', '#213183', '#523410', '#a39e98', '#615d59'];
-
-async function fetchTypes() {
+async function initData(force = false) {
     if (!org.currentOrgId) return;
-    loading.value = true;
     try {
-        // types.value = await listReagentTypes(org.currentOrgId).send();
-        setTimeout(() => staggerListIn('tr.reagent-type-row'), 50);
+        await reagentStore.initData(org.currentOrgId, force);
     } catch {
         /* empty */
-    } finally {
-        loading.value = false;
     }
+}
+
+function openEdit(rt: (typeof reagentTypes.value)[0]) {
+    editId.value = rt.id;
+    editName.value = rt.name;
+    editDesc.value = rt.description ?? '';
+    editColor.value = rt.colorHex ?? '';
+    editUnit.value = rt.unit ?? '';
+    editOpen.value = true;
 }
 
 async function handleCreate() {
     if (!newName.value.trim() || !org.currentOrgId) return;
     creating.value = true;
-    createError.value = '';
     try {
-        const created = await createReagentType({
+        await reagentStore.addReagentType({
             orgId: org.currentOrgId,
             name: newName.value.trim(),
             description: newDesc.value.trim() || undefined,
-            colorHex: newColor.value || undefined,
+            colorHex: newColor.value.trim() || undefined,
             unit: newUnit.value.trim() || undefined
-        }).send();
-        types.value.push(created);
+        });
         newName.value = '';
         newDesc.value = '';
-        newColor.value = '#0075de';
+        newColor.value = '';
         newUnit.value = '';
-        createDialogOpen.value = false;
-    } catch (e: unknown) {
-        createError.value = e instanceof Error ? e.message : '创建失败';
+        createOpen.value = false;
+    } catch {
+        /* empty */
     } finally {
         creating.value = false;
     }
 }
 
-function openEdit(item: ReagentTypeItem) {
-    editTarget.value = item;
-    editName.value = item.name;
-    editDesc.value = item.description ?? '';
-    editColor.value = item.colorHex ?? '#0075de';
-    editUnit.value = item.unit ?? '';
-    editDialogOpen.value = true;
-}
-
 async function handleEdit() {
-    if (!editTarget.value) return;
-    editSaving.value = true;
+    if (!editName.value.trim()) return;
+    editing.value = true;
     try {
-        const updated = await updateReagentType({
-            id: editTarget.value.id,
-            name: editName.value || undefined,
-            description: editDesc.value || undefined,
-            colorHex: editColor.value || undefined,
-            unit: editUnit.value || undefined
-        }).send();
-        const idx = types.value.findIndex((t) => t.id === updated.id);
-        if (idx >= 0) types.value[idx] = updated;
-        editDialogOpen.value = false;
+        await reagentStore.editReagentType({
+            id: editId.value,
+            name: editName.value.trim(),
+            description: editDesc.value.trim() || undefined,
+            colorHex: editColor.value.trim() || undefined,
+            unit: editUnit.value.trim() || undefined
+        });
+        editOpen.value = false;
     } catch {
         /* empty */
     } finally {
-        editSaving.value = false;
+        editing.value = false;
     }
 }
 
 async function handleDelete(id: string) {
     try {
-        await deleteReagentType(id).send();
-        types.value = types.value.filter((t) => t.id !== id);
+        await reagentStore.removeReagentType(id);
     } catch {
         /* empty */
     }
 }
 
-onMounted(async () => {
-    const main = document.getElementById('main-content');
-    if (main) pageTransitionIn(main);
-    await fetchTypes();
-});
-watch(() => org.currentOrgId, fetchTypes);
+onMounted(() => initData(true));
+watch(
+    () => org.currentOrgId,
+    () => initData(true)
+);
 </script>
 
 <template>
     <div class="space-y-6">
-        <!-- Header -->
         <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <Tag class="size-5 text-bsb-text-tertiary" />
-                <h1 class="text-2xl font-semibold text-bsb-text-primary">试剂类型</h1>
-            </div>
-            <Dialog v-model:open="createDialogOpen">
+            <h1 class="font-display text-2xl font-bold tracking-tight text-bsb-text-primary">试剂类型管理</h1>
+            <Dialog v-model:open="createOpen">
                 <DialogTrigger as-child>
-                    <Button class="gap-2 bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover">
+                    <Button size="sm" class="gap-2 bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover">
                         <Plus class="size-4" />
                         新建类型
                     </Button>
                 </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader><DialogTitle>新建试剂类型</DialogTitle></DialogHeader>
-                    <div class="space-y-3">
+                <DialogContent class="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>新建试剂类型</DialogTitle>
+                        <DialogDescription class="sr-only">填写试剂类型的名称、颜色和计量单位</DialogDescription>
+                    </DialogHeader>
+                    <div class="space-y-4 py-2">
                         <div class="space-y-1.5">
                             <Label>
-                                名称
+                                类型名称
                                 <span class="text-red-500">*</span>
                             </Label>
-                            <Input v-model="newName" placeholder="例：青霉素" class="border-bsb-border-standard" />
-                        </div>
-                        <div class="space-y-1.5">
-                            <Label>颜色标识</Label>
-                            <div class="flex flex-wrap gap-2">
-                                <button v-for="c in COLOR_PRESETS" :key="c" class="size-6 rounded-md transition-all" :style="{ background: c, outline: newColor === c ? `2px solid ${c}` : 'none', outlineOffset: '2px' }" @click="newColor = c" />
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <input v-model="newColor" type="color" class="size-8 cursor-pointer rounded border border-bsb-border-standard" />
-                                <code class="text-xs text-bsb-text-tertiary">{{ newColor }}</code>
-                            </div>
-                        </div>
-                        <div class="space-y-1.5">
-                            <Label>单位</Label>
-                            <Input v-model="newUnit" placeholder="例：mL, mg, μg" class="border-bsb-border-standard" />
+                            <Input v-model="newName" placeholder="例如：DNA、蛋白质" class="border-bsb-border-standard" />
                         </div>
                         <div class="space-y-1.5">
                             <Label>描述</Label>
                             <Input v-model="newDesc" placeholder="可选" class="border-bsb-border-standard" />
                         </div>
-                        <p v-if="createError" class="text-xs text-red-500">{{ createError }}</p>
+                        <div class="space-y-1.5">
+                            <Label>颜色标识</Label>
+                            <div class="flex items-center gap-2">
+                                <input v-model="newColor" type="color" class="size-9 cursor-pointer rounded border border-bsb-border-standard p-0.5" />
+                                <Input v-model="newColor" placeholder="#hex（可选）" class="flex-1 border-bsb-border-standard" />
+                            </div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <Label>单位</Label>
+                            <Input v-model="newUnit" placeholder="例如：μL、mg（可选）" class="border-bsb-border-standard" />
+                        </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="outline" @click="createDialogOpen = false">取消</Button>
+                        <Button variant="outline" @click="createOpen = false">取消</Button>
                         <Button :disabled="creating || !newName.trim()" class="bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" @click="handleCreate">
-                            {{ creating ? '创建中…' : '创建' }}
+                            {{ creating ? '创建中…' : '确认创建' }}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>
 
-        <!-- Table -->
-        <div class="rounded-lg border border-bsb-border-standard bg-white">
-            <Table>
-                <TableHeader>
-                    <TableRow class="border-b border-bsb-border-standard hover:bg-transparent">
-                        <TableHead class="text-xs font-medium text-bsb-text-tertiary">色标</TableHead>
-                        <TableHead class="text-xs font-medium text-bsb-text-tertiary">名称</TableHead>
-                        <TableHead class="text-xs font-medium text-bsb-text-tertiary">单位</TableHead>
-                        <TableHead class="text-xs font-medium text-bsb-text-tertiary">描述</TableHead>
-                        <TableHead class="w-20 text-xs font-medium text-bsb-text-tertiary">操作</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <TableRow v-if="loading">
-                        <TableCell colspan="5" class="py-6 text-center text-sm text-bsb-text-quaternary">加载中…</TableCell>
-                    </TableRow>
-                    <TableRow v-else-if="types.length === 0">
-                        <TableCell colspan="5" class="py-8 text-center text-sm text-bsb-text-quaternary">暂无试剂类型，点击"新建类型"添加第一个</TableCell>
-                    </TableRow>
-                    <TableRow v-for="t in types" :key="t.id" class="reagent-type-row border-b border-bsb-border-standard hover:bg-bsb-bg-surface/50">
-                        <TableCell>
-                            <div v-if="t.colorHex" class="size-5 rounded" :style="{ background: t.colorHex }" :title="t.colorHex" />
-                            <div v-else class="size-5 rounded border border-bsb-border-standard bg-bsb-bg-surface" />
-                        </TableCell>
-                        <TableCell class="text-sm font-medium text-bsb-text-primary">{{ t.name }}</TableCell>
-                        <TableCell>
-                            <Badge v-if="t.unit" variant="outline" class="text-xs text-bsb-text-tertiary">{{ t.unit }}</Badge>
-                            <span v-else class="text-xs text-bsb-text-quaternary">—</span>
-                        </TableCell>
-                        <TableCell class="max-w-48 truncate text-xs text-bsb-text-tertiary">{{ t.description ?? '—' }}</TableCell>
-                        <TableCell>
-                            <div class="flex items-center gap-1">
-                                <Button variant="ghost" size="icon" class="size-7 text-bsb-text-quaternary hover:text-bsb-text-secondary" @click="openEdit(t)">
-                                    <Edit3 class="size-3.5" />
-                                </Button>
-                                <Button variant="ghost" size="icon" class="size-7 text-bsb-text-quaternary hover:text-red-500" @click="handleDelete(t.id)">
-                                    <Trash2 class="size-3.5" />
-                                </Button>
-                            </div>
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </div>
-    </div>
+        <p class="text-sm text-bsb-text-tertiary">管理组织的试剂类型，用于对试剂进行分类标注。</p>
 
-    <!-- Edit Dialog -->
-    <Dialog v-model:open="editDialogOpen">
-        <DialogContent>
-            <DialogHeader><DialogTitle>编辑试剂类型</DialogTitle></DialogHeader>
-            <div class="space-y-3">
-                <div class="space-y-1.5">
-                    <Label>名称</Label>
-                    <Input v-model="editName" class="border-bsb-border-standard" />
-                </div>
-                <div class="space-y-1.5">
-                    <Label>颜色标识</Label>
-                    <div class="flex flex-wrap gap-2">
-                        <button v-for="c in COLOR_PRESETS" :key="c" class="size-6 rounded-md transition-all" :style="{ background: c, outline: editColor === c ? `2px solid ${c}` : 'none', outlineOffset: '2px' }" @click="editColor = c" />
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <input v-model="editColor" type="color" class="size-8 cursor-pointer rounded border border-bsb-border-standard" />
-                        <code class="text-xs text-bsb-text-tertiary">{{ editColor }}</code>
-                    </div>
-                </div>
-                <div class="space-y-1.5">
-                    <Label>单位</Label>
-                    <Input v-model="editUnit" class="border-bsb-border-standard" />
-                </div>
-                <div class="space-y-1.5">
-                    <Label>描述</Label>
-                    <Input v-model="editDesc" class="border-bsb-border-standard" />
+        <div v-if="reagentTypes.length > 0" class="overflow-hidden rounded-xl border border-bsb-border-standard bg-white">
+            <div v-for="(rt, idx) in reagentTypes" :key="rt.id" class="flex items-center gap-3 px-4 py-3" :class="idx !== reagentTypes.length - 1 ? 'border-b border-bsb-border-standard' : ''">
+                <span v-if="rt.colorHex" class="inline-block size-4 shrink-0 rounded-full border border-bsb-border-standard" :style="{ background: rt.colorHex }" />
+                <span v-else class="inline-block size-4 shrink-0 rounded-full border border-bsb-border-standard bg-bsb-bg-surface" />
+                <span class="min-w-0 flex-1 truncate text-sm font-medium text-bsb-text-primary">{{ rt.name }}</span>
+                <span v-if="rt.description" class="hidden max-w-xs truncate text-xs text-bsb-text-tertiary sm:block">{{ rt.description }}</span>
+                <Badge v-if="rt.unit" variant="outline" class="shrink-0 text-xs text-bsb-text-quaternary">{{ rt.unit }}</Badge>
+                <div class="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" class="size-7 text-bsb-text-quaternary hover:text-bsb-accent-brand" @click="openEdit(rt)">
+                        <Pencil class="size-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" class="size-7 text-bsb-text-quaternary hover:text-red-500" @click="handleDelete(rt.id)">
+                        <Trash2 class="size-3.5" />
+                    </Button>
                 </div>
             </div>
-            <DialogFooter>
-                <Button variant="outline" @click="editDialogOpen = false">取消</Button>
-                <Button :disabled="editSaving" class="bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" @click="handleEdit">
-                    {{ editSaving ? '保存中…' : '保存' }}
-                </Button>
-            </DialogFooter>
-        </DialogContent>
-    </Dialog>
+        </div>
+        <EmptyState v-else :icon="Tag" title="暂无试剂类型" description="点击右上角“新建类型”开始建立分类" />
+
+        <!-- Edit Dialog -->
+        <Dialog v-model:open="editOpen">
+            <DialogContent class="sm:max-w-md">
+                <DialogHeader>
+                    <DialogTitle>编辑试剂类型</DialogTitle>
+                    <DialogDescription class="sr-only">修改试剂类型的名称、颜色和计量单位</DialogDescription>
+                </DialogHeader>
+                <div class="space-y-4 py-2">
+                    <div class="space-y-1.5">
+                        <Label>
+                            类型名称
+                            <span class="text-red-500">*</span>
+                        </Label>
+                        <Input v-model="editName" placeholder="例如：DNA、蛋白质" class="border-bsb-border-standard" />
+                    </div>
+                    <div class="space-y-1.5">
+                        <Label>描述</Label>
+                        <Input v-model="editDesc" placeholder="可选" class="border-bsb-border-standard" />
+                    </div>
+                    <div class="space-y-1.5">
+                        <Label>颜色标识</Label>
+                        <div class="flex items-center gap-2">
+                            <input v-model="editColor" type="color" class="size-9 cursor-pointer rounded border border-bsb-border-standard p-0.5" />
+                            <Input v-model="editColor" placeholder="#hex（可选）" class="flex-1 border-bsb-border-standard" />
+                        </div>
+                    </div>
+                    <div class="space-y-1.5">
+                        <Label>单位</Label>
+                        <Input v-model="editUnit" placeholder="例如：μL、mg（可选）" class="border-bsb-border-standard" />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" @click="editOpen = false">取消</Button>
+                    <Button :disabled="editing || !editName.trim()" class="bg-bsb-accent-brand text-white hover:bg-bsb-accent-hover" @click="handleEdit">
+                        {{ editing ? '保存中…' : '保存更改' }}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    </div>
 </template>

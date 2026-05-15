@@ -128,6 +128,35 @@ body {
     --font-weight-emphasis: 510;
     --font-weight-semibold: 590;
 
+    /* Semantic status colors */
+    --color-bsb-semantic-success: #1aae39;
+    --color-bsb-semantic-warning: #dd5b00;
+    --color-bsb-semantic-error: #e03131;
+    --color-bsb-semantic-info: #0075de;
+
+    /* Card tint pastels — for stat card backgrounds */
+    --color-bsb-card-tint-sky: #f0f8ff;
+    --color-bsb-card-tint-mint: #f0faf4;
+    --color-bsb-card-tint-peach: #fff4f0;
+    --color-bsb-card-tint-rose: #fff0f3;
+    --color-bsb-card-tint-lavender: #f3f0ff;
+    --color-bsb-card-tint-yellow: #fffbf0;
+    --color-bsb-card-tint-cream: #fdfaf5;
+
+    /* Badge semantic bg/text tokens */
+    --color-bsb-badge-success-bg: #f0faf4;
+    --color-bsb-badge-success-text: #1aae39;
+    --color-bsb-badge-success-border: #bbf7d0;
+    --color-bsb-badge-warning-bg: #fffbf0;
+    --color-bsb-badge-warning-text: #dd5b00;
+    --color-bsb-badge-warning-border: #fed7aa;
+    --color-bsb-badge-danger-bg: #fff0f0;
+    --color-bsb-badge-danger-text: #e03131;
+    --color-bsb-badge-danger-border: #fecaca;
+    --color-bsb-badge-info-bg: #f0f8ff;
+    --color-bsb-badge-info-text: #0075de;
+    --color-bsb-badge-info-border: #bfdbfe;
+
     /* shadcn-vue semantic colors */
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
