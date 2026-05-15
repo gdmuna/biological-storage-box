@@ -1,5 +1,9 @@
-*.md
-pnpm-lock.yaml
-biological-storage-box-service/website/
+**/*.md
+**/pnpm-lock.yaml
+
+**/node-modules
+
 BSB-Frontend/test-results/
 BSB-Frontend/test/.auth/
+BSB-Frontend/src-tauri/target/**
+BSB-Frontend/src-tauri/gen

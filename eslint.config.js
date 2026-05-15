@@ -24,6 +24,7 @@ export default [
             'BSB-Backend/prisma/generated/**',
             'BSB-Docsite/.vitepress/dist/**',
             'BSB-Docsite/.vitepress/cache/**',
+            'BSB-Frontend/src-tauri/**',
         ],
     },
 
@@ -34,9 +35,10 @@ export default [
             parser: tsParser,
             globals: {
                 ...globals.node,
-                ...globals.es2024,
+                ...globals.es2026,
                 ...globals.vitest,
                 NodeJS: 'readonly',
+                Express: 'readonly',
             },
             parserOptions: {
                 project: './BSB-Backend/tsconfig.json',
@@ -79,7 +81,7 @@ export default [
             },
             globals: {
                 ...globals.browser,
-                ...globals.es2024,
+                ...globals.es2026,
             },
         },
         plugins: {
@@ -88,7 +90,7 @@ export default [
         },
         rules: {
             ...eslint.configs.recommended.rules,
-            ...vuePlugin.configs['recommended'].rules,
+            ...vuePlugin.configs.recommended.rules,
             ...commonRules,
             'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
         },

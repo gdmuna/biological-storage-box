@@ -39,5 +39,11 @@
   "rust-analyzer.linkedProjects": ["BSB-Frontend/src-tauri/Cargo.toml"],
 
   // ===== NPM 配置 =====
-  "npm.exclude": "**/dist" // 排除 dist 目录下的 package.json
+  "npm.exclude": "**/dist", // 排除 dist 目录下的 package.json
+
+  // ===== JSON Schema 配置 =====
+  "json.schemaDownload.enable": true, // 允许下载远程 JSON Schema（用于 tauri.conf.json 等）
+  "json.schemaDownload.trustedDomains": {
+    "*": true // 允许所有域名下载 JSON Schema
+  }
 }
