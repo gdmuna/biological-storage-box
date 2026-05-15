@@ -19,7 +19,10 @@ export class NodeRepository {
     }
 
     async findById(id: string) {
-        return this.db.node.findUnique({ where: { id }, include: { gridConfig: true } });
+        return this.db.node.findUnique({
+            where: { id },
+            include: { gridConfig: true, images: { orderBy: { createdAt: 'desc' } } },
+        });
     }
 
     /**
@@ -70,6 +73,21 @@ export class NodeRepository {
 
     async removeGridConfig(nodeId: string) {
         return this.db.nodeGridConfig.deleteMany({ where: { nodeId } });
+    }
+
+    async addImage(nodeId: string, imageUrl: string) {
+        return this.db.nodeImage.create({ data: { nodeId, imageUrl } });
+    }
+
+    async findImageById(id: string) {
+        return this.db.nodeImage.findUnique({
+            where: { id },
+            include: { node: { select: { orgId: true } } },
+        });
+    }
+
+    async removeImage(id: string) {
+        return this.db.nodeImage.delete({ where: { id } });
     }
 
     /**

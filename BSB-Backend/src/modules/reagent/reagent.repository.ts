@@ -1,4 +1,4 @@
-import { DatabaseService } from '@/infra/database/database.service.js';
+﻿import { DatabaseService } from '@/infra/database/database.service.js';
 
 import { Injectable } from '@nestjs/common';
 
@@ -27,20 +27,22 @@ export class ReagentRepository {
             name?: string;
             description?: string;
             reagentTypeId?: string | null;
+            quantity?: number | null;
+            unit?: string | null;
+            expiryDate?: Date | null;
+            manufactureDate?: Date | null;
+            batchNo?: string | null;
+            catalogNo?: string | null;
+            manufacturer?: string | null;
+            casNumber?: string | null;
+            storageCondition?: Record<string, unknown> | null;
+            hazardLevel?: string | null;
+            minStockThreshold?: number | null;
         }
     ) {
-        const { reagentTypeId, ...rest } = data;
         return this.db.reagent.update({
             where: { id },
-            data: {
-                ...rest,
-                ...(reagentTypeId !== undefined && {
-                    reagentType:
-                        reagentTypeId === null
-                            ? { disconnect: true }
-                            : { connect: { id: reagentTypeId } },
-                }),
-            },
+            data: data as any,
         });
     }
 
@@ -50,6 +52,17 @@ export class ReagentRepository {
         name: string;
         description?: string;
         reagentTypeId?: string | null;
+        quantity?: number;
+        unit?: string;
+        expiryDate?: Date;
+        manufactureDate?: Date;
+        batchNo?: string;
+        catalogNo?: string;
+        manufacturer?: string;
+        casNumber?: string;
+        storageCondition?: Record<string, unknown>;
+        hazardLevel?: string;
+        minStockThreshold?: number;
     }) {
         const node = await this.db.node.findUnique({
             where: { id: data.nodeId },
@@ -57,14 +70,7 @@ export class ReagentRepository {
         });
         if (!node) return null;
         return this.db.reagent.create({
-            data: {
-                nodeId: data.nodeId,
-                orgId: node.orgId,
-                position: data.position,
-                name: data.name,
-                ...(data.description !== undefined && { description: data.description }),
-                ...(data.reagentTypeId !== undefined && { reagentTypeId: data.reagentTypeId }),
-            },
+            data: { ...data, orgId: node.orgId } as any,
         });
     }
 

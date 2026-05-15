@@ -1,4 +1,4 @@
-import { CreateNodeDto, UpdateNodeDto } from './node.dto.js';
+import { CreateNodeDto, UpdateNodeDto, AddNodeImageDto, RemoveNodeImageDto } from './node.dto.js';
 import { NodeRepository } from './node.repository.js';
 import { NodeNotFoundException, NodeCircularReferenceException } from './node.exception.js';
 
@@ -85,5 +85,19 @@ export class NodeService {
         if (!node) throw new NodeNotFoundException();
         await this.assertOrgAdmin(node.orgId, userId);
         await this.nodeRepository.removeGridConfig(dto.nodeId);
+    }
+
+    async addImage(userId: string, dto: AddNodeImageDto) {
+        const node = await this.nodeRepository.findById(dto.nodeId);
+        if (!node) throw new NodeNotFoundException();
+        await this.assertOrgAdmin(node.orgId, userId);
+        return this.nodeRepository.addImage(dto.nodeId, dto.imageUrl);
+    }
+
+    async removeImage(userId: string, dto: RemoveNodeImageDto) {
+        const image = await this.nodeRepository.findImageById(dto.nodeImageId);
+        if (!image) throw new NodeNotFoundException();
+        await this.assertOrgAdmin(image.node.orgId, userId);
+        await this.nodeRepository.removeImage(dto.nodeImageId);
     }
 }

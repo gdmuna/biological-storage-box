@@ -93,7 +93,47 @@ const NodeVoSchema = z
         createdAt: z.string().meta({ title: '创建时间' }),
         updatedAt: z.string().meta({ title: '更新时间' }),
         gridConfig: NodeGridConfigVoSchema.nullable().optional().meta({ title: '网格配置' }),
+        images: z
+            .array(
+                z.object({
+                    id: z.string(),
+                    imageUrl: z.string(),
+                    createdAt: z.string(),
+                })
+            )
+            .optional()
+            .meta({ title: '图片列表' }),
     })
     .meta({ description: '节点信息' });
 
 export class NodeVo extends createZodDto(NodeVoSchema) {}
+
+// ── NodeImage 接口 DTO ────────────────────────────────────────────────
+
+const AddNodeImageDtoSchema = z
+    .object({
+        nodeId: z.string().min(1).meta({ title: 'Node ID' }),
+        imageUrl: z.string().url().meta({ title: '图片 URL' }),
+    })
+    .meta({ description: '添加节点图片' });
+
+export class AddNodeImageDto extends createZodDto(AddNodeImageDtoSchema) {}
+
+const RemoveNodeImageDtoSchema = z
+    .object({
+        nodeImageId: z.string().min(1).meta({ title: 'NodeImage ID' }),
+    })
+    .meta({ description: '删除节点图片' });
+
+export class RemoveNodeImageDto extends createZodDto(RemoveNodeImageDtoSchema) {}
+
+const NodeImageVoSchema = z
+    .object({
+        id: z.string(),
+        nodeId: z.string(),
+        imageUrl: z.string(),
+        createdAt: z.string(),
+    })
+    .meta({ description: '节点图片信息' });
+
+export class NodeImageVo extends createZodDto(NodeImageVoSchema) {}

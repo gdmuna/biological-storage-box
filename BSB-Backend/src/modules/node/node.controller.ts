@@ -7,6 +7,9 @@ import {
     RemoveGridConfigDto,
     NodeVo,
     NodeGridConfigVo,
+    AddNodeImageDto,
+    RemoveNodeImageDto,
+    NodeImageVo,
 } from './node.dto.js';
 import { NodeService } from './node.service.js';
 import NODE_EXCEPTION from './node.exception.js';
@@ -111,5 +114,36 @@ export class NodeController {
         @Body() body: RemoveGridConfigDto
     ) {
         await this.nodeService.removeGridConfig(user.sub, body);
+    }
+
+    // ─── 图片 ──────────────────────────────────────────────────────────────────
+
+    @Post('image/add')
+    @ApiRoute({
+        auth: 'required',
+        summary: '为节点添加图片',
+        description:
+            '将已上传至存储服务的图片 URL 关联到节点，生成 NodeImage 记录。客户端应先通过 FileService presign 上传文件，确认后再调用此接口。',
+        responseType: NodeImageVo,
+        errors: [
+            NODE_EXCEPTION.NodeNotFoundException.code,
+            ORG_EXCEPTION.OrgNotAdminException.code,
+        ],
+    })
+    async addImage(@CurrentUser() user: AccessTokenClaim, @Body() body: AddNodeImageDto) {
+        return this.nodeService.addImage(user.sub, body);
+    }
+
+    @Delete('image/remove')
+    @ApiRoute({
+        auth: 'required',
+        summary: '删除节点图片',
+        errors: [
+            NODE_EXCEPTION.NodeNotFoundException.code,
+            ORG_EXCEPTION.OrgNotAdminException.code,
+        ],
+    })
+    async removeImage(@CurrentUser() user: AccessTokenClaim, @Body() body: RemoveNodeImageDto) {
+        await this.nodeService.removeImage(user.sub, body);
     }
 }

@@ -1,3 +1,5 @@
+/// <reference types="multer" />
+
 import { AccessTokenClaim } from '@/modules/auth/services/index.ts';
 
 declare global {

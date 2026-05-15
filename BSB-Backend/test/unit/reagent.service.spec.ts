@@ -3,24 +3,38 @@ import { ReagentService } from '@/modules/reagent/reagent.service.js';
 import { ReagentRepository } from '@/modules/reagent/reagent.repository.js';
 import { ReagentNotFoundException } from '@/modules/reagent/reagent.exception.js';
 
-const mockReagentRepository: Mocked<Pick<ReagentRepository, 'findById' | 'list' | 'update'>> = {
+const mockReagentRepository: Mocked<
+    Pick<ReagentRepository, 'findById' | 'list' | 'update' | 'create'>
+> = {
     findById: vi.fn(),
     list: vi.fn(),
     update: vi.fn(),
+    create: vi.fn(),
 };
 
 const mockReagent = {
     id: 'reagent_1',
     nodeId: 'node_1',
     orgId: 'org_1',
-    position: 'A1',
-    name: null,
+    position: '1-1',
+    name: 'Test Reagent',
     description: null,
     reagentTypeId: null,
     placedAt: null,
     lastTakenAt: null,
     environment: null,
     responsibleUserId: null,
+    quantity: null,
+    unit: null,
+    expiryDate: null,
+    manufactureDate: null,
+    batchNo: null,
+    catalogNo: null,
+    manufacturer: null,
+    casNumber: null,
+    storageCondition: null,
+    hazardLevel: null,
+    minStockThreshold: null,
     createdAt: new Date(),
     updatedAt: new Date(),
 };
@@ -81,9 +95,85 @@ describe('ReagentService', () => {
 
         it('should update reagent position', async () => {
             mockReagentRepository.findById.mockResolvedValue(mockReagent);
-            mockReagentRepository.update.mockResolvedValue({ ...mockReagent, position: 'B2' });
-            const result = await service.update({ id: 'reagent_1', position: 'B2' });
-            expect(result.position).toBe('B2');
+            mockReagentRepository.update.mockResolvedValue({ ...mockReagent, position: '2-3' });
+            const result = await service.update({ id: 'reagent_1', position: '2-3' });
+            expect(result.position).toBe('2-3');
+        });
+
+        it('should update new P0 fields: quantity, unit, batchNo', async () => {
+            mockReagentRepository.findById.mockResolvedValue(mockReagent);
+            mockReagentRepository.update.mockResolvedValue({
+                ...mockReagent,
+                quantity: 50.5,
+                unit: 'mL',
+                batchNo: 'BATCH001',
+            });
+            const result = await service.update({
+                id: 'reagent_1',
+                quantity: 50.5,
+                unit: 'mL',
+                batchNo: 'BATCH001',
+            });
+            expect(result.quantity).toBe(50.5);
+            expect(result.unit).toBe('mL');
+            expect(result.batchNo).toBe('BATCH001');
+            expect(mockReagentRepository.update).toHaveBeenCalledWith(
+                'reagent_1',
+                expect.objectContaining({
+                    quantity: 50.5,
+                    unit: 'mL',
+                    batchNo: 'BATCH001',
+                })
+            );
+        });
+
+        it('should update expiryDate as Date object', async () => {
+            const expiryIso = '2027-01-01T00:00:00.000Z';
+            mockReagentRepository.findById.mockResolvedValue(mockReagent);
+            mockReagentRepository.update.mockResolvedValue({
+                ...mockReagent,
+                expiryDate: new Date(expiryIso),
+            });
+            const result = await service.update({ id: 'reagent_1', expiryDate: expiryIso });
+            expect(mockReagentRepository.update).toHaveBeenCalledWith(
+                'reagent_1',
+                expect.objectContaining({
+                    expiryDate: new Date(expiryIso),
+                })
+            );
+            expect(result.expiryDate).toEqual(new Date(expiryIso));
+        });
+
+        it('should set expiryDate to null when null is passed', async () => {
+            mockReagentRepository.findById.mockResolvedValue(mockReagent);
+            mockReagentRepository.update.mockResolvedValue({ ...mockReagent, expiryDate: null });
+            await service.update({ id: 'reagent_1', expiryDate: null });
+            expect(mockReagentRepository.update).toHaveBeenCalledWith(
+                'reagent_1',
+                expect.objectContaining({
+                    expiryDate: null,
+                })
+            );
+        });
+
+        it('should update hazardLevel', async () => {
+            mockReagentRepository.findById.mockResolvedValue(mockReagent);
+            mockReagentRepository.update.mockResolvedValue({
+                ...mockReagent,
+                hazardLevel: 'GHS06',
+            });
+            const result = await service.update({ id: 'reagent_1', hazardLevel: 'GHS06' });
+            expect(result.hazardLevel).toBe('GHS06');
+        });
+
+        it('should update minStockThreshold', async () => {
+            mockReagentRepository.findById.mockResolvedValue(mockReagent);
+            mockReagentRepository.update.mockResolvedValue({
+                ...mockReagent,
+                minStockThreshold: 10,
+            });
+            const result = await service.update({ id: 'reagent_1', minStockThreshold: 10 });
+            expect(result.minStockThreshold).toBe(10);
         });
 
         it('should throw ReagentNotFoundException when not found', async () => {
@@ -91,6 +181,31 @@ describe('ReagentService', () => {
             await expect(service.update({ id: 'reagent_1', name: 'X' })).rejects.toThrow(
                 ReagentNotFoundException
             );
+        });
+    });
+
+    describe('create', () => {
+        it('should create reagent with P0 fields', async () => {
+            const created = { ...mockReagent, quantity: 100, unit: 'mg', casNumber: '50-00-0' };
+            mockReagentRepository.create.mockResolvedValue(created);
+            const result = await service.create({
+                nodeId: 'node_1',
+                position: '1-1',
+                name: 'Formaldehyde',
+                quantity: 100,
+                unit: 'mg',
+                casNumber: '50-00-0',
+            });
+            expect(result.quantity).toBe(100);
+            expect(result.unit).toBe('mg');
+            expect(result.casNumber).toBe('50-00-0');
+        });
+
+        it('should throw ReagentNotFoundException when create returns null (node not found)', async () => {
+            mockReagentRepository.create.mockResolvedValue(null);
+            await expect(
+                service.create({ nodeId: 'invalid_node', position: '1-1', name: 'X' })
+            ).rejects.toThrow(ReagentNotFoundException);
         });
     });
 });
