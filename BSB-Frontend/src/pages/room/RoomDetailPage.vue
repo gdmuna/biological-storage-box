@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ArrowLeft, Home, Plus, Network, Trash2 } from 'lucide-vue-next';
+import { ArrowLeft, Camera, Home, Plus, Network, Trash2, X } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,8 +10,10 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from '
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { setGridConfig } from '@/api/modules/node';
+import { setGridConfig, getNode, addNodeImage, removeNodeImage } from '@/api/modules/node';
 import type { NodeItem } from '@/api/modules/node';
+import type { NodeImage } from '@/schemas/node.schema';
+import { serverUploadImage, getPublicFileUrl } from '@/api/modules/file';
 import { useNodeStore } from '@/stores/node';
 import { useOrgStore } from '@/stores/org';
 import { staggerListIn, pageTransitionIn } from '@/utils/animation';
@@ -25,6 +27,10 @@ const nodeId = computed(() => String(route.params.id));
 
 const roomNode = ref<NodeItem | null>(null);
 const children = ref<NodeItem[]>([]);
+const nodeImages = ref<NodeImage[]>([]);
+const imageUploading = ref(false);
+const imageUploadMsg = ref('');
+const fileInputRef = ref<HTMLInputElement | null>(null);
 
 const createDialogOpen = ref(false);
 const newName = ref('');
@@ -59,12 +65,54 @@ function updateNodeData() {
     }
 }
 
+async function loadNodeImages() {
+    try {
+        const node = await getNode(nodeId.value).send();
+        nodeImages.value = node.images ?? [];
+    } catch {
+        /* empty */
+    }
+}
+
+async function handleUploadImage(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    imageUploading.value = true;
+    imageUploadMsg.value = '';
+    try {
+        const uploaded = await serverUploadImage(file).send();
+        const imageUrl = await getPublicFileUrl(uploaded.fileId).send();
+        await addNodeImage({ nodeId: nodeId.value, imageUrl }).send();
+        await loadNodeImages();
+        imageUploadMsg.value = '上传成功';
+    } catch {
+        imageUploadMsg.value = '上传失败，请重试';
+    } finally {
+        imageUploading.value = false;
+        input.value = '';
+        setTimeout(() => (imageUploadMsg.value = ''), 3000);
+    }
+}
+
+async function handleDeleteImage(id: string) {
+    try {
+        await removeNodeImage(id).send();
+        nodeImages.value = nodeImages.value.filter((img) => img.id !== id);
+    } catch {
+        /* empty */
+    }
+}
+
 onMounted(() => {
     updateWidth();
     window.addEventListener('resize', updateWidth);
     const main = document.getElementById('main-content');
     if (main) pageTransitionIn(main);
-    if (org.currentOrgId) nodeStore.fetchByOrg(org.currentOrgId);
+    if (org.currentOrgId) {
+        nodeStore.fetchByOrg(org.currentOrgId);
+        loadNodeImages();
+    }
 });
 
 watch(
@@ -83,7 +131,10 @@ watch(
 
 watch(
     () => nodeId.value,
-    () => updateNodeData(),
+    () => {
+        updateNodeData();
+        loadNodeImages();
+    },
     { immediate: true }
 );
 
@@ -157,7 +208,7 @@ function handleRouterBack() {
                     <Home class="size-4" />
                 </div>
                 <div>
-                    <h1 class="text-2xl font-semibold text-bsb-text-primary">{{ roomNode?.name ?? '加载中…' }}</h1>
+                    <h1 class="font-display text-2xl font-bold tracking-tight text-bsb-text-primary">{{ roomNode?.name ?? '加载中…' }}</h1>
                     <p v-if="roomNode?.description" class="text-xs text-bsb-text-tertiary">{{ roomNode.description }}</p>
                 </div>
             </div>
@@ -303,6 +354,28 @@ function handleRouterBack() {
                 </Card>
             </div>
             <p v-else class="text-sm text-bsb-text-quaternary">暂无子节点</p>
+        </div>
+
+        <!-- Images section -->
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <h2 class="text-sm font-emphasis text-bsb-text-secondary">节点图片（{{ nodeImages.length }}）</h2>
+                <Button size="sm" variant="outline" :disabled="imageUploading" class="gap-1.5 border-bsb-border-standard text-bsb-text-secondary hover:text-bsb-text-primary" @click="fileInputRef?.click()">
+                    <Camera class="size-4" />
+                    {{ imageUploading ? '上传中…' : '上传图片' }}
+                </Button>
+            </div>
+            <input ref="fileInputRef" type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="hidden" @change="handleUploadImage" />
+            <p v-if="imageUploadMsg" class="text-xs" :class="imageUploadMsg.includes('失败') ? 'text-red-500' : 'text-green-600'">{{ imageUploadMsg }}</p>
+            <div v-if="nodeImages.length > 0" class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                <div v-for="img in nodeImages" :key="img.id" class="group relative aspect-square overflow-hidden rounded-md border border-bsb-border-standard">
+                    <img :src="img.imageUrl" alt="节点图片" class="h-full w-full object-cover" />
+                    <button class="absolute right-1 top-1 flex size-6 items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity group-hover:opacity-100" @click="handleDeleteImage(img.id)">
+                        <X class="size-3" />
+                    </button>
+                </div>
+            </div>
+            <p v-else-if="!imageUploading" class="text-sm text-bsb-text-quaternary">暂无图片</p>
         </div>
     </div>
 </template>

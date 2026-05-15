@@ -3,14 +3,14 @@ import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Plus, Home, ChevronRight } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useOrgStore } from '@/stores/org';
 import { useNodeStore } from '@/stores/node';
 import { staggerListIn, pageTransitionIn } from '@/utils/animation';
+import EmptyState from '@/components/EmptyState.vue';
 
 const router = useRouter();
 const org = useOrgStore();
@@ -61,7 +61,7 @@ watch(
     <div class="space-y-6">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <h1 class="text-2xl font-semibold text-bsb-text-primary">库室</h1>
+                <h1 class="font-display text-2xl font-bold tracking-tight text-bsb-text-primary">库室</h1>
             </div>
             <Dialog v-model:open="createDialogOpen">
                 <DialogTrigger as-child>
@@ -73,6 +73,7 @@ watch(
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>新建库室</DialogTitle>
+                        <DialogDescription class="sr-only">填写新库室的名称和描述信息</DialogDescription>
                     </DialogHeader>
                     <div class="space-y-3">
                         <div class="space-y-1.5">
@@ -98,37 +99,21 @@ watch(
             </Dialog>
         </div>
 
-        <!-- Room grid -->
-        <div v-if="nodeStore.nodes.length > 0" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <Card v-for="node in nodeStore.rootNodes" :key="node.id" class="room-card cursor-pointer border-bsb-border-standard bg-white transition-all hover:border-[#0075de]/30 hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]" @click="router.push(`/room/${node.id}`)">
-                <CardHeader class="pb-2">
-                    <div class="flex items-start justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <div class="flex size-8 items-center justify-center rounded-lg bg-[#f2f9ff] text-bsb-accent-brand">
-                                <Home class="size-4" />
-                            </div>
-                            <CardTitle class="text-sm text-bsb-text-primary">{{ node.name }}</CardTitle>
-                        </div>
-                        <ChevronRight class="size-4 text-bsb-text-quaternary" />
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <p v-if="node.description" class="line-clamp-2 text-xs text-bsb-text-tertiary">{{ node.description }}</p>
-                    <p v-else class="text-xs text-bsb-text-quaternary">暂无描述</p>
-                    <div class="mt-2 flex items-center gap-1">
-                        <Badge variant="outline" class="text-xs text-bsb-text-quaternary">{{ node._count?.children ?? 0 }} 个子节点</Badge>
-                    </div>
-                </CardContent>
-            </Card>
+        <!-- Room list -->
+        <div v-if="nodeStore.loading" class="space-y-1">
+            <div v-for="i in 4" :key="i" class="h-10 animate-pulse rounded-lg bg-bsb-bg-surface" />
         </div>
-        <div v-else-if="!nodeStore.loading" class="flex flex-col items-center justify-center py-16 text-center">
-            <Home class="mb-3 size-10 text-bsb-text-quaternary" />
-            <p class="text-sm font-medium text-bsb-text-secondary">暂无库室</p>
-            <p class="mt-1 text-xs text-bsb-text-quaternary">点击"新建库室"创建第一个储存空间</p>
+        <div v-else-if="nodeStore.rootNodes.length > 0" class="overflow-hidden rounded-xl border border-bsb-border-standard bg-white">
+            <div v-for="(node, idx) in nodeStore.rootNodes" :key="node.id" class="room-card flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-bsb-bg-surface" :class="idx !== nodeStore.rootNodes.length - 1 ? 'border-b border-bsb-border-standard' : ''" @click="router.push(`/room/${node.id}`)">
+                <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-[#f2f9ff] text-bsb-accent-brand">
+                    <Home class="size-3.5" />
+                </div>
+                <span class="min-w-0 flex-1 truncate text-sm font-medium text-bsb-text-primary">{{ node.name }}</span>
+                <span v-if="node.description" class="hidden max-w-xs truncate text-xs text-bsb-text-tertiary sm:block">{{ node.description }}</span>
+                <Badge variant="outline" class="shrink-0 text-xs text-bsb-text-quaternary">{{ node._count?.children ?? 0 }} 个储存盒</Badge>
+                <ChevronRight class="size-4 shrink-0 text-bsb-text-quaternary" />
+            </div>
         </div>
-
-        <div v-if="nodeStore.loading" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <div v-for="i in 3" :key="i" class="h-24 animate-pulse rounded-xl bg-bsb-bg-surface" />
-        </div>
+        <EmptyState v-else :icon="Home" title="暂无库室" description="点击“新建库室”创建第一个储存空间" />
     </div>
 </template>

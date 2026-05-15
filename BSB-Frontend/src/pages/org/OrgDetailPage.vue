@@ -131,7 +131,7 @@ async function handleDelete() {
                 <ArrowLeft class="size-4" />
             </Button>
             <div>
-                <h1 class="text-2xl font-semibold text-bsb-text-primary">{{ orgData?.name ?? '加载中…' }}</h1>
+                <h1 class="font-display text-2xl font-bold tracking-tight text-bsb-text-primary">{{ orgData?.name ?? '加载中…' }}</h1>
                 <p v-if="orgData?.description" class="mt-0.5 text-sm text-bsb-text-tertiary">{{ orgData.description }}</p>
             </div>
             <Badge v-if="(orgData as any)?.isPublic" variant="outline" class="ml-auto text-xs text-bsb-accent-brand border-bsb-accent-brand/30">公开</Badge>

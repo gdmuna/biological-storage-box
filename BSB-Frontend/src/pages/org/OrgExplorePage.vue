@@ -50,7 +50,7 @@ onMounted(async () => {
         <div>
             <div class="flex items-center gap-2">
                 <Compass class="size-5 text-bsb-accent-brand" />
-                <h1 class="text-2xl font-semibold text-bsb-text-primary">探索组织</h1>
+                <h1 class="font-display text-2xl font-bold tracking-tight text-bsb-text-primary">探索组织</h1>
             </div>
             <p class="mt-1 text-sm text-bsb-text-tertiary">发现公开组织并申请加入</p>
         </div>

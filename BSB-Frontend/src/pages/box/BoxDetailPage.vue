@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Trash2 } from 'lucide-vue-next';
@@ -15,6 +15,7 @@ import { useNodeStore } from '@/stores/node';
 import { uploadFile } from '@/api/modules/file';
 import { createBoxImage, listBoxImages, deleteBoxImage } from '@/api/modules/box-image';
 import { createFeedback, listBoxLogs } from '@/api/modules/feedback';
+import type { BoxLogItem } from '@/schemas/feedback.schema';
 import { pageTransitionIn } from '@/utils/animation';
 import { Node } from '@/schemas/node.schema';
 import { Reagent, BoxImage } from '@/schemas/box.schema';
@@ -38,7 +39,7 @@ const showReagents = computed(() => {
 const nodeStore = useNodeStore();
 const box = ref<Node | null>(null);
 const images = ref<BoxImage[]>([]);
-const boxLogs = ref<{ id: string; action?: string; createdAt?: string }[]>([]);
+const boxLogs = ref<BoxLogItem[]>([]);
 const feedbackContent = ref('');
 const feedbackMessage = ref('');
 
@@ -80,8 +81,9 @@ async function initData(force = false) {
 
     box.value = nodeStore.boxNodes.find((n) => n.id === boxId.value) || null;
     await reagentStore.initData(org.currentOrgId, force);
-    // images.value = await listBoxImages(boxId.value).send(force);
-    boxLogs.value = await listBoxLogs({ boxId: boxId.value, limit: 20, offset: 0 }).send(force);
+    images.value = await listBoxImages(boxId.value).send();
+    const logsRes = await listBoxLogs({ boxId: boxId.value, limit: 20, offset: 0 }).send(force);
+    boxLogs.value = logsRes.items;
 }
 
 onMounted(async () => {
@@ -215,7 +217,7 @@ async function handleSubmitFeedback() {
     <div class="space-y-6">
         <div v-if="box" class="flex items-start justify-between">
             <div>
-                <h1 class="text-2xl font-semibold text-bsb-text-primary">{{ box.name }}</h1>
+                <h1 class="font-display text-2xl font-bold tracking-tight text-bsb-text-primary">{{ box.name }}</h1>
                 <p v-if="box.description" class="mt-1 text-sm text-bsb-text-tertiary">
                     {{ box.description }}
                 </p>
@@ -230,7 +232,10 @@ async function handleSubmitFeedback() {
                     </Button>
                 </DialogTrigger>
                 <DialogContent>
-                    <DialogHeader><DialogTitle>确认删除储存盒？</DialogTitle></DialogHeader>
+                    <DialogHeader>
+                        <DialogTitle>确认删除储存盒？</DialogTitle>
+                        <DialogDescription class="sr-only">删除操作不可逆，储存盒内所有槽位数据将永久丢失</DialogDescription>
+                    </DialogHeader>
                     <p class="text-sm text-bsb-text-secondary">删除后所有槽位数据将永久丢失，此操作不可逆。</p>
                     <DialogFooter>
                         <Button variant="outline" @click="deleteDialogOpen = false">取消</Button>
@@ -310,7 +315,7 @@ async function handleSubmitFeedback() {
         <div v-if="boxLogs.length > 0" class="space-y-2">
             <h2 class="text-sm font-medium text-bsb-text-secondary">最近操作日志</h2>
             <div v-for="log in boxLogs" :key="log.id" class="rounded border border-bsb-border-standard p-2 text-xs text-bsb-text-tertiary">
-                <span>{{ log.action || '操作' }}</span>
+                <span>{{ log.operationType }}</span>
                 <span class="ml-2">{{ log.createdAt }}</span>
             </div>
         </div>

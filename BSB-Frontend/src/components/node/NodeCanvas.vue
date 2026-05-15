@@ -11,6 +11,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import dagre from '@dagrejs/dagre';
 import type { Node } from '@/schemas/node.schema';
 import type { NodeItem } from '@/api/modules/node';
 import type { Node as FlowNode, Edge } from '@vue-flow/core';
@@ -48,6 +49,13 @@ const typeColorMap: Record<string, string> = {
     BOX_SLOT: '#0075ff'
 };
 
+const typeNameMap: Record<string, string> = {
+    ROOT: '根节点',
+    CONTAINER: '库室',
+    BOX: '储存盒',
+    BOX_SLOT: '储位'
+};
+
 const typeBgMap: Record<string, string> = {
     ROOT: '#f0f2ff',
     CONTAINER: '#f0fafa',
@@ -55,51 +63,60 @@ const typeBgMap: Record<string, string> = {
     BOX_SLOT: '#f2f9de'
 };
 
-function flattenTree(nodes: NodeItem[], parentId: string | null = null, depth = 0): { flowNodes: FlowNode[]; edges: Edge[] } {
-    const flowNodes: FlowNode[] = [];
-    const edges: Edge[] = [];
+const NODE_WIDTH = 180;
+const NODE_HEIGHT = 44;
 
-    for (let i = 0; i < nodes.length; i++) {
-        const node = nodes[i];
-        const x = depth * 280;
-        const y = flowNodes.length * 80 + i * 10;
+function buildDagreLayout(nodes: NodeItem[]): { flowNodes: FlowNode[]; edges: Edge[] } {
+    const graph = new dagre.graphlib.Graph();
+    graph.setDefaultEdgeLabel(() => ({}));
+    graph.setGraph({ rankdir: 'LR', nodesep: 30, ranksep: 80, marginx: 20, marginy: 20 });
 
-        flowNodes.push({
-            id: node.id,
-            position: { x, y },
-            data: { ...node },
-            type: 'default',
-            style: {
-                background: typeBgMap[node.type] ?? '#fff',
-                border: `1.5px solid ${typeColorMap[node.type] ?? '#ccc'}`,
-                borderRadius: '10px',
-                padding: '8px 14px',
-                fontSize: '13px',
-                fontWeight: '510',
-                color: typeColorMap[node.type] ?? '#333',
-                minWidth: '140px'
-            },
-            label: node.name
-        });
+    const rawNodes: FlowNode[] = [];
+    const rawEdges: Edge[] = [];
 
-        if (parentId) {
-            edges.push({
-                id: `e-${parentId}-${node.id}`,
-                source: parentId,
-                target: node.id,
-                animated: false,
-                style: { stroke: '#d1d5db', strokeWidth: 1.5 }
+    function collect(items: NodeItem[], parentId: string | null) {
+        for (const node of items) {
+            graph.setNode(node.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
+            rawNodes.push({
+                id: node.id,
+                position: { x: 0, y: 0 }, // placeholder; dagre fills it in
+                data: { ...node },
+                type: 'default',
+                style: {
+                    background: typeBgMap[node.type] ?? '#fff',
+                    border: `1.5px solid ${typeColorMap[node.type] ?? '#ccc'}`,
+                    borderRadius: '10px',
+                    padding: '8px 14px',
+                    fontSize: '13px',
+                    fontWeight: '510',
+                    color: typeColorMap[node.type] ?? '#333',
+                    minWidth: '140px'
+                },
+                label: node.name
             });
-        }
-
-        if (node.children?.length) {
-            const child = flattenTree(node.children, node.id, depth + 1);
-            flowNodes.push(...child.flowNodes);
-            edges.push(...child.edges);
+            if (parentId) {
+                graph.setEdge(parentId, node.id);
+                rawEdges.push({
+                    id: `e-${parentId}-${node.id}`,
+                    source: parentId,
+                    target: node.id,
+                    animated: false,
+                    style: { stroke: '#d1d5db', strokeWidth: 1.5 }
+                });
+            }
+            if (node.children?.length) collect(node.children, node.id);
         }
     }
 
-    return { flowNodes, edges };
+    collect(nodes, null);
+    dagre.layout(graph);
+
+    const flowNodes = rawNodes.map((n) => {
+        const pos = graph.node(n.id);
+        return { ...n, position: { x: pos.x - NODE_WIDTH / 2, y: pos.y - NODE_HEIGHT / 2 } };
+    });
+
+    return { flowNodes, edges: rawEdges };
 }
 
 const filteredTree = computed(() => {
@@ -125,7 +142,7 @@ const filteredTree = computed(() => {
     return filterRecursive(treeNodes.value);
 });
 
-const flowData = computed(() => flattenTree(filteredTree.value));
+const flowData = computed(() => buildDagreLayout(filteredTree.value));
 
 const vfNodes = computed(() => flowData.value.flowNodes);
 const vfEdges = computed(() => flowData.value.edges);
@@ -159,7 +176,7 @@ watch(() => props.orgId, fetchTree);
             <div class="flex items-center gap-3 text-[11px] text-bsb-text-tertiary">
                 <span v-for="(color, type) in typeColorMap" :key="type" class="flex items-center gap-1">
                     <span class="inline-block size-2.5 rounded-full" :style="`background:${color}`" />
-                    {{ type }}
+                    {{ typeNameMap[type] ?? type }}
                 </span>
             </div>
 
@@ -172,10 +189,10 @@ watch(() => props.orgId, fetchTree);
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">全部类型</SelectItem>
-                        <SelectItem value="ROOT">ROOT</SelectItem>
-                        <SelectItem value="CONTAINER">CONTAINER</SelectItem>
-                        <SelectItem value="BOX">BOX</SelectItem>
-                        <SelectItem value="BOX_SLOT">BOX_SLOT</SelectItem>
+                        <SelectItem value="ROOT">根节点</SelectItem>
+                        <SelectItem value="CONTAINER">库室</SelectItem>
+                        <SelectItem value="BOX">储存盒</SelectItem>
+                        <SelectItem value="BOX_SLOT">储位</SelectItem>
                     </SelectContent>
                 </Select>
 
@@ -215,7 +232,7 @@ watch(() => props.orgId, fetchTree);
                     <div class="space-y-1">
                         <p class="text-xs font-medium uppercase tracking-wide text-bsb-text-tertiary">类型</p>
                         <Badge variant="outline" :style="{ borderColor: typeColorMap[selectedNode.type] + '60', color: typeColorMap[selectedNode.type], background: typeBgMap[selectedNode.type] }">
-                            {{ selectedNode.type }}
+                            {{ typeNameMap[selectedNode.type] ?? selectedNode.type }}
                         </Badge>
                     </div>
 

@@ -48,7 +48,7 @@ watch(
             <Card class="dashboard-card rounded-xl border-bsb-border-standard bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
                 <CardHeader class="flex flex-row items-center justify-between pb-2">
                     <CardTitle class="text-sm font-medium text-bsb-text-secondary">储存盒</CardTitle>
-                    <div class="flex size-8 items-center justify-center rounded-lg bg-[#f2f9ff]">
+                    <div class="flex size-8 items-center justify-center rounded-lg bg-bsb-card-tint-sky">
                         <Box class="size-4 text-bsb-accent-brand" />
                     </div>
                 </CardHeader>
@@ -61,7 +61,7 @@ watch(
             <Card class="dashboard-card rounded-xl border-bsb-border-standard bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
                 <CardHeader class="flex flex-row items-center justify-between pb-2">
                     <CardTitle class="text-sm font-medium text-bsb-text-secondary">所属组织</CardTitle>
-                    <div class="flex size-8 items-center justify-center rounded-lg bg-[#edf5ec]">
+                    <div class="flex size-8 items-center justify-center rounded-lg bg-bsb-card-tint-mint">
                         <Building2 class="size-4 text-[#2f9e44]" />
                     </div>
                 </CardHeader>
@@ -74,7 +74,7 @@ watch(
             <Card class="dashboard-card rounded-xl border-bsb-border-standard bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
                 <CardHeader class="flex flex-row items-center justify-between pb-2">
                     <CardTitle class="text-sm font-medium text-bsb-text-secondary">试剂</CardTitle>
-                    <div class="flex size-8 items-center justify-center rounded-lg bg-[#fff5f0]">
+                    <div class="flex size-8 items-center justify-center rounded-lg bg-bsb-card-tint-peach">
                         <FlaskConical class="size-4 text-[#e8590c]" />
                     </div>
                 </CardHeader>

@@ -68,7 +68,7 @@ watch(
 
 <template>
     <div class="max-w-xl space-y-6">
-        <h1 class="text-2xl font-semibold text-bsb-text-primary">新建储存盒</h1>
+        <h1 class="font-display text-2xl font-bold tracking-tight text-bsb-text-primary">新建储存盒</h1>
 
         <Card class="rounded-xl border-bsb-border-standard bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
             <CardHeader>
