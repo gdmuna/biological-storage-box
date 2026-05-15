@@ -27,7 +27,7 @@ import {
 
 import allConfig, { AllConfig } from '@/constants/index.js';
 
-import { DatabaseModule, AlsModule, MailModule } from '@/infra/index.js';
+import { DatabaseModule, AlsModule, MailModule, KvsModule, StorageModule } from '@/infra/index.js';
 
 import { Module, MiddlewareConsumer, NestModule, Global } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -107,6 +107,25 @@ import pino from 'pino';
         ReagentTypeModule,
         ShareModule,
         FeedbackModule,
+        KvsModule,
+        StorageModule.forRootAsync({
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService<AllConfig, true>) => {
+                const storageConfig = configService.get('storage', { infer: true });
+                return {
+                    options: {
+                        endpoint: storageConfig.endpoint,
+                        region: storageConfig.region,
+                        accessKeyId: storageConfig.accessKeyId,
+                        secretAccessKey: storageConfig.secretAccessKey,
+                        forcePathStyle: storageConfig.forcePathStyle,
+                        bucketPublic: storageConfig.bucketPublic,
+                        bucketPrivate: storageConfig.bucketPrivate,
+                        bucketStaging: storageConfig.bucketStaging,
+                    },
+                };
+            },
+        }),
     ],
     controllers: [AppController, TestController],
     providers: [
@@ -151,7 +170,7 @@ import pino from 'pino';
             useClass: ThrottlerExceptionFilter,
         },
     ],
-    exports: [AlsModule, DatabaseModule],
+    exports: [AlsModule, DatabaseModule, KvsModule, StorageModule],
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {

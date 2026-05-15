@@ -18,8 +18,9 @@ const StorageConfigValidateSchema = z
         S3_REGION: z.string().min(1).default('us-east-1'),
         S3_ACCESS_KEY_ID: z.string().min(1),
         S3_SECRET_ACCESS_KEY: z.string().min(1),
-        S3_BUCKET_IMG: z.string().min(1).default('img'),
-        S3_BUCKET_SHARE: z.string().min(1).default('share'),
+        S3_BUCKET_PUBLIC: z.string().min(1).default('app-public'), // CDN 公开访问
+        S3_BUCKET_PRIVATE: z.string().min(1).default('app-private'), // 鉴权访问
+        S3_BUCKET_STAGING: z.string().min(1).default('app-staging'), // CAS 暂存桶
         S3_FORCE_PATH_STYLE: z
             .enum(['true', 'false'])
             .transform((v) => v === 'true')
@@ -34,8 +35,9 @@ const StorageConfigValidateSchema = z
         region: env.S3_REGION,
         accessKeyId: env.S3_ACCESS_KEY_ID,
         secretAccessKey: env.S3_SECRET_ACCESS_KEY,
-        bucketImg: env.S3_BUCKET_IMG,
-        bucketShare: env.S3_BUCKET_SHARE,
+        bucketPublic: env.S3_BUCKET_PUBLIC,
+        bucketPrivate: env.S3_BUCKET_PRIVATE,
+        bucketStaging: env.S3_BUCKET_STAGING,
         forcePathStyle: env.S3_FORCE_PATH_STYLE,
         publicBaseUrl: env.S3_PUBLIC_BASE_URL,
     }));
