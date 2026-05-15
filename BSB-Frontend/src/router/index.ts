@@ -14,6 +14,8 @@ import RoomDetailPage from '@/pages/room/RoomDetailPage.vue';
 import NodePage from '@/pages/node/NodePage.vue';
 import ProfilePage from '@/pages/user/ProfilePage.vue';
 import ReagentPage from '@/pages/reagent/ReagentPage.vue';
+import ReagentTypePage from '@/pages/reagent-type/ReagentTypePage.vue';
+import LogsPage from '@/pages/logs/LogsPage.vue';
 
 const routes = [
     {
@@ -75,6 +77,14 @@ const routes = [
             {
                 path: 'reagent',
                 component: ReagentPage,
+            },
+            {
+                path: 'reagent-type',
+                component: ReagentTypePage,
+            },
+            {
+                path: 'logs',
+                component: LogsPage,
             },
         ],
     },

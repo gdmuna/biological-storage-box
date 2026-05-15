@@ -13,54 +13,55 @@ function handleNavClick(url: string) {
     router.push(url);
 }
 
+interface NavItem {
+    title: string;
+    url: string;
+    icon?: LucideIcon;
+    isActive?: boolean;
+    items?: { title: string; url: string }[];
+}
+
 defineProps<{
-    items: {
-        title: string;
-        url: string;
-        icon?: LucideIcon;
-        isActive?: boolean;
-        items?: {
-            title: string;
-            url: string;
-        }[];
-    }[];
+    groups: { label: string; items: NavItem[] }[];
 }>();
 </script>
 
 <template>
-    <SidebarGroup>
-        <SidebarGroupLabel>试剂管理</SidebarGroupLabel>
-        <SidebarMenu>
-            <template v-for="item in items" :key="item.title">
-                <Collapsible v-if="item.items" as-child :default-open="item.isActive" class="group/collapsible">
-                    <SidebarMenuItem>
-                        <CollapsibleTrigger as-child>
-                            <SidebarMenuButton :tooltip="item.title">
-                                <component :is="item.icon" v-if="item.icon" />
-                                <span>{{ item.title }}</span>
-                                <ChevronRight class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                            </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                            <SidebarMenuSub>
-                                <SidebarMenuSubItem v-for="subItem in item.items" :key="subItem.title">
-                                    <SidebarMenuSubButton as-child>
-                                        <a :href="subItem.url">
-                                            <span>{{ subItem.title }}</span>
-                                        </a>
-                                    </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                            </SidebarMenuSub>
-                        </CollapsibleContent>
+    <template v-for="group in groups" :key="group.label">
+        <SidebarGroup>
+            <SidebarGroupLabel>{{ group.label }}</SidebarGroupLabel>
+            <SidebarMenu>
+                <template v-for="item in group.items" :key="item.title">
+                    <Collapsible v-if="item.items" as-child :default-open="item.isActive" class="group/collapsible">
+                        <SidebarMenuItem>
+                            <CollapsibleTrigger as-child>
+                                <SidebarMenuButton :tooltip="item.title">
+                                    <component :is="item.icon" v-if="item.icon" />
+                                    <span>{{ item.title }}</span>
+                                    <ChevronRight class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                </SidebarMenuButton>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <SidebarMenuSub>
+                                    <SidebarMenuSubItem v-for="subItem in item.items" :key="subItem.title">
+                                        <SidebarMenuSubButton as-child>
+                                            <a :href="subItem.url">
+                                                <span>{{ subItem.title }}</span>
+                                            </a>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                </SidebarMenuSub>
+                            </CollapsibleContent>
+                        </SidebarMenuItem>
+                    </Collapsible>
+                    <SidebarMenuItem v-else>
+                        <SidebarMenuButton :tooltip="item.title" @click="handleNavClick(item.url)">
+                            <component :is="item.icon" v-if="item.icon" />
+                            <span>{{ item.title }}</span>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
-                </Collapsible>
-                <SidebarMenuItem v-else>
-                    <SidebarMenuButton :tooltip="item.title" @click="handleNavClick(item.url)">
-                        <component :is="item.icon" v-if="item.icon" />
-                        <span>{{ item.title }}</span>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </template>
-        </SidebarMenu>
-    </SidebarGroup>
+                </template>
+            </SidebarMenu>
+        </SidebarGroup>
+    </template>
 </template>

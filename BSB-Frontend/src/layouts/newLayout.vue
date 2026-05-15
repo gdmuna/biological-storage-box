@@ -58,7 +58,7 @@ const activeNavData = computed(() => {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem class="hidden md:block">
-                                <BreadcrumbLink href="https://github.com/gdmuna/biological-storage-box" rel="noreferer noopener" target="_blank">Biological-Storage-Box</BreadcrumbLink>
+                                <BreadcrumbLink href="/dashboard">首页</BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator class="hidden md:block" />
                             <BreadcrumbItem>

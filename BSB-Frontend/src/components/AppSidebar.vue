@@ -4,14 +4,13 @@ import { computed, markRaw } from 'vue';
 import { SidebarProps } from '@/components/ui/sidebar';
 
 import NavMain from '@/components/NavMain.vue';
-// import NavProjects from '@/components/NavProjects.vue';
 import NavUser from '@/components/NavUser.vue';
 import TeamSwitcher from '@/components/TeamSwitcher.vue';
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
 import orgDefaultLogo from '@/components/icon/orgDefaultLogo.vue';
 
-import { LayoutDashboard, Box, Building2, FlaskConical, Network, Home, Frame, Map, PieChart } from 'lucide-vue-next';
+import { LayoutDashboard, Box, Building2, FlaskConical, Network, Home, Tag, ScrollText } from 'lucide-vue-next';
 
 import { useAuthStore } from '@/stores/auth';
 import { useOrgStore } from '@/stores/org';
@@ -42,29 +41,27 @@ const orgsData = computed(() => {
 
 // This is sample data.
 const data = {
-    navMain: [
-        { title: '仪表盘', url: '/dashboard', icon: LayoutDashboard },
-        { title: '库室', url: '/room', icon: Home },
-        { title: '储存盒', url: '/box', icon: Box },
-        { title: '试剂', url: '/reagent', icon: FlaskConical },
-        { title: '节点图', url: '/node', icon: Network },
-        { title: '组织', url: '/org', icon: Building2 }
-    ],
-    projects: [
+    navGroups: [
         {
-            name: 'Design Engineering',
-            url: '#',
-            icon: Frame
+            label: '核心功能',
+            items: [{ title: '仪表盘', url: '/dashboard', icon: LayoutDashboard }]
         },
         {
-            name: 'Sales & Marketing',
-            url: '#',
-            icon: PieChart
+            label: '库存管理',
+            items: [
+                { title: '库室', url: '/room', icon: Home },
+                { title: '储存盒', url: '/box', icon: Box },
+                { title: '试剂', url: '/reagent', icon: FlaskConical },
+                { title: '试剂类型', url: '/reagent-type', icon: Tag }
+            ]
         },
         {
-            name: 'Travel',
-            url: '#',
-            icon: Map
+            label: '分析与记录',
+            items: [
+                { title: '操作日志', url: '/logs', icon: ScrollText },
+                { title: '节点图', url: '/node', icon: Network },
+                { title: '组织', url: '/org', icon: Building2 }
+            ]
         }
     ]
 };
@@ -76,8 +73,7 @@ const data = {
             <TeamSwitcher :teams="orgsData" />
         </SidebarHeader>
         <SidebarContent>
-            <NavMain :items="data.navMain" />
-            <!-- <NavProjects :projects="data.projects" /> -->
+            <NavMain :groups="data.navGroups" />
         </SidebarContent>
         <SidebarFooter>
             <NavUser :user="userData" />
