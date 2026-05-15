@@ -24,6 +24,7 @@
     "tauri:build": "tauri build"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^3.0.0",
     "@tanstack/vue-table": "^8.21.3",
     "@tauri-apps/api": "^2.11.0",
     "@tauri-apps/plugin-opener": "^2.5.4",
@@ -53,6 +54,7 @@
     "@playwright/test": "^1.60.0",
     "@tailwindcss/vite": "^4.3.0",
     "@tauri-apps/cli": "^2.11.1",
+    "@types/dagre": "^0.7.54",
     "@vitejs/plugin-vue": "^6.0.6",
     "@vue/test-utils": "^2.4.10",
     "autoprefixer": "^10.5.0",
