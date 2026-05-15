@@ -1,0 +1,409 @@
+# Progress — AI 协助者进度追踪文档
+
+本文件是 ROADMAP.md 的**执行层配套文档**，专为 AI 助手设计。
+每项功能开发前必须查阅本文件，开发完成后必须更新本文件。
+
+> **关联文档**：[ROADMAP.md](./ROADMAP.md) · [BSB-Backend/AGENTS.md](./BSB-Backend/AGENTS.md) · [BSB-Frontend/AGENTS.md](./BSB-Frontend/AGENTS.md)
+
+---
+
+## ⛔ 铁律（违反即驳回）
+
+1. **禁止 Mock 数据上生产**：所有标记为「已完成」的功能，前端必须对接真实后端 API，后端必须读写真实数据库。测试文件中的 mock/stub 仅限单元测试作用域，E2E 测试必须使用真实服务。
+2. **测试先行**：实现代码与测试代码必须同一批次提交，不允许「先上功能后补测试」。
+3. **全通过才算完成**：功能模块标记为 ✅ 的唯一标准是通过 §1 中定义的完整验证流水线。不得跳过任何一步。
+4. **Docker 镜像纳入验收**：本地构建通过不等于完成，Docker 镜像必须能成功 build。
+
+---
+
+## §1 完成定义（Definition of Done）
+
+每个功能模块完成开发后，**必须按顺序**执行以下所有步骤，全部通过后方可将模块状态改为 ✅。
+
+```
+步骤  命令                                                    作用域
+────  ──────────────────────────────────────────────────────  ──────
+ 1    pnpm run format:check                                   根工作区
+ 2    pnpm --filter bsb-backend lint                          后端
+ 3    pnpm --filter bsb-frontend eslint                       前端
+ 4    pnpm --filter bsb-backend test                          后端（单元 + E2E，Vitest）
+ 5    pnpm --filter bsb-frontend test                         前端（Vitest 单元）
+ 6    pnpm --filter bsb-frontend test:e2e                     前端（Playwright E2E）
+ 7    pnpm --filter bsb-backend build                         后端 TypeScript 编译
+ 8    pnpm --filter bsb-frontend build                        前端 Vite 构建
+ 9    docker build -f BSB-Backend/Dockerfile .                后端 Docker 镜像
+10    docker build -f BSB-Backend/Dockerfile .               前端 Docker 镜像
+11    pnpm --filter bsb-backend start:dev                     冒烟测试（启动无 crash）
+```
+
+> 步骤 9、10 使用 `--no-cache` 时的 build 参数见各 Dockerfile 的 ARG 声明，需传入测试用占位 URL。
+
+---
+
+## §2 测试文件索引
+
+### 后端测试（Vitest，`pnpm --filter bsb-backend test`）
+
+后端 `vitest.config.ts` 的 `include` 规则：`src/**/*.spec.ts` + `test/**/*.spec.ts` + `test/**/*.e2e-spec.ts`
+
+| 模块 | 单元测试路径 | E2E 测试路径 | 状态 |
+|------|------------|------------|------|
+| App | `test/unit/app.controller.spec.ts` `test/unit/app.service.spec.ts` | `test/e2e/app.e2e-spec.ts` | ✅ 已有 |
+| Auth | `test/unit/auth.controller.spec.ts` `test/unit/auth.guard.spec.ts` `test/unit/auth.service.spec.ts` | `test/e2e/auth.e2e-spec.ts` | ✅ 已有 |
+| Org | `test/unit/org.controller.spec.ts` `test/unit/org.service.spec.ts` | `test/e2e/org.e2e-spec.ts` | ✅ 已有 |
+| OrgUser | `test/unit/org-user.service.spec.ts` | （含于 org E2E） | ✅ 已有 |
+| Node | `test/unit/node.controller.spec.ts` `test/unit/node.service.spec.ts` | `test/e2e/node-extensions.e2e-spec.ts` | ✅ 已有 |
+| Reagent | `test/unit/reagent.service.spec.ts` | `test/e2e/reagent.e2e-spec.ts` | ✅ 已有 |
+| ReagentType | （含于 reagent 单元） | `test/e2e/reagent-type.e2e-spec.ts` | ✅ 已有 |
+| Share | — | `test/e2e/share.e2e-spec.ts` | ✅ 已有 |
+| User | `test/unit/user.service.spec.ts` | — | ✅ 已有 |
+| Feedback | `test/unit/feedback.service.spec.ts` | — | ✅ 已有 |
+| **NodeImage** | ❌ `test/unit/node-image.service.spec.ts` | ❌ `test/e2e/node-image.e2e-spec.ts` | ❌ 待创建 |
+| **ReagentRequest** | ❌ `test/unit/reagent-request.service.spec.ts` | ❌ `test/e2e/reagent-request.e2e-spec.ts` | ❌ 待创建 |
+| **Alert / Notification** | ❌ `test/unit/alert.service.spec.ts` | ❌ `test/e2e/alert.e2e-spec.ts` | ❌ 待创建 |
+| **ProcurementRequest** | ❌ `test/unit/procurement.service.spec.ts` | ❌ `test/e2e/procurement.e2e-spec.ts` | ❌ 待创建 |
+
+### 前端测试
+
+#### Vitest 单元（`pnpm --filter bsb-frontend test`）
+
+| 测试文件 | 对应模块 | 状态 |
+|---------|---------|------|
+| `test/unit/api/` | API 模块调用契约 | ⚠️ 目录存在，内容待核查 |
+| `test/unit/pages/` | 页面组件渲染 | ⚠️ 目录存在，内容待核查 |
+| `test/unit/stores/` | Pinia Store 逻辑 | ⚠️ 目录存在，内容待核查 |
+| `test/unit/schemas/` | Zod Schema 校验 | ⚠️ 目录存在，内容待核查 |
+
+#### Playwright E2E（`pnpm --filter bsb-frontend test:e2e`）
+
+Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`，测试目录 `test/e2e/`。
+分三个 project 运行：`setup`（全局登录） → `public`（未认证页面） → `app`（认证后页面）
+
+| E2E 文件 | 覆盖功能 | 状态 |
+|---------|---------|------|
+| `test/e2e/global.setup.ts` | 全局登录态初始化 | ✅ 已有 |
+| `test/e2e/auth.spec.ts` | 登录流程 | ✅ 已有 |
+| `test/e2e/email-auth.spec.ts` | 邮箱登录 | ✅ 已有 |
+| `test/e2e/register.spec.ts` | 注册流程 | ✅ 已有 |
+| `test/e2e/dashboard.spec.ts` | 仪表盘渲染 | ✅ 已有 |
+| `test/e2e/box-create.spec.ts` | 储存盒创建 | ✅ 已有 |
+| `test/e2e/room.spec.ts` | 库室列表与详情 | ❌ 待创建 |
+| `test/e2e/reagent.spec.ts` | 试剂增删改查 | ❌ 待创建 |
+| `test/e2e/reagent-type.spec.ts` | 试剂类型管理 | ❌ 待创建 |
+| `test/e2e/share.spec.ts` | 资源共享管理 | ❌ 待创建 |
+| `test/e2e/logs.spec.ts` | 操作日志查看 | ❌ 待创建 |
+| `test/e2e/reagent-request.spec.ts` | 出库申请流程 | ❌ 待创建 |
+| `test/e2e/notifications.spec.ts` | 通知中心 | ❌ 待创建 |
+
+---
+
+## §3 模块进度状态表
+
+> 状态码：✅ 完成（通过 DoD）· 🚧 进行中 · ❌ 未开始 · ⚠️ 部分完成
+
+### 既有模块
+
+| 模块 | 后端实现 | 前端页面 | 后端测试 | 前端单测 | 前端 E2E | DoD 通过 | 备注 |
+|------|---------|---------|---------|---------|---------|---------|------|
+| 认证（Auth） | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ | DoD 未正式执行过 |
+| 组织（Org） | ✅ | ✅ | ✅ | ✅ | ⚠️ | ⚠️ | |
+| 节点树（Node） | ✅ | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | |
+| 试剂（Reagent） | ✅ | ✅ | ⚠️ | ⚠️ | ❌ | ❌ | P0 字段扩展完成，缺 E2E |
+| 试剂类型（ReagentType） | ✅ | ✅ 独立页面 | ✅ | ⚠️ | ❌ | ❌ | 已创建独立管理页 |
+| 操作日志（Logs） | ✅ | ✅ | ✅ | — | ❌ | ❌ | 已添加日志查看页 |
+| 资源共享（Share） | ✅ | ❌ | ❌ | — | ❌ | ❌ | 后端完成，前端无页面 |
+| 节点图（NodeCanvas） | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | |
+| 仪表盘（Dashboard） | — | ✅ | — | ⚠️ | ✅ | ⚠️ | |
+
+### ROADMAP 新增模块
+
+| 模块 | 后端实现 | 前端页面 | 后端测试 | 前端单测 | 前端 E2E | DoD 通过 |
+|------|---------|---------|---------|---------|---------|---------|
+| **P0** Reagent 字段扩展 | ✅ | ✅ | ⚠️ | ❌ | ❌ | ❌ |
+| **P1** 节点图片信息存储 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **P2** 页面排版优化 | — | ❌ | — | ❌ | ❌ | ❌ |
+| **P2** 操作日志查看器 | ✅（已有） | ✅ | ✅（已有） | ❌ | ❌ | ❌ |
+| **P2** 试剂类型独立管理 | ✅（已有） | ✅ | ✅（已有） | ❌ | ❌ | ❌ |
+| **P2(FIX)** UI/UX A11y 修复（FIX-01~05） | — | ❌ | — | ❌ | ❌ | ❌ |
+| **P2(IMP)** UI/UX 高优改进（IMP-01~08） | — | ❌ | — | ❌ | ❌ | ❌ |
+| **P2(DSY)** 设计系统统一（DSY-01~05） | — | ❌ | — | ❌ | ❌ | ❌ |
+| **P2(ENH)** 体验增强（ENH-01~06） | — | ❌ | — | ❌ | ❌ | ❌ |
+| **P3** 全局搜索 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **P3** 数据导出 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **P3** 危险品合规 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **P3** 批量操作 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **P3** 出库申请（ReagentRequest） | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **P3** 通知 / 预警（Alert） | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **P3** 采购申请（Procurement） | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **P3** 资源共享管理页 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+
+
+---
+
+## §4 各功能模块实现指引
+
+以下各节描述每个 ROADMAP 功能的**开发范围**、**必须创建/修改的文件**和**测试覆盖要求**。
+
+---
+
+### P0 · Reagent 模型字段扩展
+
+**目标**：为 `Reagent` 补充生物样本管理系统必需的字段，所有后续功能依赖此基础。
+
+#### 后端变更范围
+
+| 文件 | 操作 |
+|------|------|
+| `BSB-Backend/prisma/schema.prisma` | 新增字段：`quantity`、`unit`、`expiryDate`、`manufactureDate`、`batchNo`、`catalogNo`、`manufacturer`、`casNumber`、`storageCondition`（替换/重构 `environment`）、`hazardLevel`（需新增 Enum）、`minStockThreshold` |
+| 新建 Prisma migration | `pnpm --filter bsb-backend db:migrate` |
+| `BSB-Backend/src/modules/reagent/*.dto.ts` | 更新 CreateDto / UpdateDto / ResponseDto |
+| `BSB-Backend/src/modules/reagent/reagent.service.ts` | 更新 create/update 逻辑 |
+
+#### 前端变更范围
+
+| 文件 | 操作 |
+|------|------|
+| `BSB-Frontend/src/schemas/reagent.ts` | 更新 Zod Schema，新增所有字段的类型定义 |
+| `BSB-Frontend/src/api/modules/reagent.ts` | 更新请求/响应类型 |
+| `BSB-Frontend/src/pages/reagent/ReagentPage.vue` | 表单新增字段，列表新增列 |
+
+#### 测试要求
+
+- **后端**：更新 `test/unit/reagent.service.spec.ts`（验证新字段的 CRUD 逻辑）
+- **后端**：**新建** `test/e2e/reagent.e2e-spec.ts`（覆盖含新字段的完整 CRUD 接口；不得使用固定 mock ID，使用 E2E 中动态创建的数据）
+- **前端**：更新 `test/unit/schemas/` 中的 reagent schema 测试（验证新字段的 Zod 校验规则）
+- **前端**：**新建** `test/e2e/reagent.spec.ts`（通过 Playwright 验证含新字段的创建表单和列表展示）
+
+---
+
+### P1 · 出库申请与审批（ReagentRequest）
+
+**目标**：在 `ReagentLog` 事后记录之上，增加前置的「申请 → 审批 → 取用」流程。
+
+#### 后端变更范围
+
+| 文件 | 操作 |
+|------|------|
+| `BSB-Backend/prisma/schema.prisma` | 新增 `ReagentRequest` 模型与 `ReagentRequestStatus` Enum |
+| `BSB-Backend/src/modules/reagent-request/` | **新建**完整 NestJS 模块（controller / service / dto / module） |
+| `BSB-Backend/src/app.module.ts` | 注册新模块 |
+
+#### 前端变更范围
+
+| 文件 | 操作 |
+|------|------|
+| `BSB-Frontend/src/api/modules/reagent-request.ts` | **新建** Alova 请求函数 |
+| `BSB-Frontend/src/schemas/reagent-request.ts` | **新建** Zod Schema |
+| `BSB-Frontend/src/stores/reagent-request.ts` | **新建** Pinia Store |
+| `BSB-Frontend/src/pages/reagent-request/` | **新建** 页面组件（申请列表、审批操作） |
+| `BSB-Frontend/src/router/index.ts` | 注册新路由 |
+| `BSB-Frontend/src/components/AppSidebar.vue` | 视情况添加导航入口 |
+
+#### 测试要求
+
+- **后端单元**：**新建** `test/unit/reagent-request.service.spec.ts`
+- **后端 E2E**：**新建** `test/e2e/reagent-request.e2e-spec.ts`（覆盖申请创建、审批通过、拒绝三条路径）
+- **前端 E2E**：**新建** `test/e2e/reagent-request.spec.ts`（覆盖发起申请和审批操作的完整 UI 流程）
+
+---
+
+### P1 · 库存预警与通知中心（Alert）
+
+**目标**：定时检测过期和低库存，推送系统内通知。
+
+> ⚠️ **依赖 P0**：`Reagent.expiryDate` 和 `Reagent.minStockThreshold` 字段必须已完成迁移。
+
+#### 后端变更范围
+
+| 文件 | 操作 |
+|------|------|
+| `BSB-Backend/prisma/schema.prisma` | 新增 `Alert` 模型（type、severity、orgId、reagentId?、isRead、message） |
+| `BSB-Backend/src/modules/alert/` | **新建** NestJS 模块（含定时任务 `@nestjs/schedule`） |
+
+#### 前端变更范围
+
+| 文件 | 操作 |
+|------|------|
+| `BSB-Frontend/src/api/modules/alert.ts` | **新建** |
+| `BSB-Frontend/src/stores/alert.ts` | **新建** |
+| `BSB-Frontend/src/pages/dashboard/DashboardPage.vue` | 集成「即将过期」和「低库存」卡片（真实 API 数据，禁止 mock） |
+| `BSB-Frontend/src/layouts/newLayout.vue` | 顶栏添加通知铃铛图标与已读/未读计数 |
+
+#### 测试要求
+
+- **后端单元**：**新建** `test/unit/alert.service.spec.ts`（验证过期检测和阈值判断逻辑）
+- **后端 E2E**：**新建** `test/e2e/alert.e2e-spec.ts`
+- **前端 E2E**：**新建** `test/e2e/notifications.spec.ts`（检查通知铃铛渲染，不测试定时触发）
+
+---
+
+### P1 · 采购申请（ProcurementRequest）
+
+**目标**：支持从试剂详情发起补货申请，并追踪申请状态。
+
+#### 后端变更范围
+
+| 文件 | 操作 |
+|------|------|
+| `BSB-Backend/prisma/schema.prisma` | 新增 `ProcurementRequest` 模型 |
+| `BSB-Backend/src/modules/procurement/` | **新建** NestJS 模块 |
+
+#### 前端变更范围
+
+| 文件 | 操作 |
+|------|------|
+| `BSB-Frontend/src/api/modules/procurement.ts` | **新建** |
+| `BSB-Frontend/src/schemas/procurement.ts` | **新建** |
+| `BSB-Frontend/src/stores/procurement.ts` | **新建** |
+| `BSB-Frontend/src/pages/procurement/` | **新建** |
+
+#### 测试要求
+
+- **后端单元**：**新建** `test/unit/procurement.service.spec.ts`
+- **后端 E2E**：**新建** `test/e2e/procurement.e2e-spec.ts`
+- **前端 E2E**：**新建** `test/e2e/procurement.spec.ts`
+
+---
+
+### P2 · UI/UX 审计改进（2026-05-15）
+
+> 完整问题清单详见 [BSB-Frontend/docs/UI-UX-AUDIT.md](./BSB-Frontend/docs/UI-UX-AUDIT.md)。本节只记录前端**变更范围**。
+
+#### FIX 系列（A11y / 正确性修复）
+
+| 文件 | 改动 |
+|------|------|
+| breadcrumb 组件 | **FIX-01**：面包屑首项改为 `/dashboard` 跳转，删除 GitHub 外链 |
+| 所有含 `DialogContent` 的页面 | **FIX-02**：批量补充 `<DialogDescription>`（可设 `class="sr-only"`） |
+| `BSB-Frontend/src/components/node/NodeCanvas.vue` | **FIX-03**：节点类型名称中文化（ROOT→根节点，CONTAINER→库室，BOX→储存盒，BOX_SLOT→储位） |
+| `BSB-Frontend/src/pages/logs/LogsPage.vue` | **FIX-04**：Tab 激活态改为 2px 底部下划线样式 |
+| `BSB-Frontend/src/pages/reagent-type/` | **FIX-05**：类型徽章颜色读取 `type.color` 字段，不再固定蓝色 |
+
+#### IMP 系列（高优改进）
+
+| 文件 | 改动 |
+|------|------|
+| `BSB-Frontend/src/components/AppSidebar.vue` | **IMP-01**：导航分三个 group，"组织"移出主导航 |
+| `BSB-Frontend/src/components/EmptyState.vue` | **IMP-02**：**新建**通用空态组件（SVG 插图 + 说明 + CTA） |
+| 所有列表页面 | **IMP-02**：替换现有纯文字空态为 `EmptyState` 组件 |
+| `BSB-Frontend/src/pages/reagent/ReagentPage.vue` | **IMP-03/04/05**：加搜索栏 + 类型筛选 + 整行跳转 + 侧边抽屉新建表单 |
+| `BSB-Frontend/src/pages/logs/LogsPage.vue` | **IMP-06**：默认加载全部日志，下拉改为筛选器 |
+| `BSB-Frontend/src/pages/room/RoomListPage.vue` | **IMP-07**：行补充描述文本、子储存盒数 |
+| `BSB-Frontend/src/pages/box/BoxListPage.vue` | **IMP-08**：行补充占用率（已用格/总格） |
+
+#### DSY 系列（设计系统统一）
+
+| 文件 | 改动 |
+|------|------|
+| `BSB-Frontend/src/style.css` | **DSY-01**：补充 DESIGN.md 全量 `card-tint-*`、`badge-*` 颜色 token |
+| `BSB-Frontend/src/components/ui/badge/` | **DSY-02**：扩展 badge 变体（success / warning / danger / tag-purple / tag-orange / tag-green） |
+| 全站 `h1`/`h2` 用法 | **DSY-03**：统一排版层级，页面 h1 提升至 `text-3xl`，引入 `font-display` |
+| `BSB-Frontend/src/pages/logs/LogsPage.vue` | **DSY-04**：操作类型颜色改用 DESIGN.md semantic token |
+| `BSB-Frontend/src/pages/dashboard/DashboardPage.vue` | **DSY-05**：统计卡片改用 `card-tint-*` pastel 背景 |
+
+#### 测试要求
+
+UI/UX 改进以界面正确性为主，无需新增后端测试：
+- `test/e2e/dashboard.spec.ts`：更新选择器，适应卡片样式变更
+- `test/e2e/room.spec.ts`（待创建）：验证面包屑首项跳转至 `/dashboard`
+|------|------|
+| `BSB-Frontend/src/api/modules/procurement.ts` | **新建** |
+| `BSB-Frontend/src/schemas/procurement.ts` | **新建** |
+| `BSB-Frontend/src/stores/procurement.ts` | **新建** |
+| `BSB-Frontend/src/pages/procurement/` | **新建** |
+
+#### 测试要求
+
+- **后端单元**：**新建** `test/unit/procurement.service.spec.ts`
+- **后端 E2E**：**新建** `test/e2e/procurement.e2e-spec.ts`
+- **前端 E2E**：**新建** `test/e2e/procurement.spec.ts`
+
+---
+
+### P2 · 资源共享管理页面
+
+**目标**：为已完成的 `ResourceShare` 后端功能创建前端页面。
+
+> 后端 API（`src/modules/share/`）和前端 API 封装（`src/api/modules/share.ts`）均已存在，**不得重复实现或 mock**。
+
+#### 前端变更范围
+
+| 文件 | 操作 |
+|------|------|
+| `BSB-Frontend/src/stores/share.ts` | **新建** Pinia Store（如不存在） |
+| `BSB-Frontend/src/pages/share/` 或集成到 `org/` | **新建** 共享申请/列表/撤销页面组件 |
+| `BSB-Frontend/src/router/index.ts` | 注册路由（如独立页面） |
+
+#### 测试要求
+
+- **前端 E2E**：**新建** `test/e2e/share.spec.ts`（覆盖发起共享请求、接受/拒绝）
+
+---
+
+### P2 · 操作日志查看器
+
+**目标**：为 `ReagentLog` 和 `NodeLog` 创建前端展示层。
+
+> 后端查询接口已实现。
+
+#### 前端变更范围
+
+| 文件 | 操作 |
+|------|------|
+| `BSB-Frontend/src/pages/reagent/` | 在试剂详情中嵌入操作时间轴 |
+| `BSB-Frontend/src/pages/logs/LogsPage.vue` | **新建** 全局日志页面 |
+| `BSB-Frontend/src/router/index.ts` | 注册路由（可选） |
+
+#### 测试要求
+
+- **前端 E2E**：**新建** `test/e2e/logs.spec.ts`（验证日志列表加载和筛选功能）
+
+---
+
+### P2 · 试剂类型独立管理页面
+
+**目标**：将试剂类型从试剂页内的嵌入管理提升为独立页面。
+
+> `src/api/modules/reagent-type.ts` 和 `test/e2e/reagent-type.e2e-spec.ts` 均已存在。
+
+#### 前端变更范围
+
+| 文件 | 操作 |
+|------|------|
+| `BSB-Frontend/src/pages/reagent-type/ReagentTypePage.vue` | **新建** |
+| `BSB-Frontend/src/router/index.ts` | 注册路由 `/reagent-type` |
+| `BSB-Frontend/src/components/AppSidebar.vue` | 添加导航条目（或在试剂页内以 Tab 呈现） |
+| `BSB-Frontend/src/pages/reagent/ReagentPage.vue` | 移除内嵌的类型管理 UI |
+
+#### 测试要求
+
+- **前端 E2E**：**新建** `test/e2e/reagent-type.spec.ts`（覆盖类型 CRUD 完整 UI 流程）
+
+---
+
+## §5 PR / 提交检查规程
+
+每次提交涉及功能变更时，AI 助手应自行完成以下核查，并在 PR 描述中附上结果：
+
+```
+- [ ] §1 DoD 流水线全部步骤已执行并通过
+- [ ] 本次变更涉及的所有测试文件已更新（见 §2）
+- [ ] §3 状态表已更新为当前实际状态
+- [ ] 未引入任何 mock 数据（生产代码和 E2E 测试均对接真实服务）
+- [ ] Prisma Schema 变更已同步 migration 并重新生成 Client
+- [ ] 新模块已注册到 AppModule / Router（视情况）
+- [ ] Docker 镜像本地 build 通过（步骤 9、10）
+```
+
+---
+
+## §6 环境与配置说明
+
+| 环境 | 配置文件 | 启动方式 |
+|------|---------|---------|
+| 后端开发 | `.env.development`（加密，需 `pnpm env:decrypt` 解密） | `pnpm --filter bsb-backend start:dev` |
+| 后端测试 | `.env.test`（加密） | `pnpm --filter bsb-backend test` |
+| 前端开发 | 无 `.env`，通过 Vite 代理转发 | `pnpm --filter bsb-frontend dev`（端口 8081） |
+| 前端 E2E | 依赖前端开发服务器运行中 | `pnpm --filter bsb-frontend test:e2e` |
+
+> `.env.*` 文件使用 `@dotenvx/dotenvx-ops` 加密存储，**禁止明文提交**。新开发环境需先执行 `pnpm --filter bsb-backend env:decrypt`。
