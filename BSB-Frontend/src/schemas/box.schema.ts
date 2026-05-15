@@ -1,5 +1,8 @@
 import { z } from 'zod/v4';
 
+export { ReagentSchema } from './reagent.schema';
+export type { Reagent } from './reagent.schema';
+
 export const BoxSchema = z.object({
     id: z.string(),
     orgId: z.string(),
@@ -20,18 +23,6 @@ export const BoxSchema = z.object({
 });
 
 export type Box = z.infer<typeof BoxSchema>;
-
-export const ReagentSchema = z.object({
-    id: z.string(),
-    nodeId: z.string().nullable(),
-    orgId: z.string(),
-    position: z.string(),
-    name: z.string(),
-    description: z.string().nullable(),
-    reagentTypeId: z.string().nullable().optional(),
-});
-
-export type Reagent = z.infer<typeof ReagentSchema>;
 
 export const BoxAliasSchema = z.object({
     id: z.string(),

@@ -1,11 +1,12 @@
 import { alovaInstance } from '../client';
 import { Node } from '@/schemas/node.schema';
+import type { NodeImage } from '@/schemas/node.schema';
 
 /** Convenience alias used by stores and pages */
 export type NodeItem = Node & { children?: NodeItem[] };
 
 /** 获取单个节点详情 */
-// export const getNode = (id: string) => alovaInstance.Get<Node>('/node/one', { params: { id } });
+export const getNode = (id: string) => alovaInstance.Get<Node>('/node/one', { params: { id } });
 
 /** 获取组织完整节点树（后端返回扁平数组，前端自行构建树） */
 export const fetchNodeTree = (orgId: string) =>
@@ -41,3 +42,11 @@ export const setGridConfig = (data: { nodeId: string; rows: number; cols: number
 /** 移除网格配置 */
 export const removeGridConfig = (nodeId: string) =>
     alovaInstance.Delete<void>('/node/grid/remove', { nodeId });
+
+/** 添加节点图片 */
+export const addNodeImage = (data: { nodeId: string; imageUrl: string }) =>
+    alovaInstance.Post<NodeImage>('/node/image/add', data);
+
+/** 删除节点图片 */
+export const removeNodeImage = (nodeImageId: string) =>
+    alovaInstance.Delete<void>('/node/image/remove', { nodeImageId });

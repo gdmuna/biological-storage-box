@@ -8,3 +8,14 @@ export const uploadFile = (file: File) => {
         formData
     );
 };
+
+export const serverUploadImage = (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('domain', 'AVATAR');
+    formData.append('filename', file.name);
+    return alovaInstance.Post<{ fileId: string }>('/files/server-upload', formData);
+};
+
+export const getPublicFileUrl = (fileId: string) =>
+    alovaInstance.Get<string>(`/files/${fileId}/public-url`);

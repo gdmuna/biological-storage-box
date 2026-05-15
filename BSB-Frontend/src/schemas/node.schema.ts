@@ -1,5 +1,14 @@
 import { z } from 'zod/v4';
 
+export const NodeImageSchema = z.object({
+    id: z.string(),
+    nodeId: z.string(),
+    imageUrl: z.string(),
+    createdAt: z.string(),
+});
+
+export type NodeImage = z.infer<typeof NodeImageSchema>;
+
 export const NodeSchema = z.object({
     id: z.string(),
     orgId: z.string(),
@@ -11,6 +20,7 @@ export const NodeSchema = z.object({
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),
     gridConfig: z.object({ rows: z.number(), cols: z.number() }).nullable().optional(),
+    images: z.array(NodeImageSchema).optional(),
     _count: z.object({ children: z.number() }).optional(),
 });
 

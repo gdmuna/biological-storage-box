@@ -7,9 +7,10 @@ import {
     updateReagentType,
     deleteReagentType,
 } from '@/api/modules/reagent-type';
+import type { Reagent } from '@/schemas/reagent.schema';
 
 export const useReagentStore = defineStore('reagent', () => {
-    const reagents = ref<any[]>([]);
+    const reagents = ref<Reagent[]>([]);
     const reagentTypes = ref<any[]>([]);
     const loading = ref(false);
 

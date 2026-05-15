@@ -5,7 +5,7 @@ export const createBoxImage = (data: { boxId: string; imageUrl: string }) =>
     alovaInstance.Post<BoxImage>('/box/image/add', data);
 
 export const listBoxImages = (boxId: string) =>
-    alovaInstance.Get<BoxImage[]>('/box/image/list', { params: { boxId } });
+    alovaInstance.Get<BoxImage[]>('/box/image/list', { params: { boxId }, cacheFor: 0 });
 
 export const compareBoxImage = (data: { boxId: string; imageUrl: string }) =>
     alovaInstance.Post('/box/image/compare', data);
