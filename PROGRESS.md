@@ -124,10 +124,6 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 | **P2** 页面排版优化 | — | ❌ | — | ❌ | ❌ | ❌ |
 | **P2** 操作日志查看器 | ✅（已有） | ✅ | ✅（已有） | ❌ | ❌ | ❌ |
 | **P2** 试剂类型独立管理 | ✅（已有） | ✅ | ✅（已有） | ❌ | ❌ | ❌ |
-| **P2(FIX)** UI/UX A11y 修复（FIX-01~05） | — | ❌ | — | ❌ | ❌ | ❌ |
-| **P2(IMP)** UI/UX 高优改进（IMP-01~08） | — | ❌ | — | ❌ | ❌ | ❌ |
-| **P2(DSY)** 设计系统统一（DSY-01~05） | — | ❌ | — | ❌ | ❌ | ❌ |
-| **P2(ENH)** 体验增强（ENH-01~06） | — | ❌ | — | ❌ | ❌ | ❌ |
 | **P3** 全局搜索 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **P3** 数据导出 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **P3** 危险品合规 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -251,61 +247,6 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 #### 前端变更范围
 
 | 文件 | 操作 |
-|------|------|
-| `BSB-Frontend/src/api/modules/procurement.ts` | **新建** |
-| `BSB-Frontend/src/schemas/procurement.ts` | **新建** |
-| `BSB-Frontend/src/stores/procurement.ts` | **新建** |
-| `BSB-Frontend/src/pages/procurement/` | **新建** |
-
-#### 测试要求
-
-- **后端单元**：**新建** `test/unit/procurement.service.spec.ts`
-- **后端 E2E**：**新建** `test/e2e/procurement.e2e-spec.ts`
-- **前端 E2E**：**新建** `test/e2e/procurement.spec.ts`
-
----
-
-### P2 · UI/UX 审计改进（2026-05-15）
-
-> 完整问题清单详见 [BSB-Frontend/docs/UI-UX-AUDIT.md](./BSB-Frontend/docs/UI-UX-AUDIT.md)。本节只记录前端**变更范围**。
-
-#### FIX 系列（A11y / 正确性修复）
-
-| 文件 | 改动 |
-|------|------|
-| breadcrumb 组件 | **FIX-01**：面包屑首项改为 `/dashboard` 跳转，删除 GitHub 外链 |
-| 所有含 `DialogContent` 的页面 | **FIX-02**：批量补充 `<DialogDescription>`（可设 `class="sr-only"`） |
-| `BSB-Frontend/src/components/node/NodeCanvas.vue` | **FIX-03**：节点类型名称中文化（ROOT→根节点，CONTAINER→库室，BOX→储存盒，BOX_SLOT→储位） |
-| `BSB-Frontend/src/pages/logs/LogsPage.vue` | **FIX-04**：Tab 激活态改为 2px 底部下划线样式 |
-| `BSB-Frontend/src/pages/reagent-type/` | **FIX-05**：类型徽章颜色读取 `type.color` 字段，不再固定蓝色 |
-
-#### IMP 系列（高优改进）
-
-| 文件 | 改动 |
-|------|------|
-| `BSB-Frontend/src/components/AppSidebar.vue` | **IMP-01**：导航分三个 group，"组织"移出主导航 |
-| `BSB-Frontend/src/components/EmptyState.vue` | **IMP-02**：**新建**通用空态组件（SVG 插图 + 说明 + CTA） |
-| 所有列表页面 | **IMP-02**：替换现有纯文字空态为 `EmptyState` 组件 |
-| `BSB-Frontend/src/pages/reagent/ReagentPage.vue` | **IMP-03/04/05**：加搜索栏 + 类型筛选 + 整行跳转 + 侧边抽屉新建表单 |
-| `BSB-Frontend/src/pages/logs/LogsPage.vue` | **IMP-06**：默认加载全部日志，下拉改为筛选器 |
-| `BSB-Frontend/src/pages/room/RoomListPage.vue` | **IMP-07**：行补充描述文本、子储存盒数 |
-| `BSB-Frontend/src/pages/box/BoxListPage.vue` | **IMP-08**：行补充占用率（已用格/总格） |
-
-#### DSY 系列（设计系统统一）
-
-| 文件 | 改动 |
-|------|------|
-| `BSB-Frontend/src/style.css` | **DSY-01**：补充 DESIGN.md 全量 `card-tint-*`、`badge-*` 颜色 token |
-| `BSB-Frontend/src/components/ui/badge/` | **DSY-02**：扩展 badge 变体（success / warning / danger / tag-purple / tag-orange / tag-green） |
-| 全站 `h1`/`h2` 用法 | **DSY-03**：统一排版层级，页面 h1 提升至 `text-3xl`，引入 `font-display` |
-| `BSB-Frontend/src/pages/logs/LogsPage.vue` | **DSY-04**：操作类型颜色改用 DESIGN.md semantic token |
-| `BSB-Frontend/src/pages/dashboard/DashboardPage.vue` | **DSY-05**：统计卡片改用 `card-tint-*` pastel 背景 |
-
-#### 测试要求
-
-UI/UX 改进以界面正确性为主，无需新增后端测试：
-- `test/e2e/dashboard.spec.ts`：更新选择器，适应卡片样式变更
-- `test/e2e/room.spec.ts`（待创建）：验证面包屑首项跳转至 `/dashboard`
 |------|------|
 | `BSB-Frontend/src/api/modules/procurement.ts` | **新建** |
 | `BSB-Frontend/src/schemas/procurement.ts` | **新建** |
