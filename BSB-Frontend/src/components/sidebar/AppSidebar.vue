@@ -3,9 +3,9 @@ import { computed, markRaw } from 'vue';
 
 import { SidebarProps } from '@/components/ui/sidebar';
 
-import NavMain from '@/components/NavMain.vue';
-import NavUser from '@/components/NavUser.vue';
-import TeamSwitcher from '@/components/TeamSwitcher.vue';
+import NavMain from '@/components/sidebar/NavMain.vue';
+import NavUser from '@/components/sidebar/NavUser.vue';
+import TeamSwitcher from '@/components/sidebar/TeamSwitcher.vue';
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
 import orgDefaultLogo from '@/components/icon/orgDefaultLogo.vue';
@@ -39,12 +39,14 @@ const orgsData = computed(() => {
     return data;
 });
 
-// This is sample data.
 const data = {
     navGroups: [
         {
-            label: '核心功能',
-            items: [{ title: '仪表盘', url: '/dashboard', icon: LayoutDashboard }]
+            label: '概览',
+            items: [
+                { title: '仪表盘', url: '/dashboard', icon: LayoutDashboard },
+                { title: '节点图', url: '/node', icon: Network }
+            ]
         },
         {
             label: '库存管理',
@@ -59,7 +61,6 @@ const data = {
             label: '分析与记录',
             items: [
                 { title: '操作日志', url: '/logs', icon: ScrollText },
-                { title: '节点图', url: '/node', icon: Network },
                 { title: '组织', url: '/org', icon: Building2 }
             ]
         }
