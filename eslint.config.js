@@ -13,6 +13,15 @@ const commonRules = {
     eqeqeq: ['error', 'always'],
     'no-console': 'warn',
     'no-debugger': 'error',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/explicit-function-return-types': 'off',
+    '@typescript-eslint/no-floating-promises': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'warn',
+    '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+    ],
 };
 
 export default [
@@ -41,11 +50,7 @@ export default [
                 Express: 'readonly',
             },
             parserOptions: {
-                project: './BSB-Backend/tsconfig.json',
-                tsconfigRootDir: import.meta.dirname,
                 sourceType: 'module',
-                // lint-staged 传入单文件时，允许不在 tsconfig include 内的文件
-                allowDefaultProject: ['*.ts'],
             },
         },
         plugins: {
@@ -55,15 +60,6 @@ export default [
             ...eslint.configs.recommended.rules,
             ...tsPlugin.configs.recommended.rules,
             ...commonRules,
-            '@typescript-eslint/no-explicit-any': 'off',
-            '@typescript-eslint/explicit-module-boundary-types': 'off',
-            '@typescript-eslint/explicit-function-return-types': 'off',
-            '@typescript-eslint/no-floating-promises': 'off',
-            '@typescript-eslint/no-non-null-assertion': 'warn',
-            '@typescript-eslint/no-unused-vars': [
-                'warn',
-                { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
-            ],
         },
     },
 
@@ -90,9 +86,9 @@ export default [
         },
         rules: {
             ...eslint.configs.recommended.rules,
+            ...tsPlugin.configs.recommended.rules,
             ...vuePlugin.configs.recommended.rules,
             ...commonRules,
-            'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
         },
     },
 
