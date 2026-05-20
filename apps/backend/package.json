@@ -84,7 +84,7 @@
     "@types/nodemailer": "^8.0.0",
     "@types/pg": "^8.20.0",
     "@types/supertest": "^7.2.0",
-    "@vitest/coverage-v8": "^4.1.6",
+    "@vitest/coverage-v8": "^4.1.7",
     "prisma": "^7.8.0",
     "supertest": "^7.2.2",
     "tsc-alias": "^1.8.17",
