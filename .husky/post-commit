@@ -1,3 +1,0 @@
-#!/bin/sh
-
-wsl bash -c "fortune|cowsay|lolcat" || true

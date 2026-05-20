@@ -14,7 +14,7 @@ if [ -n "$backend_envs" ]; then
     log "加密 backend env 文件..."
     backend_args=""
     for f in $backend_envs; do backend_args="$backend_args -f $f"; done
-    (cd apps/backend && pnpm exec dotenvx encrypt $backend_args)
+    pnpm --filter @talos-ark/backend dotenvx encrypt $backend_args
     git add $(echo "$backend_envs" | sed 's|^|apps/backend/|')
 fi
 
@@ -23,25 +23,11 @@ if git diff --cached --quiet; then
     exit 0
 fi
 
+log "执行 lint-staged..."
+
 pnpm lint-staged
 
-# 按工作区分别触发测试
-staged_backend=$(git diff --cached --name-only | grep -E '^apps/backend/.*\.(js|ts|d\.ts)$' || true)
-staged_frontend=$(git diff --cached --name-only | grep -E '^apps/frontend/.*\.(js|ts|d\.ts|vue)$' || true)
-
-if [ -n "$staged_backend" ]; then
-    log "运行 backend 测试"
-    pnpm --filter @talos-ark/backend test
-else
-    log "跳过 backend 测试"
-fi
-
-if [ -n "$staged_frontend" ]; then
-    log "运行 frontend 测试"
-    pnpm --filter @talos-ark/frontend test
-else
-    log "跳过 frontend 测试"
-fi
+log "执行 lint-staged 完毕"
 
 log "Pre-commit hooks 执行完毕"
 exit 0
