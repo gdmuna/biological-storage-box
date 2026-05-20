@@ -36,7 +36,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1050.0",
     "@aws-sdk/lib-storage": "^3.1050.0",
-    "@aws-sdk/s3-request-presigner": "^3.1050.0",
+    "@aws-sdk/s3-request-presigner": "^3.1051.0",
     "@dotenvx/dotenvx-ops": "^0.45.3",
     "@keyv/valkey": "^1.0.11",
     "@nestjs/cache-manager": "^3.1.2",
