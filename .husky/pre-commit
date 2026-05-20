@@ -2,41 +2,46 @@
 
 GREEN="\033[32m"; YELLOW="\033[33m"; RESET="\033[0m"
 
-printf "%-12b  %b\n" "\n${GREEN}[GitHook]" "[LOG] 执行 Pre-commit hook...${RESET}"
+log()  { printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] $1${RESET}"; }
+warn() { printf "%-12b  %b\n" "${YELLOW}[GitHook]" "[WARN] $1${RESET}"; }
 
-# 记录已暂存的 env 文件（排除 .env.keys 和 .env.example）
-staged_env_files=$(git diff --cached --name-only -- ':.env.*' ':!.env.keys' ':!.env.example')
+log "\n执行 Pre-commit hook..."
 
-# 如果有暂存的 env 文件，先加密它们
-if [ -n "$staged_env_files" ]; then
-    # 加密环境变量，以防忘记加密
-    pnpm --filter BSB-Backend dotenvx encrypt -f $staged_env_files
-    git add $staged_env_files
+# 加密 backend env 文件
+backend_envs=$(git diff --cached --name-only -- 'apps/backend/**/.env.*' ':!apps/backend/**/.env.example' | sed 's|^apps/backend/||' || true)
+
+if [ -n "$backend_envs" ]; then
+    log "加密 backend env 文件..."
+    backend_args=""
+    for f in $backend_envs; do backend_args="$backend_args -f $f"; done
+    (cd apps/backend && pnpm exec dotenvx encrypt $backend_args)
+    git add $(echo "$backend_envs" | sed 's|^|apps/backend/|')
 fi
 
 if git diff --cached --quiet; then
-    printf "%-12b  %b\n" "${YELLOW}[GitHook]" "[WARN] 无暂存文件，跳出 Pre-commit hooks${RESET}"
+    warn "无暂存文件，跳出 Pre-commit hooks"
     exit 0
 fi
 
 pnpm lint-staged
 
 # 按工作区分别触发测试
-staged_service=$(git diff --cached --name-only | grep -E '^BSB-Backend/.*\.(js|ts)$' || true)
-staged_web=$(git diff --cached --name-only | grep -E '^BSB-Frontend/.*\.(js|ts|d\.ts|vue)$' || true)
+staged_backend=$(git diff --cached --name-only | grep -E '^apps/backend/.*\.(js|ts|d\.ts)$' || true)
+staged_frontend=$(git diff --cached --name-only | grep -E '^apps/frontend/.*\.(js|ts|d\.ts|vue)$' || true)
 
-if [ -n "$staged_service" ]; then
-    printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] 检测到 service 变更，运行测试${RESET}"
-    pnpm --filter BSB-Backend test
+if [ -n "$staged_backend" ]; then
+    log "运行 backend 测试"
+    pnpm --filter @talos-ark/backend test
 else
-    printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] 无 service .js/.ts 变更，跳过 service 测试${RESET}"
+    log "跳过 backend 测试"
 fi
 
-if [ -n "$staged_web" ]; then
-    printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] 检测到 web 变更，运行测试${RESET}"
-    # pnpm --filter BSB-Frontend test  # 待 web 添加测试后启用
-    printf "%-12b  %b\n" "${YELLOW}[GitHook]" "[WARN] web 暂无测试脚本，跳过${RESET}"
+if [ -n "$staged_frontend" ]; then
+    log "运行 frontend 测试"
+    pnpm --filter @talos-ark/frontend test
+else
+    log "跳过 frontend 测试"
 fi
 
-printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] Pre-commit hooks 执行完毕${RESET}"
+log "Pre-commit hooks 执行完毕"
 exit 0
