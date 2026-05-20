@@ -12,7 +12,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,
-    "types": ["vitepress/client", "node"]
+    "types": ["vitepress/client"]
   },
   "include": [".vitepress/**/*.ts", ".vitepress/**/*.d.ts"],
   "exclude": ["node_modules", "dist"]

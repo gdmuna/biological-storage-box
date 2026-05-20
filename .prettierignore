@@ -3,6 +3,11 @@
 
 **/node-modules
 
+apps/backend/prisma/generated/
+
+apps/docsite/.vitepress/cache/
+apps/docsite/api-reference/openapi.json
+
 apps/frontend/test-results/
 apps/frontend/test/.auth/
 apps/frontend/src-tauri/target/**

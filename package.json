@@ -1,25 +1,27 @@
 {
   "name": "talos-ark",
-  "private": true,
   "version": "0.1.0",
-  "description": "生物样本储存管理系统 TalosArk",
-  "license": "AGPL-3.0",
+  "private": true,
   "type": "module",
+  "license": "AGPL-3.0",
   "author": "Maiturin",
+  "description": "璇玑云库(TalosArk) - 生物样本储存管理系统",
   "engines": {
     "node": ">=22.0.0"
   },
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint .",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "lint:staged": "lint-staged",
     "prepare": "husky"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@typescript-eslint/eslint-plugin": "^8.59.3",
-    "@typescript-eslint/parser": "^8.59.3",
-    "eslint": "~10.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.4",
+    "@typescript-eslint/parser": "^8.59.4",
+    "eslint": "^10.4.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "^10.9.1",
     "globals": "^17.6.0",
