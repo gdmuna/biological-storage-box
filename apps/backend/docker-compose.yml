@@ -48,9 +48,13 @@ services:
     volumes:
       # .env.keys 提供 dotenvx 解密私钥，其余所有配置由解密后的 .env.{NODE_ENV} 文件注入
       - type: bind
-        source: ./.env.keys
-        target: /app/.env.keys
+        source: ./secrets/env/.env.keys
+        target: /talos-ark/.env.keys
         read_only: true
+      # 运行时数据目录（日志、临时文件等）
+      - type: bind
+        source: ./data
+        target: /talos-ark/data
     ports:
       - '${BACKEND_PORT:-3000}:3000'
     healthcheck:
