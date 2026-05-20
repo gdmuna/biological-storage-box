@@ -3,7 +3,7 @@
 本文件是 ROADMAP.md 的**执行层配套文档**，专为 AI 助手设计。
 每项功能开发前必须查阅本文件，开发完成后必须更新本文件。
 
-> **关联文档**：[ROADMAP.md](./ROADMAP.md) · [BSB-Backend/AGENTS.md](./BSB-Backend/AGENTS.md) · [BSB-Frontend/AGENTS.md](./BSB-Frontend/AGENTS.md)
+> **关联文档**：[ROADMAP.md](./ROADMAP.md) · [apps/backend/AGENTS.md](./apps/backend/AGENTS.md) · [apps/frontend/AGENTS.md](./apps/frontend/AGENTS.md)
 
 ---
 
@@ -24,16 +24,16 @@
 步骤  命令                                                    作用域
 ────  ──────────────────────────────────────────────────────  ──────
  1    pnpm run format:check                                   根工作区
- 2    pnpm --filter bsb-backend lint                          后端
- 3    pnpm --filter bsb-frontend eslint                       前端
- 4    pnpm --filter bsb-backend test                          后端（单元 + E2E，Vitest）
- 5    pnpm --filter bsb-frontend test                         前端（Vitest 单元）
- 6    pnpm --filter bsb-frontend test:e2e                     前端（Playwright E2E）
- 7    pnpm --filter bsb-backend build                         后端 TypeScript 编译
- 8    pnpm --filter bsb-frontend build                        前端 Vite 构建
- 9    docker build -f BSB-Backend/Dockerfile .                后端 Docker 镜像
-10    docker build -f BSB-Backend/Dockerfile .               前端 Docker 镜像
-11    pnpm --filter bsb-backend start:dev                     冒烟测试（启动无 crash）
+ 2    pnpm --filter @talos-ark/backend lint                          后端
+ 3    pnpm --filter @talos-ark/frontend eslint                       前端
+ 4    pnpm --filter @talos-ark/backend test                          后端（单元 + E2E，Vitest）
+ 5    pnpm --filter @talos-ark/frontend test                         前端（Vitest 单元）
+ 6    pnpm --filter @talos-ark/frontend test:e2e                     前端（Playwright E2E）
+ 7    pnpm --filter @talos-ark/backend build                         后端 TypeScript 编译
+ 8    pnpm --filter @talos-ark/frontend build                        前端 Vite 构建
+ 9    docker build -f apps/backend/Dockerfile .                后端 Docker 镜像
+10    docker build -f apps/frontend/Dockerfile .               前端 Docker 镜像
+11    pnpm --filter @talos-ark/backend start:dev                     冒烟测试（启动无 crash）
 ```
 
 > 步骤 9、10 使用 `--no-cache` 时的 build 参数见各 Dockerfile 的 ARG 声明，需传入测试用占位 URL。
@@ -42,7 +42,7 @@
 
 ## §2 测试文件索引
 
-### 后端测试（Vitest，`pnpm --filter bsb-backend test`）
+### 后端测试（Vitest，`pnpm --filter @talos-ark/backend test`）
 
 后端 `vitest.config.ts` 的 `include` 规则：`src/**/*.spec.ts` + `test/**/*.spec.ts` + `test/**/*.e2e-spec.ts`
 
@@ -65,7 +65,7 @@
 
 ### 前端测试
 
-#### Vitest 单元（`pnpm --filter bsb-frontend test`）
+#### Vitest 单元（`pnpm --filter @talos-ark/frontend test`）
 
 | 测试文件 | 对应模块 | 状态 |
 |---------|---------|------|
@@ -74,7 +74,7 @@
 | `test/unit/stores/` | Pinia Store 逻辑 | ⚠️ 目录存在，内容待核查 |
 | `test/unit/schemas/` | Zod Schema 校验 | ⚠️ 目录存在，内容待核查 |
 
-#### Playwright E2E（`pnpm --filter bsb-frontend test:e2e`）
+#### Playwright E2E（`pnpm --filter @talos-ark/frontend test:e2e`）
 
 Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`，测试目录 `test/e2e/`。
 分三个 project 运行：`setup`（全局登录） → `public`（未认证页面） → `app`（认证后页面）
@@ -150,18 +150,18 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 
 | 文件 | 操作 |
 |------|------|
-| `BSB-Backend/prisma/schema.prisma` | 新增字段：`quantity`、`unit`、`expiryDate`、`manufactureDate`、`batchNo`、`catalogNo`、`manufacturer`、`casNumber`、`storageCondition`（替换/重构 `environment`）、`hazardLevel`（需新增 Enum）、`minStockThreshold` |
-| 新建 Prisma migration | `pnpm --filter bsb-backend db:migrate` |
-| `BSB-Backend/src/modules/reagent/*.dto.ts` | 更新 CreateDto / UpdateDto / ResponseDto |
-| `BSB-Backend/src/modules/reagent/reagent.service.ts` | 更新 create/update 逻辑 |
+| `apps/backend/prisma/schema.prisma` | 新增字段：`quantity`、`unit`、`expiryDate`、`manufactureDate`、`batchNo`、`catalogNo`、`manufacturer`、`casNumber`、`storageCondition`（替换/重构 `environment`）、`hazardLevel`（需新增 Enum）、`minStockThreshold` |
+| 新建 Prisma migration | `pnpm --filter @talos-ark/backend db:migrate` |
+| `apps/backend/src/modules/reagent/*.dto.ts` | 更新 CreateDto / UpdateDto / ResponseDto |
+| `apps/backend/src/modules/reagent/reagent.service.ts` | 更新 create/update 逻辑 |
 
 #### 前端变更范围
 
 | 文件 | 操作 |
 |------|------|
-| `BSB-Frontend/src/schemas/reagent.ts` | 更新 Zod Schema，新增所有字段的类型定义 |
-| `BSB-Frontend/src/api/modules/reagent.ts` | 更新请求/响应类型 |
-| `BSB-Frontend/src/pages/reagent/ReagentPage.vue` | 表单新增字段，列表新增列 |
+| `apps/frontend/src/schemas/reagent.ts` | 更新 Zod Schema，新增所有字段的类型定义 |
+| `apps/frontend/src/api/modules/reagent.ts` | 更新请求/响应类型 |
+| `apps/frontend/src/pages/reagent/ReagentPage.vue` | 表单新增字段，列表新增列 |
 
 #### 测试要求
 
@@ -180,20 +180,20 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 
 | 文件 | 操作 |
 |------|------|
-| `BSB-Backend/prisma/schema.prisma` | 新增 `ReagentRequest` 模型与 `ReagentRequestStatus` Enum |
-| `BSB-Backend/src/modules/reagent-request/` | **新建**完整 NestJS 模块（controller / service / dto / module） |
-| `BSB-Backend/src/app.module.ts` | 注册新模块 |
+| `apps/backend/prisma/schema.prisma` | 新增 `ReagentRequest` 模型与 `ReagentRequestStatus` Enum |
+| `apps/backend/src/modules/reagent-request/` | **新建**完整 NestJS 模块（controller / service / dto / module） |
+| `apps/backend/src/app.module.ts` | 注册新模块 |
 
 #### 前端变更范围
 
 | 文件 | 操作 |
 |------|------|
-| `BSB-Frontend/src/api/modules/reagent-request.ts` | **新建** Alova 请求函数 |
-| `BSB-Frontend/src/schemas/reagent-request.ts` | **新建** Zod Schema |
-| `BSB-Frontend/src/stores/reagent-request.ts` | **新建** Pinia Store |
-| `BSB-Frontend/src/pages/reagent-request/` | **新建** 页面组件（申请列表、审批操作） |
-| `BSB-Frontend/src/router/index.ts` | 注册新路由 |
-| `BSB-Frontend/src/components/AppSidebar.vue` | 视情况添加导航入口 |
+| `apps/frontend/src/api/modules/reagent-request.ts` | **新建** Alova 请求函数 |
+| `apps/frontend/src/schemas/reagent-request.ts` | **新建** Zod Schema |
+| `apps/frontend/src/stores/reagent-request.ts` | **新建** Pinia Store |
+| `apps/frontend/src/pages/reagent-request/` | **新建** 页面组件（申请列表、审批操作） |
+| `apps/frontend/src/router/index.ts` | 注册新路由 |
+| `apps/frontend/src/components/AppSidebar.vue` | 视情况添加导航入口 |
 
 #### 测试要求
 
@@ -213,17 +213,17 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 
 | 文件 | 操作 |
 |------|------|
-| `BSB-Backend/prisma/schema.prisma` | 新增 `Alert` 模型（type、severity、orgId、reagentId?、isRead、message） |
-| `BSB-Backend/src/modules/alert/` | **新建** NestJS 模块（含定时任务 `@nestjs/schedule`） |
+| `apps/backend/prisma/schema.prisma` | 新增 `Alert` 模型（type、severity、orgId、reagentId?、isRead、message） |
+| `apps/backend/src/modules/alert/` | **新建** NestJS 模块（含定时任务 `@nestjs/schedule`） |
 
 #### 前端变更范围
 
 | 文件 | 操作 |
 |------|------|
-| `BSB-Frontend/src/api/modules/alert.ts` | **新建** |
-| `BSB-Frontend/src/stores/alert.ts` | **新建** |
-| `BSB-Frontend/src/pages/dashboard/DashboardPage.vue` | 集成「即将过期」和「低库存」卡片（真实 API 数据，禁止 mock） |
-| `BSB-Frontend/src/layouts/newLayout.vue` | 顶栏添加通知铃铛图标与已读/未读计数 |
+| `apps/frontend/src/api/modules/alert.ts` | **新建** |
+| `apps/frontend/src/stores/alert.ts` | **新建** |
+| `apps/frontend/src/pages/dashboard/DashboardPage.vue` | 集成「即将过期」和「低库存」卡片（真实 API 数据，禁止 mock） |
+| `apps/frontend/src/layouts/newLayout.vue` | 顶栏添加通知陵铃图标与已读/未读计数 |
 
 #### 测试要求
 
@@ -241,17 +241,17 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 
 | 文件 | 操作 |
 |------|------|
-| `BSB-Backend/prisma/schema.prisma` | 新增 `ProcurementRequest` 模型 |
-| `BSB-Backend/src/modules/procurement/` | **新建** NestJS 模块 |
+| `apps/backend/prisma/schema.prisma` | 新增 `ProcurementRequest` 模型 |
+| `apps/backend/src/modules/procurement/` | **新建** NestJS 模块 |
 
 #### 前端变更范围
 
 | 文件 | 操作 |
 |------|------|
-| `BSB-Frontend/src/api/modules/procurement.ts` | **新建** |
-| `BSB-Frontend/src/schemas/procurement.ts` | **新建** |
-| `BSB-Frontend/src/stores/procurement.ts` | **新建** |
-| `BSB-Frontend/src/pages/procurement/` | **新建** |
+| `apps/frontend/src/api/modules/procurement.ts` | **新建** |
+| `apps/frontend/src/schemas/procurement.ts` | **新建** |
+| `apps/frontend/src/stores/procurement.ts` | **新建** |
+| `apps/frontend/src/pages/procurement/` | **新建** |
 
 #### 测试要求
 
@@ -271,9 +271,9 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 
 | 文件 | 操作 |
 |------|------|
-| `BSB-Frontend/src/stores/share.ts` | **新建** Pinia Store（如不存在） |
-| `BSB-Frontend/src/pages/share/` 或集成到 `org/` | **新建** 共享申请/列表/撤销页面组件 |
-| `BSB-Frontend/src/router/index.ts` | 注册路由（如独立页面） |
+| `apps/frontend/src/stores/share.ts` | **新建** Pinia Store（如不存在） |
+| `apps/frontend/src/pages/share/` 或集成到 `org/` | **新建** 共享申请/列表/撤销页面组件 |
+| `apps/frontend/src/router/index.ts` | 注册路由（如独立页面） |
 
 #### 测试要求
 
@@ -291,9 +291,9 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 
 | 文件 | 操作 |
 |------|------|
-| `BSB-Frontend/src/pages/reagent/` | 在试剂详情中嵌入操作时间轴 |
-| `BSB-Frontend/src/pages/logs/LogsPage.vue` | **新建** 全局日志页面 |
-| `BSB-Frontend/src/router/index.ts` | 注册路由（可选） |
+| `apps/frontend/src/pages/reagent/` | 在试剂详情中嵌入操作时间轴 |
+| `apps/frontend/src/pages/logs/LogsPage.vue` | **新建** 全局日志页面 |
+| `apps/frontend/src/router/index.ts` | 注册路由（可选） |
 
 #### 测试要求
 
@@ -311,10 +311,10 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 
 | 文件 | 操作 |
 |------|------|
-| `BSB-Frontend/src/pages/reagent-type/ReagentTypePage.vue` | **新建** |
-| `BSB-Frontend/src/router/index.ts` | 注册路由 `/reagent-type` |
-| `BSB-Frontend/src/components/AppSidebar.vue` | 添加导航条目（或在试剂页内以 Tab 呈现） |
-| `BSB-Frontend/src/pages/reagent/ReagentPage.vue` | 移除内嵌的类型管理 UI |
+| `apps/frontend/src/pages/reagent-type/ReagentTypePage.vue` | **新建** |
+| `apps/frontend/src/router/index.ts` | 注册路由 `/reagent-type` |
+| `apps/frontend/src/components/AppSidebar.vue` | 添加导航条目（或在试剂页内以 Tab 呈现） |
+| `apps/frontend/src/pages/reagent/ReagentPage.vue` | 移除内嵌的类型管理 UI |
 
 #### 测试要求
 
@@ -342,9 +342,9 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 
 | 环境 | 配置文件 | 启动方式 |
 |------|---------|---------|
-| 后端开发 | `.env.development`（加密，需 `pnpm env:decrypt` 解密） | `pnpm --filter bsb-backend start:dev` |
-| 后端测试 | `.env.test`（加密） | `pnpm --filter bsb-backend test` |
-| 前端开发 | 无 `.env`，通过 Vite 代理转发 | `pnpm --filter bsb-frontend dev`（端口 8081） |
-| 前端 E2E | 依赖前端开发服务器运行中 | `pnpm --filter bsb-frontend test:e2e` |
+| 后端开发 | `.env.development`（加密，需 `pnpm env:decrypt` 解密） | `pnpm --filter @talos-ark/backend start:dev` |
+| 后端测试 | `.env.test`（加密） | `pnpm --filter @talos-ark/backend test` |
+| 前端开发 | 无 `.env`，通过 Vite 代理转发 | `pnpm --filter @talos-ark/frontend dev`（端口 8081） |
+| 前端 E2E | 依赖前端开发服务器运行中 | `pnpm --filter @talos-ark/frontend test:e2e` |
 
-> `.env.*` 文件使用 `@dotenvx/dotenvx-ops` 加密存储，**禁止明文提交**。新开发环境需先执行 `pnpm --filter bsb-backend env:decrypt`。
+> `.env.*` 文件使用 `@dotenvx/dotenvx-ops` 加密存储，**禁止明文提交**。新开发环境需先执行 `pnpm --filter @talos-ark/backend env:decrypt`。

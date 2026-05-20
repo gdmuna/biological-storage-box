@@ -1,9 +1,9 @@
 ## 项目定位
 
 生物样本储存管理系统 monorepo，包含三个工作区：
-- `bsb-backend` — NestJS 后端服务
-- `bsb-docsite` — VitePress 文档站
-- `bsb-frontend` — Vue 3 前端
+- `apps/backend` — NestJS 后端服务
+- `apps/docsite` — VitePress 文档站
+- `apps/frontend` — Vue 3 前端
 
 ## 文档导航
 
@@ -11,10 +11,10 @@
 
 | 文档 | 路径 | 何时加载 |
 |------|------|--------|
-| **后端 AI 操作手册** | [BSB-Backend/AGENTS.md](../BSB-Backend/AGENTS.md) | 涉及后端 service 代码时：模块职责、请求流程、架构决策、提交前自我审查 |
-| 后端文档规范 | [BSB-Backend/docs/AGENTS.md](../BSB-Backend/docs/AGENTS.md) | 需要创建或修改后端文档时 |
-| 后端架构设计 | [BSB-Backend/docs/03-architecture/](../BSB-Backend/docs/03-architecture/) | 涉及模块职责、请求流程、技术选型时 |
-| **前端 AI 操作手册** | [BSB-Frontend/AGENTS.md](../BSB-Frontend/AGENTS.md) | 涉及前端任何代码时：组件、store、路由、API 调用、UI/UX、Bug 修复、E2E 测试 |
+| **后端 AI 操作手册** | [apps/backend/AGENTS.md](../apps/backend/AGENTS.md) | 涉及后端 service 代码时：模块职责、请求流程、架构决策、提交前自我审查 |
+| 后端文档规范 | [apps/backend/docs/AGENTS.md](../apps/backend/docs/AGENTS.md) | 需要创建或修改后端文档时 |
+| 后端架构设计 | [apps/backend/docs/03-architecture/](../apps/backend/docs/03-architecture/) | 涉及模块职责、请求流程、技术选型时 |
+| **前端 AI 操作手册** | [apps/frontend/AGENTS.md](../apps/frontend/AGENTS.md) | 涉及前端任何代码时：组件、store、路由、API 调用、UI/UX、Bug 修复、E2E 测试 |
 | **功能规划** | [ROADMAP.md](../ROADMAP.md) | 了解待开发功能及其优先级（P0–P3） |
 | **进度追踪** | [PROGRESS.md](../PROGRESS.md) | **开始任何功能开发前必读**：查看模块状态、找到需创建/更新的测试文件、完成后执行 DoD 检查清单 |
 
@@ -39,20 +39,20 @@ pnpm run format          # Prettier 格式化（全工作区）
 pnpm run format:check    # 格式检查
 
 # 后端 service
-pnpm --filter bsb-backend start:dev      # 热重载开发
-pnpm --filter bsb-backend build          # 编译 + 类型检查
-pnpm --filter bsb-backend test           # 单元测试 + E2E
-pnpm --filter bsb-backend lint:fix       # ESLint 自动修复
-pnpm --filter bsb-backend db:migrate     # 数据库迁移
-pnpm --filter bsb-backend db:gen-client  # 重新生成 Prisma Client
+pnpm --filter @talos-ark/backend start:dev      # 热重载开发
+pnpm --filter @talos-ark/backend build          # 编译 + 类型检查
+pnpm --filter @talos-ark/backend test           # 单元测试 + E2E
+pnpm --filter @talos-ark/backend lint:fix       # ESLint 自动修复
+pnpm --filter @talos-ark/backend db:migrate     # 数据库迁移
+pnpm --filter @talos-ark/backend db:gen-client  # 重新生成 Prisma Client
 
 # 前端
-pnpm --filter bsb-frontend dev           # 启动开发服务器（:8081）
-pnpm --filter bsb-frontend type-check    # vue-tsc 类型检查
-pnpm --filter bsb-frontend test          # Vitest 单元测试
-pnpm --filter bsb-frontend test:e2e      # Playwright E2E 测试
-pnpm --filter bsb-frontend build         # 构建产物
-pnpm --filter bsb-frontend eslint        # ESLint 自动修复
+pnpm --filter @talos-ark/frontend dev           # 启动开发服务器（:8081）
+pnpm --filter @talos-ark/frontend type-check    # vue-tsc 类型检查
+pnpm --filter @talos-ark/frontend test          # Vitest 单元测试
+pnpm --filter @talos-ark/frontend test:e2e      # Playwright E2E 测试
+pnpm --filter @talos-ark/frontend build         # 构建产物
+pnpm --filter @talos-ark/frontend eslint        # ESLint 自动修复
 ```
 
 <!-- gitnexus:start -->

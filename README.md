@@ -29,9 +29,10 @@
 
 ```
 biological-storage-box/
-├── BSB-Backend/     # NestJS 后端服务（API + 数据库）
-├── BSB-Frontend/    # Vue 3 前端 SPA
-├── BSB-Docsite/     # VitePress 文档站
+├── apps/
+│   ├── backend/     # NestJS 后端服务（API + 数据库）
+│   ├── frontend/    # Vue 3 前端 SPA
+│   └── docsite/     # VitePress 文档站
 └── docs/            # Monorepo 级规划文档
 ```
 
@@ -39,9 +40,9 @@ biological-storage-box/
 
 | 工作区 | 技术栈 | 职责 |
 |--------|--------|------|
-| **BSB-Backend** | NestJS · Prisma · PostgreSQL · Zod | REST API、认证、业务逻辑、数据持久化 |
-| **BSB-Frontend** | Vue 3 · Pinia · Alova · shadcn-vue · Tailwind | 用户界面、路由、状态管理 |
-| **BSB-Docsite** | VitePress · Nginx | 项目文档站、OpenAPI 参考文档 |
+| **apps/backend** | NestJS · Prisma · PostgreSQL · Zod | REST API、认证、业务逻辑、数据持久化 |
+| **apps/frontend** | Vue 3 · Pinia · Alova · shadcn-vue · Tailwind | 用户界面、路由、状态管理 |
+| **apps/docsite** | VitePress · Nginx | 项目文档站、OpenAPI 参考文档 |
 
 ## 核心功能
 
@@ -70,10 +71,10 @@ pnpm install
 
 ```bash
 # 后端（热重载，:3000）
-pnpm --filter BSB-Backend start:dev
+pnpm --filter @talos-ark/backend start:dev
 
 # 前端（:8081）
-pnpm --filter BSB-Frontend dev
+pnpm --filter @talos-ark/frontend dev
 ```
 
 ### 常用命令
@@ -83,27 +84,27 @@ pnpm --filter BSB-Frontend dev
 pnpm run format
 
 # 数据库迁移
-pnpm --filter BSB-Backend db:migrate
+pnpm --filter @talos-ark/backend db:migrate
 
 # 重新生成 Prisma Client
-pnpm --filter BSB-Backend db:gen-client
+pnpm --filter @talos-ark/backend db:gen-client
 
 # 前端类型检查
-pnpm --filter BSB-Frontend type-check
+pnpm --filter @talos-ark/frontend type-check
 
 # 单元测试
-pnpm --filter BSB-Backend test
-pnpm --filter BSB-Frontend test
+pnpm --filter @talos-ark/backend test
+pnpm --filter @talos-ark/frontend test
 
 # E2E 测试
-pnpm --filter BSB-Frontend test:e2e
+pnpm --filter @talos-ark/frontend test:e2e
 ```
 
 ## 文档
 
-- [后端文档](BSB-Backend/docs/) — 架构设计、API 规范、开发指南
-- [后端 AGENTS.md](BSB-Backend/AGENTS.md) — AI 协作操作手册
-- [前端 AGENTS.md](BSB-Frontend/AGENTS.md) — 前端 AI 协作操作手册
+- [后端文档](apps/backend/docs/) — 架构设计、API 规范、开发指南
+- [后端 AGENTS.md](apps/backend/AGENTS.md) — AI 协作操作手册
+- [前端 AGENTS.md](apps/frontend/AGENTS.md) — 前端 AI 协作操作手册
 
 ## License
 
