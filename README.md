@@ -60,15 +60,15 @@ Talos-Ark/
 
 ### 前置要求
 
-- Node.js >= 22
-- pnpm >= 8
-- PostgreSQL
+- Node.js ≥ 22
+- pnpm ≥ 11
+- PostgreSQL ≥ 18
 
 ### 安装与启动
 
 ```bash
 # 安装依赖
-pnpm install
+pnpm install -r
 
 pnpm --filter @talos-ark/backend db:gen-client
 
