@@ -2,10 +2,10 @@
 
 GREEN="\033[32m"; YELLOW="\033[33m"; RESET="\033[0m"
 
-log()  { printf "%-12b  %b\n" "${GREEN}[GitHook]" "[LOG] $1${RESET}"; }
-warn() { printf "%-12b  %b\n" "${YELLOW}[GitHook]" "[WARN] $1${RESET}"; }
+log()  { printf "%-12b %b\n" "${GREEN}[GitHook]" "[LOG] $1${RESET}"; }
+warn() { printf "%-12b %b\n" "${YELLOW}[GitHook]" "[WARN] $1${RESET}"; }
 
-log "\n执行 Pre-push hook..."
+log "\n执行 Pre-push hook"
 
 # 按工作区分别触发测试（新分支无上游时回退到初始提交，避免漏测）
 base=$(git rev-parse --verify @{u} 2>/dev/null || git rev-list --max-parents=0 HEAD)
