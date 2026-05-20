@@ -1,7 +1,7 @@
 packages:
-  - './BSB-Backend'
-  - './BSB-Docsite'
-  - './BSB-Frontend'
+  - './apps/backend'
+  - './apps/docsite'
+  - './apps/frontend'
 
 allowBuilds:
   '@nestjs/core': true

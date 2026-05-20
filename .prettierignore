@@ -3,7 +3,7 @@
 
 **/node-modules
 
-BSB-Frontend/test-results/
-BSB-Frontend/test/.auth/
-BSB-Frontend/src-tauri/target/**
-BSB-Frontend/src-tauri/gen
+apps/frontend/test-results/
+apps/frontend/test/.auth/
+apps/frontend/src-tauri/target/**
+apps/frontend/src-tauri/gen

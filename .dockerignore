@@ -1,5 +1,14 @@
-**/node_modules
-**/dist
-**/.git
-**/logs
+**/node_modules/
+**/dist/
+**/.vitepress/cache/
 **/*.log
+**/coverage/
+**/.env.keys
+**/.env.example
+
+apps/backend/prisma/generated/
+
+apps/frontend/src-tauri/
+
+# 测试与 CI 产物
+dogfood-output/

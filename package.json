@@ -1,8 +1,8 @@
 {
-  "name": "biological-storage-box",
+  "name": "talos-ark",
   "private": true,
   "version": "0.1.0",
-  "description": "生物样本储存管理系统 monorepo",
+  "description": "生物样本储存管理系统 TalosArk",
   "license": "AGPL-3.0",
   "type": "module",
   "author": "Maiturin",
@@ -29,11 +29,11 @@
     "vue-eslint-parser": "^10.4.0"
   },
   "lint-staged": {
-    "BSB-Backend/**/*.{js,ts}": [
+    "apps/backend/**/*.{js,ts}": [
       "eslint --fix",
       "prettier --write"
     ],
-    "BSB-Frontend/**/*.{js,ts,vue}": [
+    "apps/frontend/**/*.{js,ts,vue}": [
       "eslint --fix",
       "prettier --write"
     ],

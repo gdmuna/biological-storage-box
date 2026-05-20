@@ -30,16 +30,16 @@ export default [
         ignores: [
             '**/dist/**',
             '**/node_modules/**',
-            'BSB-Backend/prisma/generated/**',
-            'BSB-Docsite/.vitepress/dist/**',
-            'BSB-Docsite/.vitepress/cache/**',
-            'BSB-Frontend/src-tauri/**',
+            'apps/backend/prisma/generated/**',
+            'apps/docsite/.vitepress/dist/**',
+            'apps/docsite/.vitepress/cache/**',
+            'apps/frontend/src-tauri/**',
         ],
     },
 
-    // ── BSB-Backend: TypeScript ───────────
+    // ── apps/backend: TypeScript ───────────
     {
-        files: ['BSB-Backend/src/**/*.ts', 'BSB-Backend/test/**/*.ts'],
+        files: ['apps/backend/src/**/*.ts', 'apps/backend/test/**/*.ts'],
         languageOptions: {
             parser: tsParser,
             globals: {
@@ -63,10 +63,10 @@ export default [
         },
     },
 
-    // ── BSB-Frontend: Vue 3 + TypeScript ───────
+    // ── apps/frontend: Vue 3 + TypeScript ───────
     {
-        files: ['BSB-Frontend/src/**/*.{js,ts,vue}'],
-        ignores: ['BSB-Frontend/src/components/ui/**'],
+        files: ['apps/frontend/src/**/*.{js,ts,vue}'],
+        ignores: ['apps/frontend/src/components/ui/**'],
         languageOptions: {
             parser: vueParser,
             parserOptions: {
