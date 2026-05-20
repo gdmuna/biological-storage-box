@@ -217,7 +217,7 @@ jobs:
 
     steps:
       - name: Download OpenAPI artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: openapi-json-${{ github.run_id }}
           path: assets
