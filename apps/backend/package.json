@@ -31,7 +31,8 @@
     "docs:dev": "pnpm docs:gen-reference && dotenvx run -f secrets/env/.env.development -- pnpm --filter @talos-ark/docsite dev",
     "docs:build": "pnpm docs:gen-reference && pnpm --filter @talos-ark/docsite build",
     "docs:serve": "pnpm --filter @talos-ark/docsite serve",
-    "prisma": "prisma"
+    "prisma": "tsx scripts/prisma.ts",
+    "dotenvx": "dotenvx"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1045.0",
