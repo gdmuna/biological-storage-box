@@ -1,0 +1,43 @@
+version: 2
+updates:
+  # Monorepo 根（公共依赖、eslint、prettier 等）
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 5
+
+  # 后端服务
+  - package-ecosystem: 'npm'
+    directory: '/apps/backend'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 10
+
+  # 前端（Vue 3 / Tauri Web 层）
+  - package-ecosystem: 'npm'
+    directory: '/apps/frontend'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 10
+
+  # 文档站
+  - package-ecosystem: 'npm'
+    directory: '/apps/docsite'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 5
+
+  # Tauri Rust 壳层
+  - package-ecosystem: 'cargo'
+    directory: '/apps/frontend/src-tauri'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 5
+
+  # GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 5
