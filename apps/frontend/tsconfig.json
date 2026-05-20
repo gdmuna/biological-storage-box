@@ -16,6 +16,6 @@
     },
     "types": ["vite/client"]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue", "env.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue", "env.d.ts", "test/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

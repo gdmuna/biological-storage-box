@@ -39,7 +39,7 @@ vi.mock('@/stores/org', () => ({
 describe('ReagentType API Integration', () => {
     it('listReagentTypes resolves with items', async () => {
         const { listReagentTypes } = await import('@/api/modules/reagent-type');
-        const result = await listReagentTypes('org-1').send();
+        const result = await listReagentTypes({ orgId: 'org-1' }).send();
         expect(result[0].name).toBe('青霉素');
     });
 });
