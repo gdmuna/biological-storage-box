@@ -34,17 +34,17 @@ const routes = [
     {
         path: '/login',
         component: LoginPage,
-        meta: { public: true, webTitle: 'BSB | 登录', breadcrumbLabel: '登录' },
+        meta: { public: true, webTitle: '璇玑云库 | 登录', breadcrumbLabel: '登录' },
     },
     {
         path: '/login/email',
         component: EmailLoginPage,
-        meta: { public: true, webTitle: 'BSB | 邮箱登录', breadcrumbLabel: '邮箱登录' },
+        meta: { public: true, webTitle: '璇玑云库 | 邮箱登录', breadcrumbLabel: '邮箱登录' },
     },
     {
         path: '/register',
         component: RegisterPage,
-        meta: { public: true, webTitle: 'BSB | 注册', breadcrumbLabel: '注册' },
+        meta: { public: true, webTitle: '璇玑云库 | 注册', breadcrumbLabel: '注册' },
     },
     {
         path: '/',
@@ -55,7 +55,7 @@ const routes = [
                 path: 'dashboard',
                 component: DashboardPage,
                 meta: {
-                    webTitle: 'BSB | 仪表盘',
+                    webTitle: '璇玑云库 | 仪表盘',
                     breadcrumbLabel: '仪表盘',
                 },
             },
@@ -63,7 +63,7 @@ const routes = [
                 path: 'box',
                 component: BoxListPage,
                 meta: {
-                    webTitle: 'BSB | 储存盒',
+                    webTitle: '璇玑云库 | 储存盒',
                     breadcrumbLabel: '储存盒',
                 },
             },
@@ -71,7 +71,7 @@ const routes = [
                 path: 'box/new',
                 component: BoxCreatePage,
                 meta: {
-                    webTitle: 'BSB | 新建储存盒',
+                    webTitle: '璇玑云库 | 新建储存盒',
                     breadcrumbLabel: '新建储存盒',
                 },
             },
@@ -79,7 +79,7 @@ const routes = [
                 path: 'box/:id',
                 component: BoxDetailPage,
                 meta: {
-                    webTitle: 'BSB | 储存盒详情',
+                    webTitle: '璇玑云库 | 储存盒详情',
                     breadcrumbLabel: '储存盒详情',
                 },
             },
@@ -87,14 +87,14 @@ const routes = [
                 path: 'org',
                 component: OrgManagePage,
                 meta: {
-                    webTitle: 'BSB | 组织管理',
+                    webTitle: '璇玑云库 | 组织管理',
                     breadcrumbLabel: '组织管理',
                 },
                 children: [
                     {
                         path: ':id',
                         component: OrgDetailPage,
-                        meta: { webTitle: 'BSB | 组织详情', breadcrumbLabel: '组织详情' },
+                        meta: { webTitle: '璇玑云库 | 组织详情', breadcrumbLabel: '组织详情' },
                     },
                 ],
             },
@@ -102,7 +102,7 @@ const routes = [
                 path: 'room',
                 component: RoomListPage,
                 meta: {
-                    webTitle: 'BSB | 库室',
+                    webTitle: '璇玑云库 | 库室',
                     breadcrumbLabel: '库室',
                 },
             },
@@ -110,7 +110,7 @@ const routes = [
                 path: 'room/:id',
                 component: RoomDetailPage,
                 meta: {
-                    webTitle: 'BSB | 库室详情',
+                    webTitle: '璇玑云库 | 库室详情',
                     breadcrumbLabel: '库室详情',
                 },
             },
@@ -118,7 +118,7 @@ const routes = [
                 path: 'node',
                 component: NodePage,
                 meta: {
-                    webTitle: 'BSB | 节点图',
+                    webTitle: '璇玑云库 | 节点图',
                     breadcrumbLabel: '节点图',
                 },
             },
@@ -126,7 +126,7 @@ const routes = [
                 path: 'user',
                 component: ProfilePage,
                 meta: {
-                    webTitle: 'BSB | 个人中心',
+                    webTitle: '璇玑云库 | 个人中心',
                     breadcrumbLabel: '个人中心',
                 },
             },
@@ -134,7 +134,7 @@ const routes = [
                 path: 'reagent',
                 component: ReagentPage,
                 meta: {
-                    webTitle: 'BSB | 试剂管理',
+                    webTitle: '璇玑云库 | 试剂管理',
                     breadcrumbLabel: '试剂管理',
                 },
             },
@@ -142,7 +142,7 @@ const routes = [
                 path: 'reagent-type',
                 component: ReagentTypePage,
                 meta: {
-                    webTitle: 'BSB | 试剂类型',
+                    webTitle: '璇玑云库 | 试剂类型',
                     breadcrumbLabel: '试剂类型',
                 },
             },
@@ -150,7 +150,7 @@ const routes = [
                 path: 'logs',
                 component: LogsPage,
                 meta: {
-                    webTitle: 'BSB | 操作日志',
+                    webTitle: '璇玑云库 | 操作日志',
                     breadcrumbLabel: '操作日志',
                 },
             },
@@ -171,7 +171,7 @@ router.beforeEach(async (to) => {
 
 // 同步浏览器标签页标题
 router.afterEach((to) => {
-    document.title = to.meta.webTitle ?? 'Biological Storage Box';
+    document.title = to.meta.webTitle ?? '璇玑云库';
 });
 
 export default router;
