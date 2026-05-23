@@ -181,7 +181,7 @@ jobs:
         run: docker rm -f backend-export || true
 
       - name: Upload OpenAPI artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: openapi-json-${{ github.run_id }}
           path: openapi.json

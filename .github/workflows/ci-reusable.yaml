@@ -126,7 +126,7 @@ jobs:
         run: pnpm --filter @talos-ark/backend test --ci --coverage
 
       - name: Upload coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report-${{ github.run_id }}
           path: coverage/
