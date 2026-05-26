@@ -1,6 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod/v4';
 import { FileDomain } from '@root/prisma/generated/enums.js';
+import { MultipartFile } from '@fastify/multipart';
 
 // ─── 上传预签名（客户端直传） ───────────────────────────────────────────────────
 
@@ -154,10 +155,36 @@ export const ServerUploadDtoSchema = z
     .object({
         domain: z.enum(FileDomain).meta({ title: '文件领域', example: 'AVATAR' }),
         filename: z.string().meta({ title: '原始文件名', example: 'photo.jpg' }),
-        file: z
-            .file()
-            .optional()
-            .meta({ title: '上传的文件', description: '通过 multipart/form-data 上传，大小 ≤5MB' }),
+        // file: z.preprocess(
+        //     async (file: any) => {
+        //         console.log(file)
+        //         return file.file;
+        //     },
+        //     z
+        //         .file()
+        //         .optional()
+        //         .meta({
+        //             title: '上传的文件',
+        //             description: '通过 multipart/form-data 上传，大小 ≤5MB',
+        //         })
+        // ),
+        // file666: z.preprocess(
+        //     async (file: any) => {
+        //         console.log('Received file666:', file);
+        //         return file;
+        //     },
+        //     z
+        //         .file()
+        //         .optional()
+        //         .meta({
+        //             title: '上传的文件',
+        //             description: '通过 multipart/form-data 上传，大小 ≤5MB',
+        //         })
+        // ),
+        // file: z.custom<MultipartFile>().refine((file) => {
+        //     if (!file) return false;
+        //     return true;
+        // })
     })
     .meta({ description: '服务端直接上传文件（小文件 ≤5MB）的请求 Dto' });
 

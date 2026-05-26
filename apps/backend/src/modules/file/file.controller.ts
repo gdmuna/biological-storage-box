@@ -10,6 +10,7 @@ import {
     // CompleteMultipartDto,
     // AbortMultipartDto,
     ServerUploadDto,
+    ServerUploadDtoSchema,
 } from './file.dto.js';
 
 import { ApiRoute } from '@/common/decorators/index.js';
@@ -28,18 +29,21 @@ import {
     Req,
     Res,
     StreamableFile,
-    UseInterceptors,
-    UploadedFile,
+    BadRequestException,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 
-import type { Request, Response } from 'express';
+import type { FastifyRequest, FastifyReply } from 'fastify';
+
+import { NewVideoStrategy } from './strategies/video.strategy.js';
 
 @Controller('files')
 @ApiTags('文件模块')
 export class FileController {
-    constructor(private readonly fileService: FileService) {}
+    constructor(
+        private readonly fileService: FileService,
+        private readonly newVideoStrategy: NewVideoStrategy
+    ) {}
 
     // ─── 预签名 URL ────────────────────────────────────────────────────────────
 
@@ -50,7 +54,7 @@ export class FileController {
         description:
             '根据提供的文件信息生成预签名 URL 和文件记录 ID（fileId）。客户端使用该 URL 直接上传文件到存储服务后，需调用 PATCH /files/:fileId/confirm 确认上传完成。',
     })
-    presignUpload(@Body() dto: PresignUploadDto, @Req() req: Request) {
+    presignUpload(@Body() dto: PresignUploadDto, @Req() req: FastifyRequest) {
         return this.fileService.getPresignedUploadUrl(req.jwtClaim!.sub, dto);
     }
 
@@ -90,7 +94,6 @@ export class FileController {
     // ─── 服务端直接操作 ────────────────────────────────────────────────────────
 
     @Post('server-upload')
-    @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 5 * 1024 * 1024 } })) // 限制文件大小 ≤5MB
     @ApiRoute({
         auth: 'required',
         summary: '服务端直接上传文件（小文件 ≤5MB）',
@@ -98,12 +101,48 @@ export class FileController {
             '由服务端接收文件后直接写入对象存储，适用于服务端生成的文件或需要服务端处理的场景。返回文件记录 ID（fileId）。',
         consumes: ['multipart/form-data'],
     })
-    async serverUpload(
-        @UploadedFile() file: Express.Multer.File,
-        @Body() dto: ServerUploadDto,
-        @Req() req: Request
-    ) {
-        return this.fileService.serverUpload(req.jwtClaim!.sub, dto, file.buffer, file.mimetype);
+    async serverUpload(@Req() req: FastifyRequest, @Body() body: any) {
+        // let fileBuffer: Buffer | null = null;
+        // let fileMimetype = '';
+        // let domain: string | undefined;
+        // let filename: string | undefined;
+
+        // for await (const part of req.parts()) {
+        //     console.log('Received part:', part);
+        //     if (part.type === 'file') {
+        //         fileBuffer = await part.toBuffer();
+        //         fileMimetype = part.mimetype;
+        //     } else {
+        //         if (part.fieldname === 'domain') domain = String(part.value);
+        //         if (part.fieldname === 'filename') filename = String(part.value);
+        //     }
+        // }
+
+        // if (!fileBuffer) {
+        //     throw new BadRequestException('请上传文件');
+        // }
+
+        // const parseResult = ServerUploadDtoSchema.safeParse({ domain, filename, file: undefined });
+        // if (!parseResult.success) {
+        //     throw new BadRequestException(parseResult.error.message);
+        // }
+
+        // return this.fileService.serverUpload(
+        //     req.jwtClaim!.sub,
+        //     parseResult.data as ServerUploadDto,
+        //     fileBuffer,
+        //     fileMimetype
+        // );
+
+        const handler = await this.newVideoStrategy.getHandler(req, { resolveType: 'stream' });
+        const data = handler.getData();
+        const strategy = handler.getStrategy();
+        const files = handler.getFiles();
+
+        console.log('Received data:', data);
+        console.log('Received files:', files);
+        console.log('Strategy:', strategy);
+        return { message: '666' };
     }
 
     @Get(':fileId/proxy')
@@ -115,11 +154,11 @@ export class FileController {
     })
     async proxyDownload(
         @Param('fileId') fileId: string,
-        @Res({ passthrough: true }) res: Response
+        @Res({ passthrough: true }) res: FastifyReply
     ): Promise<StreamableFile> {
         const { data, filename } = await this.fileService.proxyDownload(fileId);
-        res.setHeader('Content-Type', 'application/octet-stream');
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.header('Content-Type', 'application/octet-stream');
+        res.header('Content-Disposition', `attachment; filename="${filename}"`);
         return new StreamableFile(data as any);
     }
 
