@@ -18,7 +18,7 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/co
 import { ThrottlerException } from '@nestjs/throttler';
 import { ZodValidationException, ZodSerializationException } from 'nestjs-zod';
 import { ZodError } from 'zod/v4';
-import { Request, Response } from 'express';
+import { FastifyRequest, FastifyReply } from 'fastify';
 
 /**
  * 所有 ExceptionFilter 的抽象基类。
@@ -33,17 +33,17 @@ abstract class BaseExceptionFilter implements ExceptionFilter {
 
     protected handle(exception: AppException, host: ArgumentsHost): void {
         const ctx = host.switchToHttp();
-        const request = ctx.getRequest<Request>();
-        const response = ctx.getResponse<Response>();
+        const request = ctx.getRequest<FastifyRequest>();
+        const response = ctx.getResponse<FastifyReply>();
 
         // 防止双重响应：headers 已发送时直接跳过（Filter 被重入时的安全阀）
-        if (response.headersSent) return;
+        if (response.sent) return;
 
         const requestContext = this.alsService.get() ?? null;
 
         const logContext = {
             requestId: request.id || 'unknown',
-            version: request.version || 'unknown',
+            version: request.raw.version || 'unknown',
             ...(request.jwtClaim?.user && {
                 user: {
                     id: request.jwtClaim.user.id,
@@ -75,10 +75,10 @@ abstract class BaseExceptionFilter implements ExceptionFilter {
             ?? `${ERROR_REFERENCE_URL}#${toKebabCase(exception.code)}`;
 
         if (exception.retryAfterMs !== undefined) {
-            response.setHeader('Retry-After', Math.ceil(exception.retryAfterMs / 1000));
+            response.header('Retry-After', Math.ceil(exception.retryAfterMs / 1000));
         }
 
-        response.status((exception as HttpException).getStatus()).json({
+        response.code((exception as HttpException).getStatus()).send({
             success: false,
             code: exception.code,
             message,
@@ -142,13 +142,18 @@ export class ZodExceptionFilter extends BaseExceptionFilter {
     ): void {
         if (exception instanceof ZodValidationException) {
             const zodError = exception.getZodError() as ZodError;
-            const details = zodError.issues.map((issue) => ({
-                field: issue.path.join('.') || '(root)',
-                message: issue.message,
-                code: issue.code,
-            }));
-            this.alsService.mergeContextMetadata({ validationErrors: details });
-            this.handle(new ValidationFailedException({ details }), host);
+            console.log('Zod validation error details:', zodError);
+            if (zodError instanceof ZodError) {
+                const details = zodError.issues.map((issue) => ({
+                    field: issue.path.join('.') || '(root)',
+                    message: issue.message,
+                    code: issue.code,
+                }));
+                this.alsService.mergeContextMetadata({ validationErrors: details });
+                this.handle(new ValidationFailedException({ details }), host);
+            } else {
+                this.handle(new ValidationFailedException({ cause: exception }), host);
+            }
         } else {
             this.handle(new SysSerializationException({ cause: exception }), host);
         }

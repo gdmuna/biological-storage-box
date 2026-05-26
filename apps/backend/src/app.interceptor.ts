@@ -12,7 +12,7 @@ import {
     RequestTimeoutException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Request, Response } from 'express';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { map } from 'rxjs/operators';
 import { throwError, TimeoutError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
@@ -31,9 +31,9 @@ export class PerformanceInterceptor implements NestInterceptor {
 
     intercept(context: ExecutionContext, next: CallHandler) {
         const ctx = context.switchToHttp();
-        const response = ctx.getResponse<Response>();
+        const response = ctx.getResponse<FastifyReply>();
         const startTime = performance.now();
-        response.on('finish', () => {
+        response.raw.on('finish', () => {
             const logContext = this.getContext(context);
             const hasError = response.statusCode >= 400;
             this.logPerformance(logContext, startTime, hasError);
@@ -43,15 +43,15 @@ export class PerformanceInterceptor implements NestInterceptor {
 
     private getContext(context: ExecutionContext) {
         const ctx = context.switchToHttp();
-        const request = ctx.getRequest<Request>();
-        const response = ctx.getResponse<Response>();
-        const requestId = request.id || 'unknown';
+        const request = ctx.getRequest<FastifyRequest>();
+        const response = ctx.getResponse<FastifyReply>();
+        const requestId = String(request.id) || 'unknown';
         const method = request.method;
         const url = request.url;
         const status = response.statusCode;
-        const remoteAddress = request.ip || request.socket.remoteAddress;
-        const remotePort = request.socket.remotePort;
-        const version = request.version || 'unknown';
+        const remoteAddress = request.ip || request.socket?.remoteAddress;
+        const remotePort = request.socket?.remotePort;
+        const version = request.raw.version || 'unknown';
 
         return {
             requestId,

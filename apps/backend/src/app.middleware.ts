@@ -1,23 +1,23 @@
-import { Logger } from '@/common/services/index.js';
-
 import { AllConfig } from '@/constants/index.js';
 
 import { AlsService } from '@/infra/als/als.service.js';
 
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Logger, Injectable, NestMiddleware } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Request, Response, NextFunction } from 'express';
-import { ulid } from 'ulid';
+import type { FastifyRequest, FastifyReply } from 'fastify';
+
+// Per NestJS docs (techniques/performance): middleware with Fastify receives raw
+// Node.js objects via middie, not Fastify's wrappers.
+type RawRequest = FastifyRequest['raw'];
+type RawResponse = FastifyReply['raw'];
 
 @Injectable()
 export class RequestPreprocessingMiddleware implements NestMiddleware {
     constructor(private readonly configService: ConfigService<AllConfig, true>) {}
 
-    use(req: Request, res: Response, next: NextFunction) {
+    use(req: RawRequest, res: RawResponse, next: () => void) {
         const requestIdHeader = this.configService.get('http.requestIdHeader', { infer: true });
-        const reqId = req.headers[requestIdHeader] ?? ulid();
-        req.id = typeof reqId === 'string' ? reqId : reqId[0];
-        res.setHeader(requestIdHeader, req.id);
+        res.setHeader(requestIdHeader, String(req.id));
         req.version = this.configService.get('app.appVersion', { infer: true });
         next();
     }
@@ -26,7 +26,7 @@ export class RequestPreprocessingMiddleware implements NestMiddleware {
 @Injectable()
 export class RequestScopeMiddleware implements NestMiddleware {
     constructor(private readonly alsService: AlsService) {}
-    use(req: Request, _: Response, next: NextFunction) {
+    use(req: RawRequest, _: RawResponse, next: () => void) {
         const requestContext = {
             requestId: typeof req.id === 'string' ? req.id : String(req.id ?? 'unknown'),
             time: Date.now(),
@@ -42,95 +42,58 @@ export class RequestScopeMiddleware implements NestMiddleware {
 @Injectable()
 export class CorsMiddleware implements NestMiddleware {
     private readonly logger = new Logger(CorsMiddleware.name);
+    private readonly isDev: boolean;
+    private readonly allowedOrigins: string[];
+    private readonly allowedMethods: string;
+    private readonly allowedHeaders: string;
+    private readonly maxAge: number;
 
-    constructor(private readonly configService: ConfigService<AllConfig, true>) {}
+    constructor(configService: ConfigService<AllConfig, true>) {
+        this.isDev = configService.get('app.isDev', { infer: true });
+        this.allowedOrigins = configService.get('http.corsAllowedOrigin', { infer: true });
+        this.allowedMethods = configService
+            .get('http.corsAllowedMethods', { infer: true })
+            .join(', ');
+        this.allowedHeaders = configService
+            .get('http.corsAllowedHeaders', { infer: true })
+            .join(', ');
+        this.maxAge = configService.get('http.corsPreflightMaxAgeSeconds', { infer: true });
+    }
 
-    use(req: Request, res: Response, next: NextFunction) {
-        const origin = (req.headers.origin as string) || (req.headers.referer as string);
+    use(req: RawRequest, res: RawResponse, next: () => void) {
+        const origin = req.headers.origin as string | undefined;
 
-        // 预检请求单独处理
-        if (req.method === 'OPTIONS') {
-            if (this.isOriginAllowed(origin)) {
-                this.setCorsHeaders(res, origin);
-                res.sendStatus(204);
-            } else {
-                this.logger.debug(
-                    {
-                        requestId: req.id,
-                        origin,
-                        method: req.method,
-                        url: req.url,
-                    },
-                    'CORS preflight rejected'
-                );
-                res.status(403).json({
+        const isAllowed =
+            this.isDev ||
+            !origin ||
+            this.allowedOrigins.length === 0 ||
+            this.allowedOrigins.includes(origin);
+
+        if (!isAllowed) {
+            this.logger.warn(`CORS blocked: ${origin}`);
+            res.statusCode = 403;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(
+                JSON.stringify({
                     success: false,
-                    code: 'CORS_FORBIDDEN',
-                    message: origin
-                        ? `Origin "${origin}" is not allowed by CORS policy`
-                        : 'CORS policy rejected this request',
-                    requestId: req.id ?? 'unknown',
-                });
-            }
+                    message: `Origin "${origin}" is not allowed by CORS policy`,
+                })
+            );
             return;
         }
 
-        // 实际请求：检查CORS
-        if (this.isOriginAllowed(origin)) {
-            this.setCorsHeaders(res, origin);
-            next();
-        } else {
-            this.logger.debug(
-                {
-                    requestId: req.id,
-                    origin,
-                    method: req.method,
-                    url: req.url,
-                },
-                'CORS rejected'
-            );
-            res.status(403).json({
-                success: false,
-                code: 'CORS_FORBIDDEN',
-                message: origin
-                    ? `Origin "${origin}" is not allowed by CORS policy`
-                    : 'CORS policy rejected this request',
-                requestId: req.id,
-            });
-        }
-    }
+        res.setHeader('Access-Control-Allow-Origin', origin ?? '*');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
 
-    /**
-     * 验证CORS源是否被允许
-     */
-    private isOriginAllowed(origin: string | undefined): boolean {
-        // 允许没有origin的请求（如移动应用、桌面应用、CURL等）
-        if (!origin) {
-            return true;
+        if (req.method === 'OPTIONS') {
+            res.setHeader('Access-Control-Allow-Methods', this.allowedMethods);
+            res.setHeader('Access-Control-Allow-Headers', this.allowedHeaders);
+            res.setHeader('Access-Control-Max-Age', String(this.maxAge));
+            res.statusCode = 204;
+            res.end();
+            return;
         }
 
-        if (this.configService.get('app.isDev', { infer: true })) {
-            return true;
-        }
-
-        const allowedOrigins = this.configService.get('http.corsAllowedOrigin', {
-            infer: true,
-        });
-        return allowedOrigins.length === 0 || allowedOrigins.includes(origin);
-    }
-
-    /**
-     * 设置CORS响应头
-     */
-    private setCorsHeaders(res: Response, origin: string | undefined): void {
-        if (origin) {
-            res.header('Access-Control-Allow-Origin', origin);
-        }
-        const { corsAllowedHeaders, corsAllowedMethods, corsPreflightMaxAgeSeconds } =
-            this.configService.get('http', { infer: true });
-        res.header('Access-Control-Allow-Headers', corsAllowedHeaders);
-        res.header('Access-Control-Allow-Methods', corsAllowedMethods);
-        res.header('Access-Control-Allow-Credentials', 'true');
-        res.header('Access-Control-Max-Age', String(corsPreflightMaxAgeSeconds));
+        next();
     }
 }
