@@ -27,7 +27,7 @@ describe('AuthController (unit)', () => {
     });
 
     it('register should set refresh cookie and return auth response', async () => {
-        const response: any = { cookie: vi.fn() };
+        const response: any = { setCookie: vi.fn() };
         mockAuthService.register.mockResolvedValue({
             accessToken: 'at-register',
             refreshToken: 'rt-register',
@@ -47,7 +47,7 @@ describe('AuthController (unit)', () => {
             response
         );
 
-        expect(response.cookie).toHaveBeenCalledWith(
+        expect(response.setCookie).toHaveBeenCalledWith(
             REFRESH_TOKEN_COOKIE.NAME,
             'rt-register',
             expect.objectContaining({ httpOnly: true })
@@ -57,7 +57,7 @@ describe('AuthController (unit)', () => {
     });
 
     it('login should set refresh cookie and return auth response', async () => {
-        const response: any = { cookie: vi.fn() };
+        const response: any = { setCookie: vi.fn() };
         mockAuthService.login.mockResolvedValue({
             accessToken: 'at-login',
             refreshToken: 'rt-login',
@@ -76,7 +76,7 @@ describe('AuthController (unit)', () => {
             response
         );
 
-        expect(response.cookie).toHaveBeenCalledTimes(1);
+        expect(response.setCookie).toHaveBeenCalledTimes(1);
         expect(result.accessToken).toBe('at-login');
         expect(result.user.email).toBe('alice@example.com');
     });
@@ -84,7 +84,7 @@ describe('AuthController (unit)', () => {
     // Cookie 缺失时的验证由 CookieValidationPipe 负责，不在 controller 层测试
 
     it('refresh-token should rotate tokens and set cookie', async () => {
-        const response: any = { cookie: vi.fn() };
+        const response: any = { setCookie: vi.fn() };
         mockAuthService.rotateRefreshToken.mockResolvedValue({
             accessToken: 'at-new',
             refreshToken: 'rt-new',
@@ -94,7 +94,7 @@ describe('AuthController (unit)', () => {
         const result = await controller.refreshToken('rt-old', response);
 
         expect(mockAuthService.rotateRefreshToken).toHaveBeenCalledWith('rt-old');
-        expect(response.cookie).toHaveBeenCalledTimes(1);
+        expect(response.setCookie).toHaveBeenCalledTimes(1);
         expect(result.accessToken).toBe('at-new');
     });
 
