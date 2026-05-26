@@ -14,7 +14,8 @@ export default defineConfig({
         },
         coverage: {
             provider: 'v8',
-            reporter: process.env['CI'] === 'true' ? ['lcov', 'text'] : ['text'],
+            reporter: ['html', 'lcov', 'text'],
+            reportsDirectory: './coverage',
             include: ['src/**/*.{ts,js}'],
             exclude: ['src/**/*.spec.ts', 'src/**/*.e2e-spec.ts', 'src/main.ts'],
         },
