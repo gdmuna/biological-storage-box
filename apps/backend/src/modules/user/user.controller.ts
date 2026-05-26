@@ -19,7 +19,7 @@ import type { AccessTokenClaim } from '@/modules/auth/services/token.service.js'
 import { REFRESH_TOKEN_COOKIE } from '@/constants/auth.constant.js';
 
 import { Controller, Get, Put, Post, Body, Query, Res } from '@nestjs/common';
-import type { Response } from 'express';
+import type { FastifyReply } from 'fastify';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('用户模块')
@@ -83,9 +83,12 @@ export class UserController {
             USER_EXCEPTION.VerificationCodeExpiredException.code,
         ],
     })
-    async emailLogin(@Body() body: EmailLoginDto, @Res({ passthrough: true }) response: Response) {
+    async emailLogin(
+        @Body() body: EmailLoginDto,
+        @Res({ passthrough: true }) response: FastifyReply
+    ) {
         const result = await this.userService.emailLogin(body.email, body.code);
-        response.cookie(REFRESH_TOKEN_COOKIE.NAME, result.refreshToken, {
+        response.setCookie(REFRESH_TOKEN_COOKIE.NAME, result.refreshToken, {
             httpOnly: REFRESH_TOKEN_COOKIE.HTTP_ONLY,
             sameSite: REFRESH_TOKEN_COOKIE.SAME_SITE,
             secure: REFRESH_TOKEN_COOKIE.SECURE,

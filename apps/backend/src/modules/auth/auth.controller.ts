@@ -10,7 +10,7 @@ import { AlsService } from '@/infra/index.js';
 
 import { Controller, Post, Body, Res, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import type { Response } from 'express';
+import type { FastifyReply } from 'fastify';
 
 @ApiTags('认证模块')
 @Controller('auth')
@@ -28,15 +28,15 @@ export class AuthController {
         responseType: AuthResponseDto,
         errors: [AUTH_EXCEPTION.DuplicateUserException.code],
     })
-    async register(@Body() body: RegisterDto, @Res({ passthrough: true }) response: Response) {
+    async register(@Body() body: RegisterDto, @Res({ passthrough: true }) response: FastifyReply) {
         const authResult = await this.authService.register(body);
 
-        response.cookie(REFRESH_TOKEN_COOKIE.NAME, authResult.refreshToken, {
+        response.setCookie(REFRESH_TOKEN_COOKIE.NAME, authResult.refreshToken, {
             httpOnly: REFRESH_TOKEN_COOKIE.HTTP_ONLY,
             sameSite: REFRESH_TOKEN_COOKIE.SAME_SITE,
             secure: REFRESH_TOKEN_COOKIE.SECURE,
             path: REFRESH_TOKEN_COOKIE.PATH,
-            maxAge: REFRESH_TOKEN_COOKIE.MAX_AGE_MS,
+            maxAge: Math.floor(REFRESH_TOKEN_COOKIE.MAX_AGE_MS / 1000),
         });
 
         return {
@@ -53,15 +53,15 @@ export class AuthController {
         responseType: AuthResponseDto,
         errors: [AUTH_EXCEPTION.InvalidCredentialsException.code],
     })
-    async login(@Body() body: LoginDto, @Res({ passthrough: true }) response: Response) {
+    async login(@Body() body: LoginDto, @Res({ passthrough: true }) response: FastifyReply) {
         const authResult = await this.authService.login(body);
 
-        response.cookie(REFRESH_TOKEN_COOKIE.NAME, authResult.refreshToken, {
+        response.setCookie(REFRESH_TOKEN_COOKIE.NAME, authResult.refreshToken, {
             httpOnly: REFRESH_TOKEN_COOKIE.HTTP_ONLY,
             sameSite: REFRESH_TOKEN_COOKIE.SAME_SITE,
             secure: REFRESH_TOKEN_COOKIE.SECURE,
             path: REFRESH_TOKEN_COOKIE.PATH,
-            maxAge: REFRESH_TOKEN_COOKIE.MAX_AGE_MS,
+            maxAge: Math.floor(REFRESH_TOKEN_COOKIE.MAX_AGE_MS / 1000),
         });
 
         return {
@@ -79,15 +79,15 @@ export class AuthController {
     })
     async refreshToken(
         @Cookie('refresh_token') refreshToken: string,
-        @Res({ passthrough: true }) response: Response
+        @Res({ passthrough: true }) response: FastifyReply
     ) {
         const tokenPair = await this.authService.rotateRefreshToken(refreshToken);
-        response.cookie(REFRESH_TOKEN_COOKIE.NAME, tokenPair.refreshToken, {
+        response.setCookie(REFRESH_TOKEN_COOKIE.NAME, tokenPair.refreshToken, {
             httpOnly: REFRESH_TOKEN_COOKIE.HTTP_ONLY,
             sameSite: REFRESH_TOKEN_COOKIE.SAME_SITE,
             secure: REFRESH_TOKEN_COOKIE.SECURE,
             path: REFRESH_TOKEN_COOKIE.PATH,
-            maxAge: REFRESH_TOKEN_COOKIE.MAX_AGE_MS,
+            maxAge: Math.floor(REFRESH_TOKEN_COOKIE.MAX_AGE_MS / 1000),
         });
 
         return {
@@ -102,7 +102,7 @@ export class AuthController {
         description: '清除浏览器中的刷新令牌 Cookie，通常用于用户登出。',
         responseType: { type: 'string', example: 'ok' },
     })
-    async logout(@Res({ passthrough: true }) response: Response) {
+    async logout(@Res({ passthrough: true }) response: FastifyReply) {
         response.clearCookie(REFRESH_TOKEN_COOKIE.NAME, {
             path: REFRESH_TOKEN_COOKIE.PATH,
         });

@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { FastifyRequest } from 'fastify';
 import { REFRESH_TOKEN_COOKIE } from '@/constants/index.js';
 
 /**
@@ -15,12 +15,12 @@ export function extractToken(payload: string) {
 /**
  * 从请求头中提取 Access Token。
  *
- * @param request Express 请求对象。
+ * @param request Fastify 请求对象。
  * @returns 提取到的 Bearer Token；若不存在则返回 null。
  * @example
  * const token = authService.extractAccessTokenFromRequest(request);
  */
-export function extractAccessTokenFromRequest(request: Request): string | null {
+export function extractAccessTokenFromRequest(request: FastifyRequest): string | null {
     const authHeader = request.headers?.authorization;
     if (!authHeader) return null;
     return extractToken(authHeader);
@@ -29,11 +29,11 @@ export function extractAccessTokenFromRequest(request: Request): string | null {
 /**
  * 从请求 Cookie 中提取 Refresh Token。
  *
- * @param request Express 请求对象。
+ * @param request Fastify 请求对象。
  * @returns 提取到的 Refresh Token；若不存在则返回 null。
  * @example
  * const refreshToken = authService.extractRefreshTokenFromRequest(request);
  */
-export function extractRefreshTokenFromRequest(request: Request): string | null {
+export function extractRefreshTokenFromRequest(request: FastifyRequest): string | null {
     return request.cookies?.[REFRESH_TOKEN_COOKIE.NAME] || null;
 }
