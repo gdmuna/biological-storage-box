@@ -2,12 +2,12 @@ import { AppModule } from '@/app.module.js';
 import { DatabaseService } from '@/infra/database/database.service.js';
 
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import fastifyCookie from '@fastify/cookie';
 import request from 'supertest';
-import cookieParser from 'cookie-parser';
 
 describe('Node (BOX) + Reagent (e2e)', () => {
-    let app: INestApplication;
+    let app: NestFastifyApplication;
     let db: DatabaseService;
     let accessToken: string;
     let orgId: string;
@@ -19,9 +19,10 @@ describe('Node (BOX) + Reagent (e2e)', () => {
             imports: [AppModule],
         }).compile();
 
-        app = moduleRef.createNestApplication();
-        app.use(cookieParser());
+        app = moduleRef.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
+        await app.register(fastifyCookie);
         await app.init();
+        await app.getHttpAdapter().getInstance().ready();
 
         db = app.get(DatabaseService);
 

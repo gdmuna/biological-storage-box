@@ -1,12 +1,12 @@
 import { AppModule } from '@/app.module.js';
 
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import fastifyCookie from '@fastify/cookie';
 import request from 'supertest';
-import cookieParser from 'cookie-parser';
 
 describe('Org (e2e)', () => {
-    let app: INestApplication;
+    let app: NestFastifyApplication;
     let accessToken: string;
     let createdOrgId: string;
 
@@ -15,9 +15,10 @@ describe('Org (e2e)', () => {
             imports: [AppModule],
         }).compile();
 
-        app = moduleRef.createNestApplication();
-        app.use(cookieParser());
+        app = moduleRef.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
+        await app.register(fastifyCookie);
         await app.init();
+        await app.getHttpAdapter().getInstance().ready();
 
         // register + login to get access token
         const suffix = Date.now().toString();

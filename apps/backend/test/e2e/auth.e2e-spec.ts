@@ -3,9 +3,9 @@ import { AppModule } from '@/app.module.js';
 import { REFRESH_TOKEN_COOKIE } from '@/constants/index.js';
 
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import fastifyCookie from '@fastify/cookie';
 import request from 'supertest';
-import cookieParser from 'cookie-parser';
 
 const getCookieByName = (setCookieHeaders: string | string[] | undefined, name: string): string => {
     if (!setCookieHeaders) return '';
@@ -18,16 +18,17 @@ const getCookieByName = (setCookieHeaders: string | string[] | undefined, name: 
 };
 
 describe('Auth (e2e)', () => {
-    let app: INestApplication;
+    let app: NestFastifyApplication;
 
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
             imports: [AppModule],
         }).compile();
 
-        app = moduleRef.createNestApplication();
-        app.use(cookieParser());
+        app = moduleRef.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
+        await app.register(fastifyCookie);
         await app.init();
+        await app.getHttpAdapter().getInstance().ready();
     });
 
     afterAll(async () => {
