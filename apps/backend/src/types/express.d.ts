@@ -1,14 +1,19 @@
-/// <reference types="multer" />
-
 import { AccessTokenClaim } from '@/modules/auth/services/index.ts';
 
-declare global {
-    namespace Express {
-        interface Request {
-            id?: string;
-            version?: string;
-            jwtClaim?: AccessTokenClaim;
-        }
+// NestJS Fastify middleware receives raw Node.js objects (via middie).
+// Augment IncomingMessage so that properties set in middleware are properly typed.
+declare module 'http' {
+    interface IncomingMessage {
+        /** Copied from FastifyRequest.id by middie before middleware runs */
+        id?: string | number;
+        /** Set by RequestPreprocessingMiddleware; read via request.raw.version in interceptors */
+        version?: string;
+    }
+}
+
+declare module 'fastify' {
+    interface FastifyRequest {
+        jwtClaim?: AccessTokenClaim;
     }
 }
 
