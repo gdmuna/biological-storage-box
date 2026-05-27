@@ -138,8 +138,8 @@ importers:
         specifier: ^5.4.0
         version: 5.4.0(@nestjs/common@11.1.24(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/swagger@11.4.4(@fastify/static@9.1.3)(@nestjs/common@11.1.24(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.24(@nestjs/common@11.1.24(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2))(rxjs@7.8.2)(zod@4.4.3)
       nodemailer:
-        specifier: ^8.0.8
-        version: 8.0.8
+        specifier: ^8.0.9
+        version: 8.0.9
       pg:
         specifier: ^8.21.0
         version: 8.21.0
@@ -231,12 +231,9 @@ importers:
       '@mdit/plugin-tasklist':
         specifier: ^0.23.2
         version: 0.23.2
-      markdown-it-mathjax3:
-        specifier: ^5.2.0
-        version: 5.2.0
       vitepress:
         specifier: ^1.6.4
-        version: 1.6.4(@algolia/client-search@5.52.1)(@types/node@25.9.1)(lightningcss@1.32.0)(markdown-it-mathjax3@5.2.0)(postcss@8.5.15)(search-insights@2.17.3)(stylus@0.57.0)(terser@5.47.1)(typescript@6.0.3)
+        version: 1.6.4(@algolia/client-search@5.52.1)(@types/node@25.9.1)(lightningcss@1.32.0)(postcss@8.5.15)(search-insights@2.17.3)(stylus@0.57.0)(terser@5.47.1)(typescript@6.0.3)
       vitepress-mermaid-renderer:
         specifier: ^1.1.24
         version: 1.1.24(mermaid@11.14.0)(vue@3.5.34(typescript@6.0.3))
@@ -292,7 +289,7 @@ importers:
         specifier: ^3.0.4
         version: 3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3))
       reka-ui:
-        specifier: ^2.9.8
+        specifier: ^2.9.7
         version: 2.9.8(vue@3.5.34(typescript@6.0.3))
       shadcn-vue:
         specifier: ^2.7.3
@@ -340,9 +337,6 @@ importers:
       '@vitejs/plugin-vue':
         specifier: ^6.0.7
         version: 6.0.7(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(stylus@0.57.0)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(vue@3.5.34(typescript@6.0.3))
-      '@vitest/coverage-v8':
-        specifier: ^4.1.7
-        version: 4.1.7(vitest@4.1.7)
       '@vue/test-utils':
         specifier: ^2.4.10
         version: 2.4.10(@vue/compiler-dom@3.5.34)(@vue/server-renderer@3.5.34(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3))
@@ -359,13 +353,13 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
       vite:
-        specifier: ^8.0.14
+        specifier: ^8.0.13
         version: 8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(stylus@0.57.0)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.7
+        specifier: ^4.1.6
         version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(stylus@0.57.0)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))
       vue-tsc:
-        specifier: ^3.3.2
+        specifier: ^3.3.1
         version: 3.3.2(typescript@6.0.3)
 
 packages:
@@ -2296,62 +2290,6 @@ packages:
   '@scarf/scarf@1.4.0':
     resolution: {integrity: sha512-xxeapPiUXdZAE3che6f3xogoJPeZgig6omHEy1rIY5WVsB3H2BHNnZH+gHG6x91SCWyQCzWGsuL2Hh3ClO5/qQ==}
 
-  '@se-oss/deasync-darwin-arm64@1.0.1':
-    resolution: {integrity: sha512-0YWmIDEGQfW3GGopmZHhfA6mamsG0HFKZhmBzHVyFiMKkJts8kpQwGbGrWlK8eOAoPCihOsG6tCotYR3p7HZaQ==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [darwin]
-
-  '@se-oss/deasync-darwin-x64@1.0.1':
-    resolution: {integrity: sha512-r3FRTLIXqGqOb1DjTLW3YhO/Dd1vA2qRLP0Ym3Wmk3yMv6c/nm15zg6UVoXbgBu8cjbvcsI/OfbHPdErmjMWsw==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [darwin]
-
-  '@se-oss/deasync-linux-arm64-gnu@1.0.1':
-    resolution: {integrity: sha512-657uRew7fZAx663Li03ilLV2lN09Dqb/NxawlDu8kKmboK1BLitHJRS+taiT5oFZqyIDrU45tlQKfCrW0p0sYA==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [linux]
-    libc: [glibc]
-
-  '@se-oss/deasync-linux-arm64-musl@1.0.1':
-    resolution: {integrity: sha512-IE3fIQPIJtko4lx9sRam+Zz0P4xbpAPJgDCHaz6k9cP1yUvVI179B4IZRnFx0GyjyQpm0KhHoIGHJc4KUmA81Q==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [linux]
-    libc: [musl]
-
-  '@se-oss/deasync-linux-x64-gnu@1.0.1':
-    resolution: {integrity: sha512-XQl7etZESGIjIraCyxfAey8ZTIJUB4dUFU3rPR/xLVn9bKpZGlJLIms0z3hoHX9mipO+Cqo53vK4IVm6A7U/ww==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [linux]
-    libc: [glibc]
-
-  '@se-oss/deasync-linux-x64-musl@1.0.1':
-    resolution: {integrity: sha512-vWgFAZlqImqMV6jhCWV7C9wcCS1eb1ajhlKduBRPfyUxxkoObe+EqTG2BKJAuafxp3/KS1aUsIMJma9mhwFvow==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [linux]
-    libc: [musl]
-
-  '@se-oss/deasync-win32-arm64-msvc@1.0.1':
-    resolution: {integrity: sha512-yk7lEE7Zd8GX7o6CuUbg3HnnmUhBx4tgfn5ff3eoq05CgBO6Z3ZtL4l+utAe1cxcFaXPhyvcgnHYyA4OF544tg==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [win32]
-
-  '@se-oss/deasync-win32-x64-msvc@1.0.1':
-    resolution: {integrity: sha512-ixizmuLGRPGyAesWUNWVzVOsvuunNb/qMqU8SmjfLR/vVgzdQEkSHFf+fkX9GXPN6FDv+DAz5uskTzhjUyCXFA==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [win32]
-
-  '@se-oss/deasync@1.0.1':
-    resolution: {integrity: sha512-Ha7P/xCNxOuH72BNdLRWs4TT8rsMMrERnHtfKWBeTWu+UFW9OBTrRgfZJOlbAAQFR0l4Q30cpAn8CuR7PXWcPg==}
-    engines: {node: '>= 10'}
-
   '@shikijs/core@2.1.0':
     resolution: {integrity: sha512-v795KDmvs+4oV0XD05YLzfDMe9ISBgNjtFxP4PAEv5DqyeghO1/TwDqs9ca5/E6fuO95IcAcWqR6cCX9TnqLZA==}
 
@@ -3664,8 +3602,8 @@ packages:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
 
-  commander@7.0.0:
-    resolution: {integrity: sha512-ovx/7NkTrnPuIV8sqk/GjUIIM1+iUQeqA3ye2VNpq9sVoiZsooObWlQy+OPWGI17GDaEoybuAGJm6U8yC077BA==}
+  commander@7.2.0:
+    resolution: {integrity: sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==}
     engines: {node: '>= 10'}
 
   commander@8.3.0:
@@ -3959,8 +3897,8 @@ packages:
   dateformat@4.6.3:
     resolution: {integrity: sha512-2P0p0pFGzHS5EMnhdxQi7aJN+iMheud0UhG4dlE1DLAlvL8JHjJJTX/CSm4JXwV0Ka5nGk3zC5mcb5bUQUxxMA==}
 
-  dayjs@1.11.20:
-    resolution: {integrity: sha512-YbwwqR/uYpeoP4pu043q+LTDLFBLApUP6VxRihdfNTqu4ubqMlGDLd6ErXhEgsyvY0K6nCs7nggYumAN+9uEuQ==}
+  dayjs@1.11.21:
+    resolution: {integrity: sha512-98IT+HOahAisibz/yjKbzuOBwYcjJ7BCLPzARyHiyEBmRz4fatF+KPJszEHXsGYjUG234aH/cOjW1wwTbKUZlA==}
 
   debounce-fn@4.0.0:
     resolution: {integrity: sha512-8pYCQiL9Xdcg0UPSD3d+0KMlOjp+KGU5EPwYddgzQ7DATsg4fuUDjQtsYLmWjnk2obnNHgV3vE2Y4jejSOJVBQ==}
@@ -4085,8 +4023,8 @@ packages:
     resolution: {integrity: sha512-pr8ToPIuwBonzUy42STpc5Cf0m69zsQ7gtCLLvKrTbhVRnRohT2pLiJmGp3PAh16nDVWpYpcRpdjuk1vFmnQUg==}
     engines: {node: '>= 4'}
 
-  dompurify@3.4.5:
-    resolution: {integrity: sha512-OrwIBKsdNSVEeubdJ1HBv/wNENRM9ytAVCv7YXt//A3vPdVMNuACRqK9mXCGCBW2ln7BT/A4X0jXHo2Gu89miA==}
+  dompurify@3.4.6:
+    resolution: {integrity: sha512-+7gzEI8trIIQkVCvQ3ucGtNfH3nOmDgVTzc62rAAOlMxLth78pwpPoZCPc7CyRzAQF89MqcfPdEWkDwnjgqktg==}
 
   domutils@3.0.1:
     resolution: {integrity: sha512-z08c1l761iKhDFtfXO04C7kTdPBLi41zwOZl00WS8b5eiaebNpY00HKbztwBq+e3vyqWNwWF3mP9YLUeqIrF+Q==}
@@ -4719,8 +4657,8 @@ packages:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
     engines: {node: '>=0.10.0'}
 
-  iconv-lite@0.6.0:
-    resolution: {integrity: sha512-43ZpGYZ9QtuutX5l6WC1DSO8ane9N+Ct5qPLF2OV7vM9abM69gnAbVkh66ibaZd3aOGkoP1ZmringlKhLBkw2Q==}
+  iconv-lite@0.6.3:
+    resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
     engines: {node: '>=0.10.0'}
 
   iconv-lite@0.7.2:
@@ -5247,20 +5185,14 @@ packages:
   mark.js@8.11.1:
     resolution: {integrity: sha512-1I+1qpDt4idfgLQG+BNWmrqku+7/2bi5nLf4YwF8y8zXvmfiTBY3PV3ZibfrjBueCByROpuBjLLFCajqkgYoLQ==}
 
-  markdown-it-mathjax3@5.2.0:
-    resolution: {integrity: sha512-R+XAy5/7vSGuhG9Z0/cJm6zKxOzStcScfSKVwoarh4nBra+v1KClvbALr/xFTEe9iQhwfQM4SJnO68LXL+btMA==}
-
-  marked@16.3.0:
-    resolution: {integrity: sha512-K3UxuKu6l6bmA5FUwYho8CfJBlsUWAooKtdGgMcERSpF7gcBUrCGsLH7wDaaNOzwq18JzSUDyoEb/YsrqMac3w==}
+  marked@16.4.2:
+    resolution: {integrity: sha512-TI3V8YYWvkVf3KJe1dRkpnjs68JUPyEa5vjKrp1XEEJUAOaQc+Qj+L1qWbPd0SJuAdQkFU0h73sXXqwDYxsiDA==}
     engines: {node: '>= 20'}
     hasBin: true
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
-
-  mathxyjax3@0.8.3:
-    resolution: {integrity: sha512-eXjFaiyQsTdVOeTFoFaFJ/r1FITpB1f9c5MW4FETfcoVV/+xa5SD9pS05AwugzL/gNuDtWXrTOSmoD2e0Du+UA==}
 
   mdast-util-to-hast@13.2.1:
     resolution: {integrity: sha512-cctsq2wp5vTsLIcaymblUriiTcZd0CwWtCbLvrOzYCDZoWyMNV8sZ7krj09FSnsiJi3WVsHLM4k6Dq/yaPyCXA==}
@@ -5462,8 +5394,8 @@ packages:
   node-releases@2.0.44:
     resolution: {integrity: sha512-5WUyunoPMsvvEhS8AxHtRzP+oA8UCkJ7YRxatWKjngndhDGLiqEVAQKWjFAiAiuL8zMRGzGSJxFnLetoa43qGQ==}
 
-  nodemailer@8.0.8:
-    resolution: {integrity: sha512-p+XsnzXGdtIHXUu2ugxdfG+eX2nehsGhMjW9h0CWj1BhE30hrFz0kh0yIM0/VjUgVsRrDj+80ZO+I1nSkGE4tA==}
+  nodemailer@8.0.9:
+    resolution: {integrity: sha512-5ofa7BUN8+C+Hckh5V2GjeeOGRQBx0CJQA6KxrvuZfC8iU4/q7sLn8XrtEEhJkjV6HdyIiQs7Bba6bTao8JhkA==}
     engines: {node: '>=6.0.0'}
 
   nopt@7.2.1:
@@ -6561,10 +6493,6 @@ packages:
   type-fest@0.21.3:
     resolution: {integrity: sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==}
     engines: {node: '>=10'}
-
-  type-fest@4.37.0:
-    resolution: {integrity: sha512-S/5/0kFftkq27FPNye0XM1e2NsnoD/3FS+pBmbjmmtLT6I+i344KoOf7pvXreaFsDamWeaJX55nczA1m5PsBDg==}
-    engines: {node: '>=16'}
 
   type-fest@4.6.0:
     resolution: {integrity: sha512-rLjWJzQFOq4xw7MgJrCZ6T1jIOvvYElXT12r+y0CC6u67hegDHaxcPqb2fZHOGlqxugGQPNB1EnTezjBetkwkw==}
@@ -8445,7 +8373,7 @@ snapshots:
   '@isaacs/cliui@8.0.2':
     dependencies:
       string-width: 5.1.2
-      string-width-cjs: string-width@4.2.0
+      string-width-cjs: string-width@4.2.3
       strip-ansi: 7.2.0
       strip-ansi-cjs: strip-ansi@6.0.1
       wrap-ansi: 8.1.0
@@ -9032,43 +8960,6 @@ snapshots:
   '@scalar/validation@0.6.0': {}
 
   '@scarf/scarf@1.4.0': {}
-
-  '@se-oss/deasync-darwin-arm64@1.0.1':
-    optional: true
-
-  '@se-oss/deasync-darwin-x64@1.0.1':
-    optional: true
-
-  '@se-oss/deasync-linux-arm64-gnu@1.0.1':
-    optional: true
-
-  '@se-oss/deasync-linux-arm64-musl@1.0.1':
-    optional: true
-
-  '@se-oss/deasync-linux-x64-gnu@1.0.1':
-    optional: true
-
-  '@se-oss/deasync-linux-x64-musl@1.0.1':
-    optional: true
-
-  '@se-oss/deasync-win32-arm64-msvc@1.0.1':
-    optional: true
-
-  '@se-oss/deasync-win32-x64-msvc@1.0.1':
-    optional: true
-
-  '@se-oss/deasync@1.0.1':
-    dependencies:
-      type-fest: 4.37.0
-    optionalDependencies:
-      '@se-oss/deasync-darwin-arm64': 1.0.1
-      '@se-oss/deasync-darwin-x64': 1.0.1
-      '@se-oss/deasync-linux-arm64-gnu': 1.0.1
-      '@se-oss/deasync-linux-arm64-musl': 1.0.1
-      '@se-oss/deasync-linux-x64-gnu': 1.0.1
-      '@se-oss/deasync-linux-x64-musl': 1.0.1
-      '@se-oss/deasync-win32-arm64-msvc': 1.0.1
-      '@se-oss/deasync-win32-x64-msvc': 1.0.1
 
   '@shikijs/core@2.1.0':
     dependencies:
@@ -10522,7 +10413,7 @@ snapshots:
 
   commander@4.1.1: {}
 
-  commander@7.0.0: {}
+  commander@7.2.0: {}
 
   commander@8.3.0: {}
 
@@ -10710,8 +10601,8 @@ snapshots:
 
   d3-dsv@3.0.1:
     dependencies:
-      commander: 7.0.0
-      iconv-lite: 0.6.0
+      commander: 7.2.0
+      iconv-lite: 0.6.3
       rw: 1.3.3
 
   d3-ease@3.0.1: {}
@@ -10850,7 +10741,7 @@ snapshots:
 
   dateformat@4.6.3: {}
 
-  dayjs@1.11.20: {}
+  dayjs@1.11.21: {}
 
   debounce-fn@4.0.0:
     dependencies:
@@ -10938,7 +10829,7 @@ snapshots:
     dependencies:
       domelementtype: 2.3.0
 
-  dompurify@3.4.5:
+  dompurify@3.4.6:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
@@ -11691,7 +11582,7 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
-  iconv-lite@0.6.0:
+  iconv-lite@0.6.3:
     dependencies:
       safer-buffer: 2.1.2
 
@@ -12166,16 +12057,9 @@ snapshots:
 
   mark.js@8.11.1: {}
 
-  markdown-it-mathjax3@5.2.0:
-    dependencies:
-      '@se-oss/deasync': 1.0.1
-      mathxyjax3: 0.8.3
-
-  marked@16.3.0: {}
+  marked@16.4.2: {}
 
   math-intrinsics@1.1.0: {}
-
-  mathxyjax3@0.8.3: {}
 
   mdast-util-to-hast@13.2.1:
     dependencies:
@@ -12216,12 +12100,12 @@ snapshots:
       d3: 7.9.0
       d3-sankey: 0.12.3
       dagre-d3-es: 7.0.14
-      dayjs: 1.11.20
-      dompurify: 3.4.5
+      dayjs: 1.11.21
+      dompurify: 3.4.6
       katex: 0.16.47
       khroma: 2.1.0
       lodash-es: 4.18.1
-      marked: 16.3.0
+      marked: 16.4.2
       roughjs: 4.6.6
       stylis: 4.4.0
       ts-dedent: 2.2.0
@@ -12369,7 +12253,7 @@ snapshots:
 
   node-releases@2.0.44: {}
 
-  nodemailer@8.0.8: {}
+  nodemailer@8.0.9: {}
 
   nopt@7.2.1:
     dependencies:
@@ -13548,8 +13432,6 @@ snapshots:
 
   type-fest@0.21.3: {}
 
-  type-fest@4.37.0: {}
-
   type-fest@4.6.0: {}
 
   type-fest@5.6.0:
@@ -13696,7 +13578,7 @@ snapshots:
       mermaid: 11.14.0
       vue: 3.5.34(typescript@6.0.3)
 
-  vitepress@1.6.4(@algolia/client-search@5.52.1)(@types/node@25.9.1)(lightningcss@1.32.0)(markdown-it-mathjax3@5.2.0)(postcss@8.5.15)(search-insights@2.17.3)(stylus@0.57.0)(terser@5.47.1)(typescript@6.0.3):
+  vitepress@1.6.4(@algolia/client-search@5.52.1)(@types/node@25.9.1)(lightningcss@1.32.0)(postcss@8.5.15)(search-insights@2.17.3)(stylus@0.57.0)(terser@5.47.1)(typescript@6.0.3):
     dependencies:
       '@docsearch/css': 3.8.2
       '@docsearch/js': 3.8.2(@algolia/client-search@5.52.1)(search-insights@2.17.3)
@@ -13717,7 +13599,6 @@ snapshots:
       vite: 5.4.14(@types/node@25.9.1)(lightningcss@1.32.0)(stylus@0.57.0)(terser@5.47.1)
       vue: 3.5.34(typescript@6.0.3)
     optionalDependencies:
-      markdown-it-mathjax3: 5.2.0
       postcss: 8.5.15
     transitivePeerDependencies:
       - '@algolia/client-search'
@@ -13961,8 +13842,8 @@ snapshots:
   wrap-ansi@7.0.0:
     dependencies:
       ansi-styles: 4.3.0
-      string-width: 4.1.0
-      strip-ansi: 6.0.0
+      string-width: 4.2.3
+      strip-ansi: 6.0.1
 
   wrap-ansi@8.1.0:
     dependencies:
