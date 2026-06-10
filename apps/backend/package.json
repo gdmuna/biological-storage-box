@@ -78,7 +78,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@nestjs/cli": "^11.0.21",
+    "@nestjs/cli": "^11.0.23",
     "@nestjs/testing": "^11.1.24",
     "@types/compression": "^1.8.1",
     "@types/cookie-parser": "^1.4.10",
