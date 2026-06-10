@@ -57,7 +57,7 @@
     "@types/dagre": "^0.7.54",
     "@types/node": "^25.9.1",
     "@vitejs/plugin-vue": "^6.0.7",
-    "@vue/test-utils": "^2.4.10",
+    "@vue/test-utils": "^2.4.11",
     "autoprefixer": "^10.5.0",
     "jsdom": "^29.1.1",
     "tailwindcss": "^4.3.0",
