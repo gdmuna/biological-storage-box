@@ -55,7 +55,7 @@
     "@tailwindcss/vite": "^4.3.0",
     "@tauri-apps/cli": "^2.11.2",
     "@types/dagre": "^0.7.54",
-    "@types/node": "^25.9.1",
+    "@types/node": "^25.9.3",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vue/test-utils": "^2.4.10",
     "autoprefixer": "^10.5.0",
