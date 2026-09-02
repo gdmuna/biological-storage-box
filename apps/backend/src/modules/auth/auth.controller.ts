@@ -54,6 +54,7 @@ export class AuthController {
         errors: [AUTH_EXCEPTION.InvalidCredentialsException.code],
     })
     async login(@Body() body: LoginDto, @Res({ passthrough: true }) response: FastifyReply) {
+        console.log('Login request body:', body);
         const authResult = await this.authService.login(body);
 
         response.setCookie(REFRESH_TOKEN_COOKIE.NAME, authResult.refreshToken, {
@@ -63,6 +64,8 @@ export class AuthController {
             path: REFRESH_TOKEN_COOKIE.PATH,
             maxAge: Math.floor(REFRESH_TOKEN_COOKIE.MAX_AGE_MS / 1000),
         });
+
+        console.log('Login successful, access token:', authResult.accessToken);
 
         return {
             accessToken: authResult.accessToken,

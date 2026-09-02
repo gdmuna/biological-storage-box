@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
                 return;
             }
             setAccessToken(newToken);
-            user.value = await getMyInfo().send();
+            user.value = await getMyInfo();
         } catch {
             user.value = null;
             setAccessToken(null);
@@ -35,28 +35,28 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     async function doLogin(form: LoginForm) {
-        const result = await login(form).send();
+        const result = await login(form);
         setAccessToken(result.accessToken);
-        user.value = await getMyInfo().send(true);
+        user.value = await getMyInfo();
         initialized.value = true;
     }
 
     async function doRegister(form: RegisterForm) {
-        const result = await register(form).send();
+        const result = await register(form);
         setAccessToken(result.accessToken);
-        user.value = await getMyInfo().send(true);
+        user.value = await getMyInfo();
         initialized.value = true;
     }
 
     async function doEmailLogin(payload: { email: string; code: string }) {
-        const result = await emailLogin(payload).send();
+        const result = await emailLogin(payload);
         setAccessToken(result.accessToken);
-        user.value = await getMyInfo().send(true);
+        user.value = await getMyInfo();
         initialized.value = true;
     }
 
     async function doLogout() {
-        await logout().send();
+        await logout();
         setAccessToken(null);
         user.value = null;
     }

@@ -2,19 +2,20 @@ import { setActivePinia, createPinia } from 'pinia';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useAuthStore } from '@/stores/auth';
 
-const mockUser = {
-    id: 'user-1',
-    username: 'testuser',
-    email: 'test@example.com',
-    nickname: null,
-    realname: null,
-    createdAt: '2024-01-01T00:00:00.000Z',
-};
-
-const mockAuthResponse = {
-    accessToken: 'mock-access-token',
-    user: { id: 'user-1', username: 'testuser', email: 'test@example.com' },
-};
+const { mockUser, mockAuthResponse } = vi.hoisted(() => ({
+    mockUser: {
+        id: 'user-1',
+        username: 'testuser',
+        email: 'test@example.com',
+        nickname: null,
+        realname: null,
+        createdAt: '2024-01-01T00:00:00.000Z',
+    },
+    mockAuthResponse: {
+        accessToken: 'mock-access-token',
+        user: { id: 'user-1', username: 'testuser', email: 'test@example.com' },
+    },
+}));
 
 // Mock @/api/token so setAccessToken/callRefreshToken are controllable
 vi.mock('@/api/token', () => ({
@@ -23,10 +24,10 @@ vi.mock('@/api/token', () => ({
 }));
 
 vi.mock('@/api/modules/auth', () => ({
-    getMyInfo: vi.fn(() => ({ send: vi.fn().mockResolvedValue(mockUser) })),
-    login: vi.fn(() => ({ send: vi.fn().mockResolvedValue(mockAuthResponse) })),
-    logout: vi.fn(() => ({ send: vi.fn().mockResolvedValue(undefined) })),
-    register: vi.fn(() => ({ send: vi.fn().mockResolvedValue(mockAuthResponse) })),
+    getMyInfo: vi.fn().mockResolvedValue(mockUser),
+    login: vi.fn().mockResolvedValue(mockAuthResponse),
+    logout: vi.fn().mockResolvedValue(undefined),
+    register: vi.fn().mockResolvedValue(mockAuthResponse),
 }));
 
 describe('auth store', () => {
@@ -71,9 +72,7 @@ describe('auth store', () => {
 
     it('fetchMe sets initialized even when getMyInfo throws', async () => {
         const { getMyInfo } = await import('@/api/modules/auth');
-        vi.mocked(getMyInfo).mockReturnValueOnce({
-            send: vi.fn().mockRejectedValue(new Error('Server error')),
-        } as any);
+        vi.mocked(getMyInfo).mockRejectedValueOnce(new Error('Server error'));
 
         const auth = useAuthStore();
         await auth.fetchMe();

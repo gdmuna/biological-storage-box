@@ -30,7 +30,7 @@ async function handleSendCode() {
 
     sending.value = true;
     try {
-        await sendCodeApi(parsed.data.email).send();
+        await sendCodeApi(parsed.data.email);
         info.value = '验证码已发送，请查收邮箱';
     } catch (e: unknown) {
         error.value = e instanceof Error ? e.message : '发送失败';

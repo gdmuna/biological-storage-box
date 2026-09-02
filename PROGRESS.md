@@ -25,7 +25,7 @@
 ────  ──────────────────────────────────────────────────────  ──────
  1    pnpm run format:check                                   根工作区
  2    pnpm --filter @talos-ark/backend lint                          后端
- 3    pnpm --filter @talos-ark/frontend eslint                       前端
+ 3    pnpm --filter @talos-ark/frontend lint                        前端
  4    pnpm --filter @talos-ark/backend test                          后端（单元 + E2E，Vitest）
  5    pnpm --filter @talos-ark/frontend test                         前端（Vitest 单元）
  6    pnpm --filter @talos-ark/frontend test:e2e                     前端（Playwright E2E）
@@ -89,9 +89,9 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 | `test/e2e/box-create.spec.ts` | 储存盒创建 | ✅ 已有 |
 | `test/e2e/room.spec.ts` | 库室列表与详情 | ❌ 待创建 |
 | `test/e2e/reagent.spec.ts` | 试剂增删改查 | ❌ 待创建 |
-| `test/e2e/reagent-type.spec.ts` | 试剂类型管理 | ❌ 待创建 |
+| `test/e2e/reagent-type.spec.ts` | 试剂类型管理 | ✅ 已有 |
 | `test/e2e/share.spec.ts` | 资源共享管理 | ❌ 待创建 |
-| `test/e2e/logs.spec.ts` | 操作日志查看 | ❌ 待创建 |
+| `test/e2e/logs.spec.ts` | 操作日志查看 | ✅ 已有 |
 | `test/e2e/reagent-request.spec.ts` | 出库申请流程 | ❌ 待创建 |
 | `test/e2e/notifications.spec.ts` | 通知中心 | ❌ 待创建 |
 
@@ -108,11 +108,11 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 | 认证（Auth） | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ | DoD 未正式执行过 |
 | 组织（Org） | ✅ | ✅ | ✅ | ✅ | ⚠️ | ⚠️ | |
 | 节点树（Node） | ✅ | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | |
-| 试剂（Reagent） | ✅ | ✅ | ⚠️ | ⚠️ | ❌ | ❌ | P0 字段扩展完成，缺 E2E |
-| 试剂类型（ReagentType） | ✅ | ✅ 独立页面 | ✅ | ⚠️ | ❌ | ❌ | 已创建独立管理页 |
-| 操作日志（Logs） | ✅ | ✅ | ✅ | — | ❌ | ❌ | 已添加日志查看页 |
-| 资源共享（Share） | ✅ | ❌ | ❌ | — | ❌ | ❌ | 后端完成，前端无页面 |
-| 节点图（NodeCanvas） | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | |
+| 试剂（Reagent） | ✅ | ✅ | ✅ | ⚠️ | ❌ | ❌ | P0 字段扩展完成后端 E2E 已补 |
+| 试剂类型（ReagentType） | ✅ | ✅ 独立页面 | ✅ | ⚠️ | ✅ | ❌ | 已创建独立管理页 |
+| 操作日志（Logs） | ✅ | ✅ | ✅ | — | ✅ | ❌ | 已添加日志查看页 |
+| 资源共享（Share） | ✅ | ❌ | ⚠️ | — | ❌ | ❌ | 后端已含 E2E，缺单元测试；前端无页面 |
+| 节点图（NodeCanvas） | ✅ | ✅ 内嵌于Dashboard+Node页 | ⚠️ | ⚠️ | ⚠️ | ⚠️ | 非独立模块，为 Node 的可视化特性 |
 | 仪表盘（Dashboard） | — | ✅ | — | ⚠️ | ✅ | ⚠️ | |
 
 ### ROADMAP 新增模块
@@ -122,16 +122,16 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 | **P0** Reagent 字段扩展 | ✅ | ✅ | ⚠️ | ❌ | ❌ | ❌ |
 | **P1** 节点图片信息存储 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **P2** 页面排版优化 | — | ❌ | — | ❌ | ❌ | ❌ |
-| **P2** 操作日志查看器 | ✅（已有） | ✅ | ✅（已有） | ❌ | ❌ | ❌ |
-| **P2** 试剂类型独立管理 | ✅（已有） | ✅ | ✅（已有） | ❌ | ❌ | ❌ |
+| **P2** 操作日志查看器 | ✅（已有） | ✅ | ✅（已有） | ❌ | ✅ | ❌ |
+| **P2** 试剂类型独立管理 | ✅（已有） | ✅ | ✅（已有） | ❌ | ✅ | ❌ |
 | **P3** 全局搜索 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **P3** 数据导出 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **P3** 危险品合规 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **P3** 批量操作 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **P3** 出库申请（ReagentRequest） | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **P3** 通知 / 预警（Alert） | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **P3** 采购申请（Procurement） | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **P3** 资源共享管理页 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **P1** 出库申请（ReagentRequest） | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **P1** 通知 / 预警（Alert） | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **P1** 采购申请（Procurement） | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **P2** 资源共享管理页 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 
 ---
@@ -150,23 +150,23 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 
 | 文件 | 操作 |
 |------|------|
-| `apps/backend/prisma/schema.prisma` | 新增字段：`quantity`、`unit`、`expiryDate`、`manufactureDate`、`batchNo`、`catalogNo`、`manufacturer`、`casNumber`、`storageCondition`（替换/重构 `environment`）、`hazardLevel`（需新增 Enum）、`minStockThreshold` |
-| 新建 Prisma migration | `pnpm --filter @talos-ark/backend db:migrate` |
-| `apps/backend/src/modules/reagent/*.dto.ts` | 更新 CreateDto / UpdateDto / ResponseDto |
-| `apps/backend/src/modules/reagent/reagent.service.ts` | 更新 create/update 逻辑 |
+| `apps/backend/prisma/schema.prisma` | ✅ 已新增字段：`quantity`、`unit`、`expiryDate`、`manufactureDate`、`batchNo`、`catalogNo`、`manufacturer`、`casNumber`、`storageCondition`、`hazardLevel`、`minStockThreshold` |
+| 新建 Prisma migration | ✅ 已执行 `pnpm --filter @talos-ark/backend db:migrate` |
+| `apps/backend/src/modules/reagent/reagent.dto.ts` | ✅ 已更新 CreateDto / UpdateDto / ResponseDto |
+| `apps/backend/src/modules/reagent/reagent.service.ts` | ✅ 已更新 create/update 逻辑 |
 
 #### 前端变更范围
 
 | 文件 | 操作 |
 |------|------|
-| `apps/frontend/src/schemas/reagent.ts` | 更新 Zod Schema，新增所有字段的类型定义 |
-| `apps/frontend/src/api/modules/reagent.ts` | 更新请求/响应类型 |
-| `apps/frontend/src/pages/reagent/ReagentPage.vue` | 表单新增字段，列表新增列 |
+| `apps/frontend/src/schemas/reagent.schema.ts` | ✅ 已更新 Zod Schema，包含所有 P0 字段 |
+| `apps/frontend/src/api/modules/reagent.ts` | ✅ 已更新请求/响应类型 |
+| `apps/frontend/src/pages/reagent/ReagentPage.vue` | 表单仍需扩展 P0 字段展示和输入控件 |
 
 #### 测试要求
 
-- **后端**：更新 `test/unit/reagent.service.spec.ts`（验证新字段的 CRUD 逻辑）
-- **后端**：**新建** `test/e2e/reagent.e2e-spec.ts`（覆盖含新字段的完整 CRUD 接口；不得使用固定 mock ID，使用 E2E 中动态创建的数据）
+- **后端**：✅ 已更新 `test/unit/reagent.service.spec.ts`（已含 P0 字段的 CRUD 测试）
+- **后端 E2E**：✅ 已存在 `test/e2e/reagent.e2e-spec.ts`（可扩展 P0 字段的校验断言）
 - **前端**：更新 `test/unit/schemas/` 中的 reagent schema 测试（验证新字段的 Zod 校验规则）
 - **前端**：**新建** `test/e2e/reagent.spec.ts`（通过 Playwright 验证含新字段的创建表单和列表展示）
 
@@ -292,12 +292,12 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 | 文件 | 操作 |
 |------|------|
 | `apps/frontend/src/pages/reagent/` | 在试剂详情中嵌入操作时间轴 |
-| `apps/frontend/src/pages/logs/LogsPage.vue` | **新建** 全局日志页面 |
-| `apps/frontend/src/router/index.ts` | 注册路由（可选） |
+| `apps/frontend/src/pages/logs/LogsPage.vue` | ✅ 已创建 全局日志页面 |
+| `apps/frontend/src/router/index.ts` | ✅ 已注册路由 `/logs` |
 
 #### 测试要求
 
-- **前端 E2E**：**新建** `test/e2e/logs.spec.ts`（验证日志列表加载和筛选功能）
+- **前端 E2E**：更新 `test/e2e/logs.spec.ts`（已存在，覆盖日志列表加载和筛选功能，可按需扩展）
 
 ---
 
@@ -305,20 +305,19 @@ Playwright 配置：`playwright.config.ts`，基础 URL `http://localhost:8081`�
 
 **目标**：将试剂类型从试剂页内的嵌入管理提升为独立页面。
 
-> `src/api/modules/reagent-type.ts` 和 `test/e2e/reagent-type.e2e-spec.ts` 均已存在。
+> `src/api/modules/reagent-type.ts` 和前端页面均已存在。
 
 #### 前端变更范围
 
 | 文件 | 操作 |
 |------|------|
-| `apps/frontend/src/pages/reagent-type/ReagentTypePage.vue` | **新建** |
-| `apps/frontend/src/router/index.ts` | 注册路由 `/reagent-type` |
-| `apps/frontend/src/components/AppSidebar.vue` | 添加导航条目（或在试剂页内以 Tab 呈现） |
+| `apps/frontend/src/pages/reagent-type/ReagentTypePage.vue` | ✅ 已创建 |
+| `apps/frontend/src/router/index.ts` | ✅ 已注册路由 `/reagent-type` |
 | `apps/frontend/src/pages/reagent/ReagentPage.vue` | 移除内嵌的类型管理 UI |
 
 #### 测试要求
 
-- **前端 E2E**：**新建** `test/e2e/reagent-type.spec.ts`（覆盖类型 CRUD 完整 UI 流程）
+- **前端 E2E**：更新 `test/e2e/reagent-type.spec.ts`（已存在，覆盖类型 CRUD 完整 UI 流程，可按需扩展）
 
 ---
 

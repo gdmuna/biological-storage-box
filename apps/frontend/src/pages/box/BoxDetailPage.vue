@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2 } from 'lucide-vue-next';
+import { Trash2 } from '@lucide/vue';
 import { useNodeStore } from '@/stores/node';
 import { uploadFile } from '@/api/modules/file';
 import { createBoxImage, listBoxImages, deleteBoxImage } from '@/api/modules/box-image';
@@ -81,8 +81,8 @@ async function initData(force = false) {
 
     box.value = nodeStore.boxNodes.find((n) => n.id === boxId.value) || null;
     await reagentStore.initData(org.currentOrgId, force);
-    images.value = await listBoxImages(boxId.value).send();
-    const logsRes = await listBoxLogs({ boxId: boxId.value, limit: 20, offset: 0 }).send(force);
+    images.value = await listBoxImages(boxId.value);
+    const logsRes = await listBoxLogs({ boxId: boxId.value, limit: 20, offset: 0 });
     boxLogs.value = logsRes.items;
 }
 
@@ -180,9 +180,9 @@ async function handleUploadImage(event: Event) {
     imageUploading.value = true;
     imageUploadMsg.value = '';
     try {
-        const uploaded = await uploadFile(file).send();
-        await createBoxImage({ boxId: boxId.value, imageUrl: uploaded.url }).send();
-        images.value = await listBoxImages(boxId.value).send();
+        const uploaded = await uploadFile(file);
+        await createBoxImage({ boxId: boxId.value, imageUrl: uploaded.url });
+        images.value = await listBoxImages(boxId.value);
         imageUploadMsg.value = '上传成功';
     } catch {
         imageUploadMsg.value = '上传失败，请重试';
@@ -194,8 +194,8 @@ async function handleUploadImage(event: Event) {
 
 async function handleDeleteImage(id: string) {
     try {
-        await deleteBoxImage(id).send();
-        images.value = await listBoxImages(boxId.value).send();
+        await deleteBoxImage(id);
+        images.value = await listBoxImages(boxId.value);
     } catch {
         /* empty */
     }
@@ -204,7 +204,7 @@ async function handleDeleteImage(id: string) {
 async function handleSubmitFeedback() {
     if (!feedbackContent.value.trim()) return;
     try {
-        await createFeedback({ content: feedbackContent.value.trim() }).send();
+        await createFeedback({ content: feedbackContent.value.trim() });
         feedbackContent.value = '';
         feedbackMessage.value = '提交成功';
     } catch {

@@ -16,7 +16,7 @@ export default defineConfig({
     },
     clearScreen: false,
     server: {
-        port: 1420,
+        port: 4444,
         strictPort: true,
         host: host || false,
         //prettier-ignore

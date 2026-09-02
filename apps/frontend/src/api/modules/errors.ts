@@ -1,4 +1,4 @@
-import { alovaInstance } from '../client';
+import api from '../client';
 
 export interface ErrorCatalogItem {
     code: string;
@@ -7,7 +7,7 @@ export interface ErrorCatalogItem {
     [key: string]: unknown;
 }
 
-export const listErrors = () => alovaInstance.Get<ErrorCatalogItem[]>('/errors');
+export const listErrors = () => api.get<ErrorCatalogItem[]>('/errors');
 
 export const getErrorByCode = (exceptionCode: string) =>
-    alovaInstance.Get<ErrorCatalogItem>(`/errors/${exceptionCode}`);
+    api.get<ErrorCatalogItem>(`/errors/${exceptionCode}`);

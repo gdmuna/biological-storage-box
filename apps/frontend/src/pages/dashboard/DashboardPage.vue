@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { Box, Building2, FlaskConical } from 'lucide-vue-next';
+import { Box, Building2, FlaskConical } from '@lucide/vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useOrgStore } from '@/stores/org';
 import { useAuthStore } from '@/stores/auth';

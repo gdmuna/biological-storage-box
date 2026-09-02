@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ArrowLeft, Camera, Home, Plus, Network, Trash2, X } from 'lucide-vue-next';
+import { ArrowLeft, Camera, Home, Plus, Network, Trash2, X } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -67,7 +67,7 @@ function updateNodeData() {
 
 async function loadNodeImages() {
     try {
-        const node = await getNode(nodeId.value).send();
+        const node = await getNode(nodeId.value);
         nodeImages.value = node.images ?? [];
     } catch {
         /* empty */
@@ -81,9 +81,9 @@ async function handleUploadImage(event: Event) {
     imageUploading.value = true;
     imageUploadMsg.value = '';
     try {
-        const uploaded = await serverUploadImage(file).send();
-        const imageUrl = await getPublicFileUrl(uploaded.fileId).send();
-        await addNodeImage({ nodeId: nodeId.value, imageUrl }).send();
+        const uploaded = await serverUploadImage(file);
+        const imageUrl = await getPublicFileUrl(uploaded.fileId);
+        await addNodeImage({ nodeId: nodeId.value, imageUrl });
         await loadNodeImages();
         imageUploadMsg.value = '上传成功';
     } catch {
@@ -97,7 +97,7 @@ async function handleUploadImage(event: Event) {
 
 async function handleDeleteImage(id: string) {
     try {
-        await removeNodeImage(id).send();
+        await removeNodeImage(id);
         nodeImages.value = nodeImages.value.filter((img) => img.id !== id);
     } catch {
         /* empty */
@@ -155,7 +155,7 @@ async function handleCreate() {
                 description: newDesc.value.trim() || undefined,
                 type: 'BOX'
             });
-            await setGridConfig({ nodeId: created.id, rows: newRows.value, cols: newCols.value }).send();
+            await setGridConfig({ nodeId: created.id, rows: newRows.value, cols: newCols.value });
             children.value.push(created);
         } else {
             const created = await nodeStore.addNode({

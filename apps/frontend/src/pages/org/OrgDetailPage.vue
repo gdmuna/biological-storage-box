@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ArrowLeft, Users, Share2, Settings, Trash2, Search, UserPlus, X } from 'lucide-vue-next';
+import { ArrowLeft, Users, Share2, Settings, Trash2, Search, UserPlus, X } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -55,12 +55,12 @@ onMounted(async () => {
     if (main) pageTransitionIn(main);
 
     try {
-        [orgData.value, members.value] = await Promise.all([getOrg(orgId.value).send(), listOrgMembers(orgId.value).send()]);
+        [orgData.value, members.value] = await Promise.all([getOrg(orgId.value), listOrgMembers(orgId.value)]);
         settingsName.value = orgData.value.name;
         settingsDesc.value = orgData.value.description ?? '';
         settingsPublic.value = (orgData.value as any).isPublic ?? false;
 
-        [outboundShares.value, inboundShares.value] = await Promise.all([listOutboundShares(orgId.value).send(), listInboundShares(orgId.value).send()]);
+        [outboundShares.value, inboundShares.value] = await Promise.all([listOutboundShares(orgId.value), listInboundShares(orgId.value)]);
     } catch {
         /* empty */
     }
@@ -76,7 +76,7 @@ async function handleInvite() {
     inviteLoading.value = true;
     inviteError.value = '';
     try {
-        await inviteUser({ orgId: orgId.value, userId: inviteId.value.trim() }).send();
+        await inviteUser({ orgId: orgId.value, userId: inviteId.value.trim() });
         inviteId.value = '';
     } catch (e: unknown) {
         inviteError.value = e instanceof Error ? e.message : '邀请失败';
@@ -87,8 +87,8 @@ async function handleInvite() {
 
 async function handleRemoveMember(userId: string) {
     try {
-        await removeMember({ orgId: orgId.value, userId }).send();
-        members.value = await listOrgMembers(orgId.value).send();
+        await removeMember({ orgId: orgId.value, userId });
+        members.value = await listOrgMembers(orgId.value);
     } catch {
         /* empty */
     }
@@ -102,7 +102,7 @@ async function handleSaveSettings() {
             name: settingsName.value,
             description: settingsDesc.value || undefined,
             isPublic: settingsPublic.value
-        }).send();
+        });
         if (orgData.value) orgData.value.name = settingsName.value;
         await org.fetchOrgs();
     } catch {
@@ -114,7 +114,7 @@ async function handleSaveSettings() {
 
 async function handleDelete() {
     try {
-        await deleteOrg(orgId.value).send();
+        await deleteOrg(orgId.value);
         await org.fetchOrgs();
         router.push('/org');
     } catch {

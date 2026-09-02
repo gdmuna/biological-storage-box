@@ -115,22 +115,54 @@ NestJS 后端基线模板 API，提供认证系统、健康检查和错误目录
     );
     SwaggerModule.setup('api-doc', app, processedDoc);
 
-    app.use(
-        '/reference',
-        apiReference({
-            url: '/api-doc-json',
-            theme: 'elysiajs',
-            darkMode: true,
-            defaultOpenAllTags: true,
-            defaultHttpClient: {
-                targetKey: 'js',
-                clientKey: 'axios',
-            },
-            expandAllModelSections: true,
-            showDeveloperTools: 'never',
-            showOperationId: true,
-        })
-    );
+    // app.use(
+    //     '/reference',
+    //     apiReference({
+    //         url: '/api-doc-json',
+    //         theme: 'elysiajs',
+    //         darkMode: true,
+    //         defaultOpenAllTags: true,
+    //         defaultHttpClient: {
+    //             targetKey: 'js',
+    //             clientKey: 'axios',
+    //         },
+    //         expandAllModelSections: true,
+    //         showDeveloperTools: 'never',
+    //         showOperationId: true,
+    //     })
+    // );
+    // @scalar/nestjs-api-reference 是 Express 中间件（依赖 res.send），与 Fastify 不兼容。
+    // 改为通过 Fastify 原生实例注册路由，直接返回 Scalar HTML。
+    const scalarConfig = {
+        url: '/api-doc-json',
+        theme: 'elysiajs',
+        darkMode: true,
+        defaultOpenAllTags: true,
+        defaultHttpClient: { targetKey: 'js', clientKey: 'axios' },
+        expandAllModelSections: true,
+        showOperationId: true,
+    };
+    const fastifyInstance = app.getHttpAdapter().getInstance() as any;
+    fastifyInstance.get('/reference', (_req: unknown, reply: any) => {
+        reply.type('text/html').send(
+            `<!doctype html>
+<html lang="en">
+<head>
+  <title>API Reference</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>body { margin: 0 }</style>
+</head>
+<body>
+  <div id="api-reference" data-url="/api-doc-json"></div>
+  <script>
+    document.getElementById('api-reference').dataset.configuration = ${JSON.stringify(JSON.stringify(scalarConfig))};
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+</body>
+</html>`
+        );
+    });
 
     const port = parseInt(process.env.PORT ?? '3000');
     await app.listen(port, '0.0.0.0').catch(async (err) => {

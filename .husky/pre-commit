@@ -8,7 +8,7 @@ warn() { printf "%-12b %b\n" "${YELLOW}[GitHook]" "[WARN] $1${RESET}"; }
 log "执行 Pre-commit hook"
 
 # 加密 backend env 文件
-backend_envs=$(git diff --cached --name-only -- 'apps/backend/**/.env.*' ':!apps/backend/**/.env.example' | sed 's|^apps/backend/||' || true)
+backend_envs=$(git diff --cached --name-only -- 'apps/backend/**/.env.*' ':!apps/backend/**/.env.example' ':!apps/backend/**/.env.*.local' | sed 's|^apps/backend/||' || true)
 
 if [ -n "$backend_envs" ]; then
     log "加密 backend env 文件"

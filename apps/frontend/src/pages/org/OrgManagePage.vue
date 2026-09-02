@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { Plus, Trash2, UserMinus, UserCog, UserPlus } from 'lucide-vue-next';
+import { Plus, Trash2, UserMinus, UserCog, UserPlus } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -65,7 +65,7 @@ async function handleCreate() {
 
 async function handleDelete(orgItem: Org) {
     try {
-        await deleteOrg(orgItem.id).send();
+        await deleteOrg(orgItem.id);
         await org.fetchOrgs();
     } catch {
         /* empty */
@@ -76,7 +76,7 @@ async function loadMembers() {
     if (!org.currentOrgId) return;
     membersLoading.value = true;
     try {
-        [members.value, pending.value] = await Promise.all([listOrgMembers(org.currentOrgId).send(), listPendingOrgUsers(org.currentOrgId).send()]);
+        [members.value, pending.value] = await Promise.all([listOrgMembers(org.currentOrgId), listPendingOrgUsers(org.currentOrgId)]);
     } catch {
         /* empty */
     } finally {
@@ -87,7 +87,7 @@ async function loadMembers() {
 async function handleRemoveMember(member: OrgMember) {
     if (!org.currentOrgId) return;
     try {
-        await removeMember({ orgId: org.currentOrgId, userId: member.userId }).send();
+        await removeMember({ orgId: org.currentOrgId, userId: member.userId });
         await loadMembers();
     } catch {
         /* empty */
@@ -97,7 +97,7 @@ async function handleRemoveMember(member: OrgMember) {
 async function handleAcceptApply(item: PendingOrgUser) {
     if (!org.currentOrgId) return;
     try {
-        await acceptApply({ orgId: org.currentOrgId, userId: item.userId }).send();
+        await acceptApply({ orgId: org.currentOrgId, userId: item.userId });
         await loadMembers();
     } catch {
         /* empty */
@@ -107,7 +107,7 @@ async function handleAcceptApply(item: PendingOrgUser) {
 async function handleRejectApply(item: PendingOrgUser) {
     if (!org.currentOrgId) return;
     try {
-        await rejectApply({ orgId: org.currentOrgId, userId: item.userId }).send();
+        await rejectApply({ orgId: org.currentOrgId, userId: item.userId });
         await loadMembers();
     } catch {
         /* empty */
@@ -119,7 +119,7 @@ async function handleInvite() {
     inviteError.value = '';
     inviteLoading.value = true;
     try {
-        await inviteUser({ orgId: org.currentOrgId, userId: inviteUserId.value.trim() }).send();
+        await inviteUser({ orgId: org.currentOrgId, userId: inviteUserId.value.trim() });
         inviteUserId.value = '';
         inviteDialogOpen.value = false;
     } catch (e: unknown) {
@@ -132,7 +132,7 @@ async function handleInvite() {
 async function handleUpdateRole(member: OrgMember, role: 'ADMIN' | 'MEMBER') {
     if (!org.currentOrgId) return;
     try {
-        await updateMemberAuthority({ orgId: org.currentOrgId, userId: member.userId, role }).send();
+        await updateMemberAuthority({ orgId: org.currentOrgId, userId: member.userId, role });
         await loadMembers();
     } catch {
         /* empty */
@@ -141,7 +141,7 @@ async function handleUpdateRole(member: OrgMember, role: 'ADMIN' | 'MEMBER') {
 
 async function handleQuit(orgItem: Org) {
     try {
-        await quitOrg(orgItem.id).send();
+        await quitOrg(orgItem.id);
         await org.fetchOrgs();
     } catch {
         /* empty */

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { LucideIcon } from 'lucide-vue-next';
-import { ChevronRight } from 'lucide-vue-next';
+import type { LucideIcon } from '@lucide/vue';
+import { ChevronRight } from '@lucide/vue';
 import { useRouter } from 'vue-router';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, useSidebar } from '@/components/ui/sidebar';
@@ -35,7 +35,7 @@ defineProps<{
                     <Collapsible v-if="item.items" as-child :default-open="item.isActive" class="group/collapsible">
                         <SidebarMenuItem>
                             <CollapsibleTrigger as-child>
-                                <SidebarMenuButton :tooltip="item.title">
+                                <SidebarMenuButton :tooltip="item.title" class="cursor-pointer">
                                     <component :is="item.icon" v-if="item.icon" />
                                     <span>{{ item.title }}</span>
                                     <ChevronRight class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -55,7 +55,7 @@ defineProps<{
                         </SidebarMenuItem>
                     </Collapsible>
                     <SidebarMenuItem v-else>
-                        <SidebarMenuButton :tooltip="item.title" @click="handleNavClick(item.url)">
+                        <SidebarMenuButton :tooltip="item.title" class="cursor-pointer" @click="handleNavClick(item.url)">
                             <component :is="item.icon" v-if="item.icon" />
                             <span>{{ item.title }}</span>
                         </SidebarMenuButton>

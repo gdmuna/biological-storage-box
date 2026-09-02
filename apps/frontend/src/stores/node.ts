@@ -53,18 +53,18 @@ export const useNodeStore = defineStore('node', () => {
     const boxSlotNodes = computed(() => NODE_MAP.value.BOX_SLOT);
 
     async function addNode(data: Parameters<typeof createNode>[0]) {
-        const created = await createNode(data).send();
+        const created = await createNode(data);
         nodes.value.push(created);
         return created;
     }
 
     async function removeNode(nodeId: string) {
-        await deleteNode(nodeId).send();
+        await deleteNode(nodeId);
         nodes.value = nodes.value.filter((n) => n.id !== nodeId);
     }
 
     async function editNode(data: Parameters<typeof updateNode>[0]) {
-        const updated = await updateNode(data).send();
+        const updated = await updateNode(data);
         const idx = nodes.value.findIndex((n) => n.id === updated.id);
         if (idx >= 0) nodes.value[idx] = updated;
         return updated;
@@ -74,10 +74,10 @@ export const useNodeStore = defineStore('node', () => {
         return NODE_MAP.value.MAP.get(nodeId) ?? null;
     }
 
-    async function fetchByOrg(orgId: string, force = false) {
+    async function fetchByOrg(orgId: string, _force = false) {
         loading.value = true;
         try {
-            const flat = await fetchNodeTree(orgId).send(force);
+            const flat = await fetchNodeTree(orgId);
             nodes.value = flat;
         } finally {
             loading.value = false;

@@ -3,25 +3,27 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useOrgStore } from '@/stores/org';
 import type { Org } from '@/schemas/org.schema';
 
-const mockOrgs: Org[] = [
-    {
-        id: 'org-1',
-        name: 'BioLab Alpha',
-        description: null,
-        ownerId: 'user-1',
-        createdAt: '2024-01-01T00:00:00.000Z',
-    },
-    {
-        id: 'org-2',
-        name: 'BioLab Beta',
-        description: 'Second lab',
-        ownerId: 'user-2',
-        createdAt: '2024-02-01T00:00:00.000Z',
-    },
-];
+const { mockOrgs } = vi.hoisted(() => ({
+    mockOrgs: [
+        {
+            id: 'org-1',
+            name: 'BioLab Alpha',
+            description: null,
+            ownerId: 'user-1',
+            createdAt: '2024-01-01T00:00:00.000Z',
+        },
+        {
+            id: 'org-2',
+            name: 'BioLab Beta',
+            description: 'Second lab',
+            ownerId: 'user-2',
+            createdAt: '2024-02-01T00:00:00.000Z',
+        },
+    ] as Org[],
+}));
 
 vi.mock('@/api/modules/org', () => ({
-    listOrgs: vi.fn(() => ({ send: vi.fn().mockResolvedValue(mockOrgs) })),
+    listOrgs: vi.fn().mockResolvedValue(mockOrgs),
 }));
 
 describe('org store', () => {

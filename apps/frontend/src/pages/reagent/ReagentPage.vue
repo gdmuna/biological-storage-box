@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Trash2, Plus, AlertTriangle, FlaskConical, Search } from 'lucide-vue-next';
+import { Trash2, Plus, AlertTriangle, FlaskConical, Search } from '@lucide/vue';
 import EmptyState from '@/components/EmptyState.vue';
 import { useOrgStore } from '@/stores/org';
 import { useNodeStore } from '@/stores/node';

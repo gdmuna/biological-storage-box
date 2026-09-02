@@ -2,61 +2,59 @@ import { setActivePinia, createPinia } from 'pinia';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useNodeStore } from '@/stores/node';
 
-const flatNodes = [
-    {
-        id: 'n1',
-        name: 'Root A',
-        type: 'ROOT' as const,
-        parentId: null,
-        orgId: 'org-1',
-        metadata: null,
-        gridConfig: null,
-        description: null,
-        createdAt: '',
-        updatedAt: '',
-    },
-    {
-        id: 'n2',
-        name: 'Container B',
-        type: 'CONTAINER' as const,
-        parentId: 'n1',
-        orgId: 'org-1',
-        metadata: null,
-        gridConfig: null,
-        description: null,
-        createdAt: '',
-        updatedAt: '',
-    },
-];
+const { flatNodes } = vi.hoisted(() => ({
+    flatNodes: [
+        {
+            id: 'n1',
+            name: 'Root A',
+            type: 'ROOT' as const,
+            parentId: null,
+            orgId: 'org-1',
+            metadata: null,
+            gridConfig: null,
+            description: null,
+            createdAt: '',
+            updatedAt: '',
+        },
+        {
+            id: 'n2',
+            name: 'Container B',
+            type: 'CONTAINER' as const,
+            parentId: 'n1',
+            orgId: 'org-1',
+            metadata: null,
+            gridConfig: null,
+            description: null,
+            createdAt: '',
+            updatedAt: '',
+        },
+    ],
+}));
 
 vi.mock('@/api/modules/node', () => ({
-    fetchNodeTree: () => ({
-        send: (_force?: boolean) => Promise.resolve([...flatNodes]),
-    }),
-    getNode: () => ({ send: () => Promise.resolve(flatNodes[0]) }),
-    createNode: () => ({
-        send: () =>
-            Promise.resolve({
-                id: 'n3',
-                name: 'Box C',
-                type: 'BOX' as const,
-                parentId: 'n2',
-                orgId: 'org-1',
-                metadata: null,
-                gridConfig: null,
-                description: null,
-                createdAt: '',
-                updatedAt: '',
-            }),
-    }),
-    deleteNode: () => ({ send: () => Promise.resolve() }),
-    updateNode: () => ({
-        send: () =>
-            Promise.resolve({
-                ...flatNodes[0],
-                name: 'Root A Updated',
-            }),
-    }),
+    fetchNodeTree: vi.fn().mockImplementation(() => Promise.resolve([...flatNodes])),
+    getNode: vi.fn().mockImplementation(() => Promise.resolve(flatNodes[0])),
+    createNode: vi.fn().mockImplementation(() =>
+        Promise.resolve({
+            id: 'n3',
+            name: 'Box C',
+            type: 'BOX' as const,
+            parentId: 'n2',
+            orgId: 'org-1',
+            metadata: null,
+            gridConfig: null,
+            description: null,
+            createdAt: '',
+            updatedAt: '',
+        })
+    ),
+    deleteNode: vi.fn().mockImplementation(() => Promise.resolve()),
+    updateNode: vi.fn().mockImplementation(() =>
+        Promise.resolve({
+            ...flatNodes[0],
+            name: 'Root A Updated',
+        })
+    ),
 }));
 
 describe('useNodeStore', () => {

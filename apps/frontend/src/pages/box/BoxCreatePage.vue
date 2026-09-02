@@ -46,7 +46,7 @@ async function handleSubmit() {
             description: description.value.trim() || undefined,
             type: 'BOX'
         });
-        await setGridConfig({ nodeId: created.id, rows: rows.value, cols: cols.value }).send();
+        await setGridConfig({ nodeId: created.id, rows: rows.value, cols: cols.value });
         router.push('/box');
     } catch (e: unknown) {
         error.value = e instanceof Error ? e.message : '创建失败';

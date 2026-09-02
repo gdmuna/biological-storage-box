@@ -11,7 +11,7 @@ export const useOrgStore = defineStore('org', () => {
     const currentOrg = computed(() => orgs.value.find((o) => o.id === currentOrgId.value) ?? null);
 
     async function fetchOrgs() {
-        const res = await listOrgs().send(true);
+        const res = await listOrgs();
         orgs.value = res;
         console.log('Fetched orgs:', res);
         if (!currentOrgId.value && orgs.value.length > 0) {
@@ -29,7 +29,7 @@ export const useOrgStore = defineStore('org', () => {
 
     /** 创建组织后立即切换到该组织 */
     async function createAndSwitch(form: CreateOrgForm) {
-        const created = await createOrg(form).send();
+        const created = await createOrg(form);
         await fetchOrgs();
         currentOrgId.value = created.id;
         return created;
@@ -37,12 +37,12 @@ export const useOrgStore = defineStore('org', () => {
 
     /** 搜索公开组织（供 OrgExplorePage 使用） */
     async function explore(keyword?: string) {
-        return exploreOrgs({ keyword, limit: 20 }).send();
+        return exploreOrgs({ keyword, limit: 20 });
     }
 
     /** 组织内搜索成员（供 OrgDetailPage 使用） */
     async function searchMembers(orgId: string, keyword: string) {
-        return searchOrgMembers({ orgId, keyword }).send();
+        return searchOrgMembers({ orgId, keyword });
     }
 
     return {

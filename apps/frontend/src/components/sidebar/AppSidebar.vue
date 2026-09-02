@@ -10,7 +10,7 @@ import TeamSwitcher from '@/components/sidebar/TeamSwitcher.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
 import orgDefaultLogo from '@/components/icon/orgDefaultLogo.vue';
 
-import { LayoutDashboard, Box, Building2, FlaskConical, Network, Home, Tag, ScrollText } from 'lucide-vue-next';
+import { LayoutDashboard, Box, Building2, FlaskConical, Network, Home, Tag, ScrollText } from '@lucide/vue';
 
 import { useAuthStore } from '@/stores/auth';
 import { useOrgStore } from '@/stores/org';
@@ -35,7 +35,6 @@ const orgsData = computed(() => {
         name: o.name,
         logo: markRaw(orgDefaultLogo)
     }));
-    console.log('Computed orgsData:', data);
     return data;
 });
 

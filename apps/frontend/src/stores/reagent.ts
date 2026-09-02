@@ -14,42 +14,42 @@ export const useReagentStore = defineStore('reagent', () => {
     const reagentTypes = ref<any[]>([]);
     const loading = ref(false);
 
-    async function initData(orgId: string, force = false) {
+    async function initData(orgId: string, _force = false) {
         loading.value = true;
         try {
-            await getReagent({ orgId }, force);
-            await getReagentType({ orgId }, force);
+            await getReagent({ orgId });
+            await getReagentType({ orgId });
         } finally {
             loading.value = false;
         }
     }
 
-    async function getReagent(params: { orgId?: string; nodeId?: string }, force = false) {
-        const res = await listReagents(params).send(force);
+    async function getReagent(params: { orgId?: string; nodeId?: string }, _force = false) {
+        const res = await listReagents(params);
         reagents.value = res;
         return res;
     }
 
-    async function getReagentType(params: { orgId?: string; nodeId?: string }, force = false) {
-        const res = await listReagentTypes(params).send(force);
+    async function getReagentType(params: { orgId?: string; nodeId?: string }, _force = false) {
+        const res = await listReagentTypes(params);
         reagentTypes.value = res;
         return res;
     }
 
     async function addReagent(data: Parameters<typeof createReagent>[0]) {
-        const created = await createReagent(data).send();
+        const created = await createReagent(data);
         reagents.value.push(created);
         return created;
     }
 
     async function addReagentType(data: Parameters<typeof createReagentType>[0]) {
-        const created = await createReagentType(data).send();
+        const created = await createReagentType(data);
         reagentTypes.value.push(created);
         return created;
     }
 
     async function editReagent(data: Parameters<typeof updateReagent>[0]) {
-        const updated = await updateReagent(data).send();
+        const updated = await updateReagent(data);
         const index = reagents.value.findIndex((r) => r.id === updated.id);
         if (index !== -1) {
             reagents.value[index] = updated;
@@ -58,7 +58,7 @@ export const useReagentStore = defineStore('reagent', () => {
     }
 
     async function editReagentType(data: Parameters<typeof updateReagentType>[0]) {
-        const updated = await updateReagentType(data).send();
+        const updated = await updateReagentType(data);
         const index = reagentTypes.value.findIndex((rt) => rt.id === updated.id);
         if (index !== -1) {
             reagentTypes.value[index] = updated;
@@ -67,13 +67,13 @@ export const useReagentStore = defineStore('reagent', () => {
     }
 
     async function removeReagent(id: string | string[]) {
-        await deleteReagent(id).send();
+        await deleteReagent(id);
         const ids = Array.isArray(id) ? id : [id];
         reagents.value = reagents.value.filter((r) => !ids.includes(r.id));
     }
 
     async function removeReagentType(id: string | string[]) {
-        await deleteReagentType(id).send();
+        await deleteReagentType(id);
         const ids = Array.isArray(id) ? id : [id];
         reagentTypes.value = reagentTypes.value.filter((rt) => !ids.includes(rt.id));
     }

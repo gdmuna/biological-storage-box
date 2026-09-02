@@ -1,4 +1,4 @@
-import { alovaInstance } from '../client';
+import api from '../client';
 import type {
     BoxLogPaginated,
     ReagentLogPaginated,
@@ -6,10 +6,10 @@ import type {
 } from '@/schemas/feedback.schema';
 
 export const listBoxLogs = (params: { boxId: string; limit?: number; offset?: number }) =>
-    alovaInstance.Get<BoxLogPaginated>('/box/log/list', { params });
+    api.get<BoxLogPaginated>('/box/log/list', { params });
 
 export const listReagentLogs = (params: { reagentId: string; limit?: number; offset?: number }) =>
-    alovaInstance.Get<ReagentLogPaginated>('/box/log/reagent/list', { params });
+    api.get<ReagentLogPaginated>('/box/log/reagent/list', { params });
 
 export const createFeedback = (data: CreateFeedbackPayload) =>
-    alovaInstance.Post<void>('/feedback/add', data);
+    api.post<void>('/feedback/add', data);

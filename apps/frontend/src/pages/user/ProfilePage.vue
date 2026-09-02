@@ -30,7 +30,7 @@ async function handleUpdateInfo() {
         await updateUserInfo({
             nickname: nickname.value || undefined,
             realname: realname.value || undefined
-        }).send();
+        });
         await auth.fetchMe();
     } catch (e: unknown) {
         infoError.value = e instanceof Error ? e.message : '更新失败';
@@ -50,7 +50,7 @@ async function handleUpdatePassword() {
         await updatePassword({
             oldPassword: oldPassword.value,
             newPassword: newPassword.value
-        }).send();
+        });
         oldPassword.value = '';
         newPassword.value = '';
     } catch (e: unknown) {

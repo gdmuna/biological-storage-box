@@ -1,15 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@/api/client', () => ({
-    alovaInstance: {
-        Get: vi.fn(),
-        Post: vi.fn(),
-        Put: vi.fn(),
-        Delete: vi.fn(),
+    default: {
+        get: vi.fn(),
+        post: vi.fn(),
+        put: vi.fn(),
+        delete: vi.fn(),
     },
 }));
 
-import { alovaInstance } from '@/api/client';
+import api from '@/api/client';
 import {
     getReagent,
     listReagents,
@@ -31,7 +31,7 @@ describe('box API module', () => {
     describe('getReagent', () => {
         it('calls Get /reagent/one with id as query param', () => {
             getReagent('reagent-1');
-            expect(alovaInstance.Get).toHaveBeenCalledWith('/reagent/one', {
+            expect(api.get).toHaveBeenCalledWith('/reagent/one', {
                 params: { id: 'reagent-1' },
             });
         });
@@ -40,7 +40,7 @@ describe('box API module', () => {
     describe('listReagents', () => {
         it('calls Get /reagent/list with nodeId', () => {
             listReagents('node-1');
-            expect(alovaInstance.Get).toHaveBeenCalledWith('/reagent/list', {
+            expect(api.get).toHaveBeenCalledWith('/reagent/list', {
                 params: { nodeId: 'node-1' },
             });
         });
@@ -50,7 +50,7 @@ describe('box API module', () => {
         it('calls Put /reagent/update with update payload', () => {
             const data = { id: 'reagent-1', name: 'Sample X', position: '1-1' };
             updateReagent(data);
-            expect(alovaInstance.Put).toHaveBeenCalledWith('/reagent/update', data);
+            expect(api.put).toHaveBeenCalledWith('/reagent/update', data);
         });
     });
 
@@ -58,7 +58,7 @@ describe('box API module', () => {
         it('calls Post /reagent/add with full payload', () => {
             const data = { nodeId: 'node-1', position: '1-1', name: 'Sample A' };
             createReagent(data);
-            expect(alovaInstance.Post).toHaveBeenCalledWith('/reagent/add', data);
+            expect(api.post).toHaveBeenCalledWith('/reagent/add', data);
         });
 
         it('calls Post /reagent/add with optional fields', () => {
@@ -70,7 +70,7 @@ describe('box API module', () => {
                 reagentTypeId: 'type-1',
             };
             createReagent(data);
-            expect(alovaInstance.Post).toHaveBeenCalledWith('/reagent/add', data);
+            expect(api.post).toHaveBeenCalledWith('/reagent/add', data);
         });
     });
 
@@ -80,21 +80,21 @@ describe('box API module', () => {
         it('calls Post /box/alias/add with boxId and alias', () => {
             const data = { boxId: 'box-1', alias: 'CryoBox-A' };
             createBoxAlias(data);
-            expect(alovaInstance.Post).toHaveBeenCalledWith('/box/alias/add', data);
+            expect(api.post).toHaveBeenCalledWith('/box/alias/add', data);
         });
     });
 
     describe('deleteBoxAlias', () => {
         it('calls Delete /box/alias/del with alias id in data body', () => {
             deleteBoxAlias('alias-99');
-            expect(alovaInstance.Delete).toHaveBeenCalledWith('/box/alias/del', { id: 'alias-99' });
+            expect(api.delete).toHaveBeenCalledWith('/box/alias/del', { id: 'alias-99' });
         });
     });
 
     describe('listBoxAliases', () => {
         it('calls Get /box/alias/list with boxId', () => {
             listBoxAliases('box-1');
-            expect(alovaInstance.Get).toHaveBeenCalledWith('/box/alias/list', {
+            expect(api.get).toHaveBeenCalledWith('/box/alias/list', {
                 params: { boxId: 'box-1' },
             });
         });
@@ -104,7 +104,7 @@ describe('box API module', () => {
         it('calls Put /box/alias/update with id and new alias', () => {
             const data = { id: 'alias-1', alias: 'NewAlias' };
             updateBoxAlias(data);
-            expect(alovaInstance.Put).toHaveBeenCalledWith('/box/alias/update', data);
+            expect(api.put).toHaveBeenCalledWith('/box/alias/update', data);
         });
     });
 });

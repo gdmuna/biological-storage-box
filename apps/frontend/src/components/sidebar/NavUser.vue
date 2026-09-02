@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { ChevronsUpDown, LogOut, User } from 'lucide-vue-next';
+import { ChevronsUpDown, LogOut, User } from '@lucide/vue';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -43,7 +43,7 @@ const initials = computed(() => {
         <SidebarMenuItem>
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
-                    <SidebarMenuButton size="lg" class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                    <SidebarMenuButton size="lg" class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer">
                         <Avatar class="h-8 w-8 rounded-lg">
                             <AvatarImage :src="user.avatar" :alt="user.name" />
                             <AvatarFallback class="rounded-lg">{{ initials }}</AvatarFallback>
@@ -77,7 +77,7 @@ const initials = computed(() => {
                     </DropdownMenuGroup> -->
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
-                        <DropdownMenuItem @click="handleNavClick('/user')">
+                        <DropdownMenuItem class="cursor-pointer" @click="handleNavClick('/user')">
                             <User />
                             个人中心
                         </DropdownMenuItem>
@@ -91,7 +91,7 @@ const initials = computed(() => {
                         </DropdownMenuItem> -->
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem @click="handleLogout">
+                    <DropdownMenuItem class="cursor-pointer" @click="handleLogout">
                         <LogOut />
                         登出
                     </DropdownMenuItem>

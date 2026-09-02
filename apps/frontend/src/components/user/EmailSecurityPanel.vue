@@ -17,7 +17,7 @@ async function handleSendEmailCode(email: string) {
     error.value = '';
     message.value = '';
     try {
-        await sendEmailCode(email).send();
+        await sendEmailCode(email);
         message.value = '验证码已发送';
     } catch (e: unknown) {
         error.value = e instanceof Error ? e.message : '发送失败';
@@ -28,7 +28,7 @@ async function handleUpdateEmail() {
     error.value = '';
     message.value = '';
     try {
-        await updateEmail({ email: newEmail.value, code: emailCode.value }).send();
+        await updateEmail({ email: newEmail.value, code: emailCode.value });
         message.value = '邮箱更新成功';
     } catch (e: unknown) {
         error.value = e instanceof Error ? e.message : '更新失败';
@@ -43,7 +43,7 @@ async function handleEmailPasswordUpdate() {
             email: passwordEmail.value,
             code: passwordCode.value,
             newPassword: newPassword.value
-        }).send();
+        });
         message.value = '密码更新成功';
     } catch (e: unknown) {
         error.value = e instanceof Error ? e.message : '更新失败';

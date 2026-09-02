@@ -1,4 +1,4 @@
-import { alovaInstance } from '../client';
+import api from '../client';
 
 export interface ShareRecord {
     id: string;
@@ -19,16 +19,15 @@ export const grantShare = (data: {
     ownerOrgId: string;
     granteeOrgId: string;
     permission: 'READ' | 'WRITE';
-}) => alovaInstance.Post<ShareRecord>('/share/grant', data);
+}) => api.post<ShareRecord>('/share/grant', data);
 
 export const respondShare = (data: { shareId: string; approve: boolean }) =>
-    alovaInstance.Put<ShareRecord>('/share/respond', data);
+    api.put<ShareRecord>('/share/respond', data);
 
-export const revokeShare = (shareId: string) =>
-    alovaInstance.Delete<void>('/share/revoke', { shareId });
+export const revokeShare = (shareId: string) => api.delete<void>('/share/revoke', { shareId });
 
 export const listOutboundShares = (orgId: string) =>
-    alovaInstance.Get<ShareRecord[]>('/share/outbound', { params: { orgId } });
+    api.get<ShareRecord[]>('/share/outbound', { params: { orgId } });
 
 export const listInboundShares = (orgId: string) =>
-    alovaInstance.Get<ShareRecord[]>('/share/inbound', { params: { orgId } });
+    api.get<ShareRecord[]>('/share/inbound', { params: { orgId } });

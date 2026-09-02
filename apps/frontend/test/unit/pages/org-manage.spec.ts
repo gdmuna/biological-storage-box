@@ -2,12 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { shallowMount, flushPromises } from '@vue/test-utils';
 import { reactive } from 'vue';
 
-const listMembersSend = vi.fn();
-const listPendingSend = vi.fn();
+const { listMembersMock, listPendingMock } = vi.hoisted(() => ({
+    listMembersMock: vi.fn(),
+    listPendingMock: vi.fn(),
+}));
 
 vi.mock('@/api/modules/org-user', () => ({
-    listOrgMembers: vi.fn(() => ({ send: listMembersSend })),
-    listPendingOrgUsers: vi.fn(() => ({ send: listPendingSend })),
+    listOrgMembers: listMembersMock,
+    listPendingOrgUsers: listPendingMock,
     removeMember: vi.fn(),
     acceptApply: vi.fn(),
     rejectApply: vi.fn(),
@@ -43,10 +45,10 @@ import OrgManagePage from '@/pages/org/OrgManagePage.vue';
 
 describe('OrgManagePage', () => {
     beforeEach(() => {
-        listMembersSend.mockReset();
-        listPendingSend.mockReset();
-        listMembersSend.mockResolvedValue([]);
-        listPendingSend.mockResolvedValue([]);
+        listMembersMock.mockReset();
+        listPendingMock.mockReset();
+        listMembersMock.mockResolvedValue([]);
+        listPendingMock.mockResolvedValue([]);
         orgStore.currentOrgId = 'org-1';
     });
 
@@ -62,7 +64,7 @@ describe('OrgManagePage', () => {
         await wrapper.vm.$nextTick();
         await flushPromises();
 
-        expect(listMembersSend).toHaveBeenCalledTimes(2);
-        expect(listPendingSend).toHaveBeenCalledTimes(2);
+        expect(listMembersMock).toHaveBeenCalledTimes(2);
+        expect(listPendingMock).toHaveBeenCalledTimes(2);
     });
 });

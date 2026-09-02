@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Component } from 'vue';
 
-import { ChevronsUpDown, Plus } from 'lucide-vue-next';
+import { ChevronsUpDown, Plus } from '@lucide/vue';
 import { computed, ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,7 +68,7 @@ async function handleCreate() {
         <SidebarMenuItem>
             <DropdownMenu v-if="teams.length > 0">
                 <DropdownMenuTrigger as-child>
-                    <SidebarMenuButton size="lg" class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground select-none" :disabled="!activeTeam">
+                    <SidebarMenuButton size="lg" class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground select-none cursor-pointer" :disabled="!activeTeam">
                         <div class="flex aspect-square size-8 items-center justify-center rounded-lg border">
                             <component :is="activeTeam?.logo" class="size-6" />
                         </div>
@@ -82,7 +82,7 @@ async function handleCreate() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent class="w-(--reka-dropdown-menu-trigger-width) min-w-56 rounded-lg" align="start" :side="isMobile ? 'bottom' : 'right'" :side-offset="4">
                     <DropdownMenuLabel class="text-xs text-muted-foreground">组织</DropdownMenuLabel>
-                    <DropdownMenuItem v-for="(team, index) in teams" :key="team.name" class="gap-2 p-2 truncate" @click="org.selectOrg(team.id)">
+                    <DropdownMenuItem v-for="(team, index) in teams" :key="team.name" class="gap-2 p-2 truncate cursor-pointer" @click="org.selectOrg(team.id)">
                         <div class="flex size-6 items-center justify-center rounded-sm border">
                             <component :is="team.logo" class="size-4 shrink-0" />
                         </div>
@@ -90,7 +90,7 @@ async function handleCreate() {
                         <DropdownMenuShortcut>⌘{{ index + 1 }}</DropdownMenuShortcut>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem class="gap-2 p-2" @click="dialogOpen = true">
+                    <DropdownMenuItem class="gap-2 p-2 cursor-pointer" @click="dialogOpen = true">
                         <Plus class="size-4" />
                         创建新组织
                     </DropdownMenuItem>

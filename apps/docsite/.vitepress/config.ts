@@ -1,13 +1,18 @@
 ﻿import { defineConfig } from 'vitepress';
 import { tasklist } from '@mdit/plugin-tasklist';
 
+// const localeToOgLocaleMap: Record<string, string> = {
+//     root: 'zh_CN',
+//     en: 'en_US',
+// };
+
 export default defineConfig({
-    title: 'Biological Storage Box',
+    title: 'TalosArk',
     description: '生物样本储存管理系统',
     lang: 'zh-Hans',
 
     // 内容来源指向 service 的 docs/ 文件夹
-    srcDir: '../biological-storage-box-service/docs',
+    srcDir: './docs',
     // 构建输出到 website/dist
     outDir: './dist',
     // 缓存目录
@@ -19,9 +24,11 @@ export default defineConfig({
     // 忽略所有 localhost 链接造成的死链
     ignoreDeadLinks: [/^https?:\/\/localhost/],
 
-    base: process.env.VITE_BASE_PATH || '/',
+    base: process.env.VITE_BASE_PATH ?? '/',
 
+    lastUpdated: true,
     cleanUrls: true,
+    metaChunk: true,
 
     head: [
         ['link', { rel: 'icon', type: 'image/svg+xml', href: '/img/gdmuna-logo_gradient-cut.png' }],
@@ -125,7 +132,7 @@ export default defineConfig({
                 { text: '← 上手', link: '/guide/introduction' },
             ],
         },
-        // 内置本地全文搜索（替代 @easyops-cn/docusaurus-search-local）
+        // 内置本地全文搜索
         search: {
             provider: 'local',
             options: {
@@ -144,20 +151,34 @@ export default defineConfig({
                             },
                         },
                     },
+                    en: {
+                        translations: {
+                            button: { buttonText: 'Search docs', buttonAriaLabel: 'Search docs' },
+                            modal: {
+                                noResultsText: 'No results found',
+                                resetButtonTitle: 'Clear query',
+                                footer: {
+                                    selectText: 'Select',
+                                    navigateText: 'Navigate',
+                                    closeText: 'Close',
+                                },
+                            },
+                        },
+                    }
                 },
             },
         },
 
-        socialLinks: [{ icon: 'github', link: 'https://github.com/gdmuna/NestJS-Scaffold' }],
+        socialLinks: [{ icon: 'github', link: 'https://github.com/gdmuna/TalosArk' }],
 
         footer: {
             message:
-                '基于 <a href="https://github.com/gdmuna/biological-storage-box/blob/main/LICENSE">AGPL-3.0 许可</a> 发布',
-            copyright: `版权所有 © 2026-至今 <a href="https://github.com/gdmuna">GDMU-NA & GDMU-ACM</a>`,
+                '基于 <a href="https://github.com/gdmuna/TalosArk/blob/dev/LICENSE">AGPL-3.0 许可</a> 发布',
+            copyright: `版权所有 © 2024-至今 <a href="https://github.com/gdmuna">GDMU-NA & GDMU-ACM</a>`,
         },
 
         editLink: {
-            pattern: 'https://github.com/gdmuna/NestJS-Scaffold/edit/main/docs/:path',
+            pattern: 'https://github.com/gdmuna/TalosArk/edit/dev/docs/:path',
             text: '在 GitHub 上编辑此页',
         },
 
@@ -194,9 +215,31 @@ export default defineConfig({
     },
 
     markdown: {
+        math: true,
         config: (md) => {
+            const fence = md.renderer.rules.fence!;
+            md.renderer.rules.fence = function (tokens, idx, options, env, self) {
+                const { localeIndex = 'root' } = env;
+                const codeCopyButtonTitle = (() => {
+                    switch (localeIndex) {
+                        case 'en':
+                            return 'Copy code';
+                        default:
+                            return '复制代码';
+                    }
+                })();
+                return fence(tokens, idx, options, env, self).replace(
+                    '<button title="复制代码" class="copy"></button>',
+                    `<button title="${codeCopyButtonTitle}" class="copy"></button>`
+                );
+            };
             // 渲染 GitHub 风格的 task list（- [ ] / - [x]）
             md.use(tasklist);
         },
+    },
+
+    locales: {
+        root: { label: '简体中文', lang: 'zh-Hans', dir: 'ltr' },
+        en: { label: 'English', lang: 'en-US', dir: 'ltr' },
     },
 });

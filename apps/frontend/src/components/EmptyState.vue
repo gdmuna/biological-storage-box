@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { LucideIcon } from 'lucide-vue-next';
+import type { LucideIcon } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 
 const props = defineProps<{
