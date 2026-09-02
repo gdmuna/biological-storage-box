@@ -62,8 +62,7 @@ export class NewVideoStrategy {
 }
 
 export type MultipartBuffer =
-    | (Omit<MultipartFile, 'toBuffer'> & { buffer: Buffer })
-    | MultipartValue;
+    (Omit<MultipartFile, 'toBuffer'> & { buffer: Buffer }) | MultipartValue;
 
 type HandlerState =
     | { type: 'stream'; data: Multipart[] }

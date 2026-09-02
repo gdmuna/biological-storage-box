@@ -24,8 +24,7 @@ export function wrapSuccessResponses(doc: OpenAPIObject): OpenAPIObject {
     for (const pathItem of Object.values(doc.paths ?? {})) {
         for (const method of HTTP_METHODS) {
             const operation = (pathItem as Record<string, unknown>)[method] as
-                | OperationLike
-                | undefined;
+                OperationLike | undefined;
             if (!operation?.responses) continue;
 
             for (const [statusCode, response] of Object.entries(operation.responses)) {
@@ -62,8 +61,7 @@ export function enrichErrorResponses(doc: OpenAPIObject): OpenAPIObject {
     for (const pathItem of Object.values(doc.paths ?? {})) {
         for (const method of HTTP_METHODS) {
             const operation = (pathItem as Record<string, unknown>)[method] as
-                | OperationLike
-                | undefined;
+                OperationLike | undefined;
             if (!operation?.responses) continue;
 
             for (const [statusCode, response] of Object.entries(operation.responses)) {
