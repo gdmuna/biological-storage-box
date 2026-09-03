@@ -8,7 +8,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <ol data-slot="breadcrumb-list" :class="cn('text-muted-foreground gap-1.5 text-sm flex flex-wrap items-center wrap-break-word', props.class)">
+    <ol data-slot="breadcrumb-list" :class="cn('text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5', props.class)">
         <slot />
     </ol>
 </template>

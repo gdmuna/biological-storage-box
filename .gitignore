@@ -5,6 +5,4 @@
 **/*.log
 **/.obsidian/
 
-dogfood-output/
-
 **/__pycache__/

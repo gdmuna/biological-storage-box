@@ -1,9 +1,22 @@
-<script setup lang="ts">
-import { RouterView } from 'vue-router';
-import { Toaster } from '@/components/ui/sonner';
-</script>
-
 <template>
-    <RouterView />
-    <Toaster position="bottom-right" rich-colors />
+    <div id="app-container ">
+        <RouterView />
+    </div>
 </template>
+
+<script setup lang="ts">
+import { useTabProvider, useTab, useTabComponentProvider, useSlotProvider, useViewHistoryProvider } from '@/composables';
+
+useTabProvider();
+
+useTabComponentProvider();
+
+useSlotProvider();
+
+useViewHistoryProvider();
+
+// const { createTab, setActiveTabId } = useTab();
+
+// const { id } = createTab();
+// setActiveTabId(id);
+</script>
