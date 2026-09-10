@@ -14,8 +14,8 @@
         <section aria-label="工作概况" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <article v-for="item in overviewStats" :key="item.label" class="rounded-lg border bg-card p-4 shadow-xs">
                 <div class="flex items-start gap-3">
-                    <div :class="['flex size-10 shrink-0 items-center justify-center rounded-lg', item.iconClass]">
-                        <component :is="item.icon" class="size-5" stroke-width="1.75" aria-hidden="true" />
+                    <div :class="['flex size-14 shrink-0 items-center justify-center rounded-lg', item.iconClass]">
+                        <component :is="item.icon" class="size-8" stroke-width="1.75" aria-hidden="true" />
                     </div>
                     <div class="min-w-0 flex-1">
                         <p class="text-sm text-muted-foreground">{{ item.label }}</p>

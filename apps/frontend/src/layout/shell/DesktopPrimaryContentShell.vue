@@ -45,25 +45,25 @@
                             </Button>
                         </PopoverTrigger>
                     </PopoverAnchor>
-                    <PopoverContent class="p-0 w-auto" align="end">
-                        <ButtonGroup orientation="vertical">
-                            <Button class="font-normal" variant="outline">
-                                <div class="flex items-center w-full h-full gap-1">
-                                    <UserRound />
+                    <PopoverContent class="p-0 w-32" align="end">
+                        <div class="flex flex-col items-center p-1">
+                            <Button class="font-normal text-sm py-1.5 px-2 h-auto w-full" variant="ghost">
+                                <div class="flex items-center justify-between w-full h-full gap-1">
                                     <span>账号设置</span>
+                                    <UserRound />
                                 </div>
                             </Button>
                             <Button
-                                class="hover:bg-destructive/20 font-normal"
-                                variant="outline"
+                                class="hover:bg-destructive/20 font-normal text-sm py-1.5 px-2 h-auto w-full"
+                                variant="ghost"
                                 @click="$router.push('/auth/login')"
                             >
-                                <div class="flex items-center w-full h-full gap-1">
-                                    <LogOut />
+                                <div class="flex items-center justify-between w-full h-full gap-1">
                                     <span>退出登录</span>
+                                    <LogOut />
                                 </div>
                             </Button>
-                        </ButtonGroup>
+                        </div>
                     </PopoverContent>
                 </Popover>
             </div>
@@ -78,7 +78,6 @@
 import { RouterTabProvider } from '@/modules';
 
 import { Button } from '@/ui/button';
-import { ButtonGroup } from '@/ui/button-group';
 import { Input } from '@/ui/input';
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from '@/ui/popover';
 
