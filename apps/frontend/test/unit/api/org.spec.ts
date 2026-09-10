@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@/api/client', () => ({
+vi.mock('@/shared/api/client', () => ({
     default: {
         get: vi.fn(),
         post: vi.fn(),
@@ -9,8 +9,15 @@ vi.mock('@/api/client', () => ({
     },
 }));
 
-import api from '@/api/client';
-import { createOrg, deleteOrg, getOrg, listOrgs, searchOrgs, updateOrg } from '@/api/modules/org';
+import api from '@/shared/api/client';
+import {
+    createOrg,
+    deleteOrg,
+    getOrg,
+    listOrgs,
+    searchOrgs,
+    updateOrg,
+} from '@/shared/api/modules/org';
 
 describe('org API module', () => {
     beforeEach(() => {

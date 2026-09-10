@@ -17,13 +17,13 @@ const { mockUser, mockAuthResponse } = vi.hoisted(() => ({
     },
 }));
 
-// Mock @/api/token so setAccessToken/callRefreshToken are controllable
-vi.mock('@/api/token', () => ({
+// Mock @/shared/api/token so setAccessToken/callRefreshToken are controllable
+vi.mock('@/shared/api/token', () => ({
     setAccessToken: vi.fn(),
     callRefreshToken: vi.fn().mockResolvedValue('mock-access-token'),
 }));
 
-vi.mock('@/api/modules/auth', () => ({
+vi.mock('@/shared/api/modules/auth', () => ({
     getMyInfo: vi.fn().mockResolvedValue(mockUser),
     login: vi.fn().mockResolvedValue(mockAuthResponse),
     logout: vi.fn().mockResolvedValue(undefined),
@@ -60,7 +60,7 @@ describe('auth store', () => {
     });
 
     it('fetchMe sets user to null when refresh token is missing', async () => {
-        const { callRefreshToken } = await import('@/api/token');
+        const { callRefreshToken } = await import('@/shared/api/token');
         vi.mocked(callRefreshToken).mockResolvedValueOnce(null);
 
         const auth = useAuthStore();
@@ -71,7 +71,7 @@ describe('auth store', () => {
     });
 
     it('fetchMe sets initialized even when getMyInfo throws', async () => {
-        const { getMyInfo } = await import('@/api/modules/auth');
+        const { getMyInfo } = await import('@/shared/api/modules/auth');
         vi.mocked(getMyInfo).mockRejectedValueOnce(new Error('Server error'));
 
         const auth = useAuthStore();
@@ -81,7 +81,7 @@ describe('auth store', () => {
     });
 
     it('doLogin sets user and token', async () => {
-        const { setAccessToken } = await import('@/api/token');
+        const { setAccessToken } = await import('@/shared/api/token');
         const auth = useAuthStore();
         await auth.doLogin({ account: 'testuser', password: 'password123' });
         expect(setAccessToken).toHaveBeenCalledWith('mock-access-token');
@@ -91,7 +91,7 @@ describe('auth store', () => {
     });
 
     it('doRegister sets user and token', async () => {
-        const { setAccessToken } = await import('@/api/token');
+        const { setAccessToken } = await import('@/shared/api/token');
         const auth = useAuthStore();
         await auth.doRegister({
             username: 'testuser',
@@ -104,7 +104,7 @@ describe('auth store', () => {
     });
 
     it('doLogout clears user and token', async () => {
-        const { setAccessToken } = await import('@/api/token');
+        const { setAccessToken } = await import('@/shared/api/token');
         const auth = useAuthStore();
         auth.user = mockUser;
 

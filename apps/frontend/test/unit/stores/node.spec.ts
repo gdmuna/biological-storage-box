@@ -31,7 +31,7 @@ const { flatNodes } = vi.hoisted(() => ({
     ],
 }));
 
-vi.mock('@/api/modules/node', () => ({
+vi.mock('@/shared/api/modules/node', () => ({
     fetchNodeTree: vi.fn().mockImplementation(() => Promise.resolve([...flatNodes])),
     getNode: vi.fn().mockImplementation(() => Promise.resolve(flatNodes[0])),
     createNode: vi.fn().mockImplementation(() =>

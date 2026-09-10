@@ -7,7 +7,7 @@ const { listMembersMock, listPendingMock } = vi.hoisted(() => ({
     listPendingMock: vi.fn(),
 }));
 
-vi.mock('@/api/modules/org-user', () => ({
+vi.mock('@/shared/api/modules/org-user', () => ({
     listOrgMembers: listMembersMock,
     listPendingOrgUsers: listPendingMock,
     removeMember: vi.fn(),
@@ -18,7 +18,7 @@ vi.mock('@/api/modules/org-user', () => ({
     quitOrg: vi.fn(),
 }));
 
-vi.mock('@/api/modules/org', () => ({
+vi.mock('@/shared/api/modules/org', () => ({
     createOrg: vi.fn(),
     deleteOrg: vi.fn(),
 }));

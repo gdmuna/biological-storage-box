@@ -10,39 +10,160 @@ declare module 'vue-router' {
 const routes: RouteRecordRaw[] = [
     {
         path: '/',
-        redirect: '/workbench',
+        redirect: '/main',
     },
     {
-        path: '/workbench',
-        component: () => import('@/components/layout/workbench/AppWorkbenchLayout.vue'),
-        meta: {
-            defaultTitle: 'workbench',
-        },
+        path: '/auth',
+        component: () => import('@/layout/shell/DesktopAuthShell.vue'),
+        redirect: '/auth/login',
+        children: [
+            {
+                path: 'login',
+                component: () => import('@/pages/auth/Auth.vue'),
+                meta: {
+                    defaultTitle: 'login',
+                },
+            },
+        ],
+    },
+    {
+        path: '/main',
+        component: () => import('@/layout/shell/DesktopPrimarySidebarShell.vue'),
         children: [
             {
                 path: '',
-                redirect: '/workbench/welcome',
+                redirect: '/main/workbench',
             },
             {
-                path: 'welcome',
-                component: () => import('@/view/welcome/WorkbenchWelcome.vue'),
+                path: 'workbench',
+                component: () => import('@/pages/workbench/Workbench.vue'),
+                redirect: '/main/workbench/overview',
                 meta: {
-                    defaultTitle: 'welcome',
+                    defaultTitle: 'workbench',
                 },
+                children: [
+                    {
+                        path: 'overview',
+                        component: () => import('@/pages/workbench/Overview.vue'),
+                        meta: {
+                            defaultTitle: 'overview',
+                        },
+                    },
+                    {
+                        path: 'my-task',
+                        component: () => import('@/pages/workbench/MyTask.vue'),
+                        meta: {
+                            defaultTitle: 'my-task',
+                        },
+                    },
+                    {
+                        path: 'pending-approval',
+                        component: () => import('@/pages/workbench/PendingApproval.vue'),
+                        meta: {
+                            defaultTitle: 'pending-approval',
+                        },
+                    },
+                    {
+                        path: 'exception-alert',
+                        component: () => import('@/pages/workbench/ExceptionAlert.vue'),
+                        meta: {
+                            defaultTitle: 'exception-alert',
+                        },
+                    },
+                ],
             },
             {
-                path: 'playground',
-                component: () => import('@/view/playground/WorkbenchPlayground.vue'),
+                path: 'material',
+                component: () => import('@/pages/material/Material.vue'),
+                redirect: '/main/material/overview',
                 meta: {
-                    defaultTitle: 'playground',
+                    defaultTitle: 'material',
                 },
+                children: [
+                    {
+                        path: 'overview',
+                        component: () => import('@/pages/material/Overview.vue'),
+                        meta: {
+                            defaultTitle: 'overview',
+                        },
+                    },
+                    {
+                        path: 'list',
+                        component: () => import('@/pages/material/List.vue'),
+                        meta: {
+                            defaultTitle: 'list',
+                        },
+                    },
+                    {
+                        path: 'culture',
+                        component: () => import('@/pages/material/Culture.vue'),
+                        meta: {
+                            defaultTitle: 'culture',
+                        },
+                    },
+                ],
             },
             {
-                path: 'overview',
-                component: () => import('@/view/overview/WorkbenchOverview.vue'),
+                path: 'inventory',
+                component: () => import('@/pages/inventory/Inventory.vue'),
+                redirect: '/main/inventory/overview',
                 meta: {
-                    defaultTitle: 'overview',
+                    defaultTitle: 'inventory',
                 },
+                children: [
+                    {
+                        path: 'overview',
+                        component: () => import('@/pages/inventory/Overview.vue'),
+                        meta: {
+                            defaultTitle: 'overview',
+                        },
+                    },
+                    {
+                        path: 'ledger',
+                        component: () => import('@/pages/inventory/Ledger.vue'),
+                        meta: {
+                            defaultTitle: 'overview',
+                        },
+                    },
+                    {
+                        path: 'storage-topology',
+                        component: () => import('@/pages/inventory/StorageTopology.vue'),
+                        meta: {
+                            defaultTitle: 'overview',
+                        },
+                    },
+                    {
+                        path: 'stocktake',
+                        component: () => import('@/pages/inventory/Stocktake.vue'),
+                        meta: {
+                            defaultTitle: 'overview',
+                        },
+                    },
+                ],
+            },
+            {
+                path: 'equipment',
+                component: () => import('@/pages/equipment/Equipment.vue'),
+                redirect: '/main/equipment/overview',
+                meta: {
+                    defaultTitle: 'equipment',
+                },
+                children: [
+                    {
+                        path: 'overview',
+                        component: () => import('@/pages/equipment/Overview.vue'),
+                        meta: {
+                            defaultTitle: 'overview',
+                        },
+                    },
+                    {
+                        path: 'list',
+                        component: () => import('@/pages/equipment/List.vue'),
+                        meta: {
+                            defaultTitle: 'list',
+                        },
+                    },
+                ],
             },
         ],
     },

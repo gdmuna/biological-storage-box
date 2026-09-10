@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@/api/client', () => ({
+vi.mock('@/shared/api/client', () => ({
     default: {
         get: vi.fn(),
         post: vi.fn(),
@@ -9,7 +9,7 @@ vi.mock('@/api/client', () => ({
     },
 }));
 
-import api from '@/api/client';
+import api from '@/shared/api/client';
 import {
     getReagent,
     listReagents,
@@ -19,7 +19,7 @@ import {
     deleteBoxAlias,
     listBoxAliases,
     updateBoxAlias,
-} from '@/api/modules/box';
+} from '@/shared/api/modules/box';
 
 describe('box API module', () => {
     beforeEach(() => {

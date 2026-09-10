@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 
 // Minimal smoke test: ReagentType API mock
-vi.mock('@/api/modules/reagent-type', () => ({
+vi.mock('@/shared/api/modules/reagent-type', () => ({
     listReagentTypes: vi.fn().mockResolvedValue([
         {
             id: 'rt-1',
@@ -32,7 +32,7 @@ vi.mock('@/stores/org', () => ({
 
 describe('ReagentType API Integration', () => {
     it('listReagentTypes resolves with items', async () => {
-        const { listReagentTypes } = await import('@/api/modules/reagent-type');
+        const { listReagentTypes } = await import('@/shared/api/modules/reagent-type');
         const result = await listReagentTypes({ orgId: 'org-1' });
         expect(result[0].name).toBe('青霉素');
     });

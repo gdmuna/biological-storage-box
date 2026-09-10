@@ -41,7 +41,7 @@ vi.mock('@/stores/reagent', () => ({
     }),
 }));
 
-vi.mock('@/utils/animation', () => ({
+vi.mock('@/shared/utils/animation', () => ({
     fadeSlideIn: vi.fn(),
 }));
 

@@ -22,7 +22,7 @@ const { mockOrgs } = vi.hoisted(() => ({
     ] as Org[],
 }));
 
-vi.mock('@/api/modules/org', () => ({
+vi.mock('@/shared/api/modules/org', () => ({
     listOrgs: vi.fn().mockResolvedValue(mockOrgs),
 }));
 

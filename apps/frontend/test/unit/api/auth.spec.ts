@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock must be declared before imports that use the module
-vi.mock('@/api/client', () => ({
+vi.mock('@/shared/api/client', () => ({
     default: {
         get: vi.fn(),
         post: vi.fn(),
@@ -10,8 +10,8 @@ vi.mock('@/api/client', () => ({
     },
 }));
 
-import api from '@/api/client';
-import { login, register, logout, getMyInfo } from '@/api/modules/auth';
+import api from '@/shared/api/client';
+import { login, register, logout, getMyInfo } from '@/shared/api/modules/auth';
 
 describe('auth API module', () => {
     beforeEach(() => {
