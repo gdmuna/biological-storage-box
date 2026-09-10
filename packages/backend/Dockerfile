@@ -4,19 +4,19 @@ FROM node:22.22-slim AS builder
 WORKDIR /talos-ark
 
 # 替换为国内镜像源（阿里云），避免官方源在国内网络不稳定
-COPY apps/backend/config/apt/debian.sources /etc/apt/sources.list.d/debian.sources
+COPY packages/backend/config/apt/debian.sources /etc/apt/sources.list.d/debian.sources
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends openssl \
     && npm install -g pnpm
 
 COPY pnpm-workspace.yaml pnpm-lock.yaml .npmrc package.json ./
-COPY apps/backend/package.json ./apps/backend/
+COPY packages/backend/package.json ./packages/backend/
 
 # 2. 安装工作区依赖（lockfile 锁版本）
 RUN pnpm --filter @talos-ark/backend install --frozen-lockfile --ignore-scripts
 
-COPY apps/backend/ ./apps/backend/
+COPY packages/backend/ ./packages/backend/
 
 # 3. 生成 Prisma Client + 编译 TypeScript
 ARG DATABASE_URL="postgresql://username:password@host:5432/dbName?schema=public"
@@ -33,17 +33,17 @@ WORKDIR /talos-ark
 
 # 从构建阶段复制 deploy 产物
 COPY --from=builder /talos-ark/deploy/node_modules ./node_modules
-COPY --from=builder /talos-ark/apps/backend/dist ./dist
+COPY --from=builder /talos-ark/packages/backend/dist ./dist
 
 # .env.* 文件在构建时从 service 目录复制（含加密的 dotenvx 文件）
-COPY apps/backend/secrets/env/* ./secrets/env/
+COPY packages/backend/secrets/env/* ./secrets/env/
 
-COPY apps/backend/secrets/keys/* ./secrets/keys/
+COPY packages/backend/secrets/keys/* ./secrets/keys/
 
 # 替换为国内镜像源（阿里云），避免官方源在国内网络不稳定
-COPY apps/backend/config/apt/debian.sources /etc/apt/sources.list.d/debian.sources
+COPY packages/backend/config/apt/debian.sources /etc/apt/sources.list.d/debian.sources
 
-COPY apps/backend/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY packages/backend/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 RUN apt-get update \
     && apt-get install -y openssl curl \

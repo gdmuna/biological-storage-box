@@ -4,6 +4,6 @@ Read the context document for the application being changed. Cross-cutting decis
 
 | Context | Scope | Context document | Context ADRs |
 | --- | --- | --- | --- |
-| Backend | NestJS API, persistence, and server-side integrations | `apps/backend/CONTEXT.md` | `apps/backend/docs/adr/` |
-| Frontend | Client application and user-facing interactions | `apps/frontend/CONTEXT.md` | `apps/frontend/docs/adr/` |
-| Docsite | Documentation site and documentation delivery | `apps/docsite/CONTEXT.md` | `apps/docsite/docs/adr/` |
+| Backend | NestJS API, persistence, and server-side integrations | `packages/backend/CONTEXT.md` | `packages/backend/docs/adr/` |
+| Frontend | Client application and user-facing interactions | `packages/frontend/CONTEXT.md` | `packages/frontend/docs/adr/` |
+| Docsite | Documentation site and documentation delivery | `packages/docsite/CONTEXT.md` | `packages/docsite/docs/adr/` |

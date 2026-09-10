@@ -30,7 +30,7 @@
 
 ```
 Talos-Ark/
-├── apps/
+├── packages/
 │   ├── backend/     # NestJS 后端服务（API + 数据库）
 │   ├── frontend/    # Tauri 桌面客户端（Vue 3 + Rust 壳层）
 │   └── docsite/     # VitePress 文档站
@@ -41,9 +41,9 @@ Talos-Ark/
 
 | 工作区 | 技术栈 | 职责 |
 | --- | --- | --- |
-| **apps/backend** | NestJS · Prisma · PostgreSQL · Zod | REST API、认证、业务逻辑、数据持久化 |
-| **apps/frontend** | Tauri · Vue 3 · Pinia · Alova · shadcn-vue · Tailwind | 跨平台桌面客户端（Tauri 壳层 + Vue 3 渲染器） |
-| **apps/docsite** | VitePress · Nginx | 项目文档站、OpenAPI 参考文档 |
+| **packages/backend** | NestJS · Prisma · PostgreSQL · Zod | REST API、认证、业务逻辑、数据持久化 |
+| **packages/frontend** | Tauri · Vue 3 · Pinia · Alova · shadcn-vue · Tailwind | 跨平台桌面客户端（Tauri 壳层 + Vue 3 渲染器） |
+| **packages/docsite** | VitePress · Nginx | 项目文档站、OpenAPI 参考文档 |
 
 ## 核心功能
 
@@ -100,9 +100,9 @@ pnpm --filter @talos-ark/frontend test:e2e
 
 ## 文档
 
-- [后端文档](apps/backend/docs/) — 架构设计、API 规范、开发指南
-- [后端 AGENTS.md](apps/backend/AGENTS.md) — AI 协作操作手册
-- [前端 AGENTS.md](apps/frontend/AGENTS.md) — 前端 AI 协作操作手册
+- [后端文档](packages/backend/docs/) — 架构设计、API 规范、开发指南
+- [后端 AGENTS.md](packages/backend/AGENTS.md) — AI 协作操作手册
+- [前端 AGENTS.md](packages/frontend/AGENTS.md) — 前端 AI 协作操作手册
 
 ## License
 

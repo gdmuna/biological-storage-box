@@ -87,7 +87,7 @@ jobs:
       - name: Extract version
         id: version
         run: |
-          VERSION=$(node -e "const fs=require('fs');console.log(JSON.parse(fs.readFileSync('./apps/backend/package.json','utf8')).version)")
+          VERSION=$(node -e "const fs=require('fs');console.log(JSON.parse(fs.readFileSync('./packages/backend/package.json','utf8')).version)")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "📦 Version: $VERSION"
 
@@ -109,11 +109,11 @@ jobs:
 
       - name: Sync schema (CI DB)
         run: |
-          if compgen -G "apps/backend/prisma/migrations/*/migration.sql" > /dev/null 2>&1; then
+          if compgen -G "packages/backend/prisma/migrations/*/migration.sql" > /dev/null 2>&1; then
             echo "\U0001f50d Validating schema.prisma matches migrations..."
             pnpm --filter @talos-ark/backend prisma migrate diff \
-              --from-migrations ./apps/backend/prisma/migrations \
-              --to-schema-datamodel ./apps/backend/prisma/schema.prisma \
+              --from-migrations ./packages/backend/prisma/migrations \
+              --to-schema-datamodel ./packages/backend/prisma/schema.prisma \
               --exit-code || (echo "\u274c schema.prisma has uncommitted changes \u2014 run pnpm db:migrate" && exit 1)
             echo "\u2705 Schema matches, running migrate deploy"
             pnpm --filter @talos-ark/backend prisma migrate deploy

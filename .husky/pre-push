@@ -9,8 +9,8 @@
 
 # # 按工作区分别触发测试（新分支无上游时回退到初始提交，避免漏测）
 # base=$(git rev-parse --verify @{u} 2>/dev/null || git rev-list --max-parents=0 HEAD)
-# changed_backend=$(git diff --name-only "$base" HEAD | grep -E '^apps/backend/.*\.(js|ts|d\.ts)$' || true)
-# changed_frontend=$(git diff --name-only "$base" HEAD | grep -E '^apps/frontend/.*\.(js|ts|d\.ts|vue)$' || true)
+# changed_backend=$(git diff --name-only "$base" HEAD | grep -E '^packages/backend/.*\.(js|ts|d\.ts)$' || true)
+# changed_frontend=$(git diff --name-only "$base" HEAD | grep -E '^packages/frontend/.*\.(js|ts|d\.ts|vue)$' || true)
 
 # if [ -n "$changed_backend" ]; then
 #     log "检测到 backend 变更，运行测试"

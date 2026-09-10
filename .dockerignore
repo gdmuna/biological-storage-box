@@ -6,6 +6,6 @@
 **/.env.keys
 **/.env.example
 
-apps/backend/prisma/generated/
+packages/backend/prisma/generated/
 
-apps/frontend/src-tauri/
+packages/frontend/src-tauri/

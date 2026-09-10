@@ -7,14 +7,14 @@ RUN npm install -g pnpm
 
 # 先复制 workspace 级别的依赖描述文件，充分利用 layer cache
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/frontend/package.json ./apps/frontend/
+COPY packages/frontend/package.json ./packages/frontend/
 
 RUN pnpm --filter @talos-ark/frontend install --frozen-lockfile --ignore-scripts
 
 # 复制前端源码
-COPY apps/frontend/ ./apps/frontend/
+COPY packages/frontend/ ./packages/frontend/
 
-# 构建产物输出到 apps/frontend/dist
+# 构建产物输出到 packages/frontend/dist
 
 RUN pnpm --filter @talos-ark/frontend vite:build
 
@@ -22,9 +22,9 @@ RUN pnpm --filter @talos-ark/frontend vite:build
 FROM nginxinc/nginx-unprivileged:alpine AS runner
 
 # Vite 构建产物
-COPY --from=builder /talos-ark/apps/frontend/dist /usr/share/nginx/html
+COPY --from=builder /talos-ark/packages/frontend/dist /usr/share/nginx/html
 
 # nginx 配置
-COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY packages/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 8080

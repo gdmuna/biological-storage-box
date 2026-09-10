@@ -30,16 +30,16 @@ export default [
         ignores: [
             '**/dist/**',
             '**/node_modules/**',
-            'apps/backend/prisma/generated/**',
-            'apps/docsite/.vitepress/dist/**',
-            'apps/docsite/.vitepress/cache/**',
-            'apps/frontend/src-tauri/**',
+            'packages/backend/prisma/generated/**',
+            'packages/docsite/.vitepress/dist/**',
+            'packages/docsite/.vitepress/cache/**',
+            'packages/frontend/src-tauri/**',
         ],
     },
 
-    // ── apps/backend: TypeScript ───────────
+    // ── packages/backend: TypeScript ────────
     {
-        files: ['apps/backend/src/**/*.ts', 'apps/backend/test/**/*.ts'],
+        files: ['packages/backend/src/**/*.ts', 'packages/backend/test/**/*.ts'],
         languageOptions: {
             parser: tsParser,
             globals: {
@@ -63,10 +63,10 @@ export default [
         },
     },
 
-    // ── apps/frontend: Vue 3 + TypeScript ───────
+    // ── packages/frontend: Vue 3 + TypeScript ───
     {
-        files: ['apps/frontend/src/**/*.{js,ts,vue}'],
-        ignores: ['apps/frontend/src/components/ui/**'],
+        files: ['packages/frontend/src/**/*.{js,ts,vue}'],
+        ignores: ['packages/frontend/src/components/ui/**'],
         languageOptions: {
             parser: vueParser,
             parserOptions: {

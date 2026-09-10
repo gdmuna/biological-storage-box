@@ -1,7 +1,7 @@
 packages:
-  - './apps/backend'
-  - './apps/docsite'
-  - './apps/frontend'
+  - './packages/backend'
+  - './packages/docsite'
+  - './packages/frontend'
 
 allowBuilds:
   '@nestjs/core': true

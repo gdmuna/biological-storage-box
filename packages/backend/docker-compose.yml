@@ -30,8 +30,8 @@ services:
   backend:
     container_name: ${APP_CONTAINER_NAME:-backend}
     build:
-      context: ..
-      dockerfile: apps/backend/Dockerfile
+      context: ../..
+      dockerfile: packages/backend/Dockerfile
       args:
         NODE_ENV: ${NODE_ENV:-development}
         APP_NAME: ${APP_NAME:-biological-storage-box}
