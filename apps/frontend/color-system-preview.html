@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TalosArk · Color System Preview</title>
+        <style>
+            :root {
+                --background: oklch(98.3% 0.00398 122.382);
+                --foreground: oklch(0.278 0.03 256.8);
+                --card: oklch(0.997 0.002 122.382);
+                --popover: oklch(0.997 0.002 122.382);
+                --primary: hsl(216 98% 52%);
+                --primary-soft: #e7eefe;
+                --primary-soft-foreground: var(--primary);
+                --primary-hover: #0a63e9;
+                --primary-hover-foreground: var(--primary-foreground);
+                --primary-active: #0959ce;
+                --primary-active-foreground: var(--primary-foreground);
+                --primary-foreground: oklch(1 0 0);
+                --neutral-selected: oklch(0.89 0.01 122.382);
+                --neutral-selected-foreground: var(--foreground);
+                --secondary: var(--neutral-selected);
+                --secondary-foreground: var(--foreground);
+                --muted: oklch(0.962 0.004 122.382);
+                --muted-foreground: oklch(0.551 0.023 264.4);
+                --accent: oklch(0.945 0.006 122.382);
+                --accent-foreground: var(--foreground);
+                --destructive: hsl(3 95% 61%);
+                --destructive-soft: #fde8e7;
+                --destructive-soft-foreground: var(--destructive);
+                --destructive-hover: #e64339;
+                --destructive-active: #d9362c;
+                --success: hsl(157 83% 45%);
+                --success-soft: #e1f7ec;
+                --success-soft-foreground: var(--success);
+                --warning: hsl(37 98% 56%);
+                --warning-soft: #ffebd8;
+                --warning-soft-foreground: var(--warning);
+                --border: oklch(0.9 0.007 122.382);
+                --input: oklch(0.82 0.01 122.382);
+                --ring: oklch(0.64 0.11 255);
+                --sidebar: var(--muted);
+                --sidebar-accent: var(--neutral-selected);
+                --radius: 8px;
+                --shadow-xs: 0 1px 2px rgb(15 23 42 / 4%);
+                --shadow-md: 0 4px 10px rgb(15 23 42 / 8%), 0 2px 4px rgb(15 23 42 / 4%);
+                --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                background: var(--background);
+                color: var(--foreground);
+                font-family:
+                    ui-sans-serif,
+                    system-ui,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    'Segoe UI',
+                    'PingFang SC',
+                    'Microsoft YaHei',
+                    sans-serif;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+
+            button {
+                font: inherit;
+            }
+
+            .page {
+                width: min(1180px, calc(100% - 48px));
+                margin: 0 auto;
+                padding: 48px 0 72px;
+            }
+
+            .eyebrow {
+                margin: 0 0 8px;
+                color: var(--primary);
+                font-size: 12px;
+                font-weight: 650;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            h1,
+            h2,
+            h3,
+            p {
+                margin-top: 0;
+            }
+
+            h1 {
+                margin-bottom: 8px;
+                font-size: 28px;
+                letter-spacing: -0.02em;
+            }
+
+            h2 {
+                margin-bottom: 4px;
+                font-size: 18px;
+            }
+
+            .lede,
+            .section-description {
+                color: var(--muted-foreground);
+            }
+
+            .lede {
+                max-width: 720px;
+                margin-bottom: 32px;
+                font-size: 15px;
+            }
+
+            .section {
+                margin-top: 36px;
+            }
+
+            .section-heading {
+                display: flex;
+                align-items: end;
+                justify-content: space-between;
+                gap: 16px;
+                margin-bottom: 16px;
+            }
+
+            .section-description {
+                margin: 0;
+                font-size: 13px;
+            }
+
+            .workbench {
+                display: grid;
+                min-height: 420px;
+                overflow: hidden;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                background: var(--background);
+                box-shadow: var(--shadow-md);
+                grid-template-columns: 224px minmax(0, 1fr);
+                grid-template-rows: 40px minmax(0, 1fr);
+            }
+
+            .titlebar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                grid-column: 1 / -1;
+                border-bottom: 1px solid var(--border);
+                background: var(--muted);
+                padding: 0 14px;
+            }
+
+            .brand,
+            .window-controls,
+            .utility-actions,
+            .sidebar-item {
+                display: flex;
+                align-items: center;
+            }
+
+            .brand {
+                gap: 8px;
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+            .brand-mark {
+                width: 16px;
+                height: 16px;
+                border: 1.5px solid currentcolor;
+                border-radius: 4px;
+                transform: rotate(30deg);
+            }
+
+            .window-controls {
+                gap: 4px;
+            }
+
+            .icon-button {
+                display: grid;
+                width: 28px;
+                height: 28px;
+                cursor: pointer;
+                place-items: center;
+                border: 0;
+                border-radius: 6px;
+                background: transparent;
+                color: var(--foreground);
+                transition: background-color 150ms var(--ease-standard);
+            }
+
+            .icon-button:hover,
+            .icon-button.is-hover {
+                background: var(--accent);
+            }
+
+            .sidebar {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+                border-right: 1px solid var(--border);
+                background: var(--sidebar);
+                padding: 16px 12px;
+            }
+
+            .workspace-switcher {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                background: var(--card);
+                padding: 10px;
+                box-shadow: var(--shadow-xs);
+            }
+
+            .workspace-avatar {
+                display: grid;
+                width: 30px;
+                height: 30px;
+                flex: 0 0 auto;
+                place-items: center;
+                border-radius: 6px;
+                background: color-mix(in oklch, var(--primary) 12%, var(--card));
+                color: var(--primary);
+                font-weight: 700;
+            }
+
+            .workspace-copy {
+                min-width: 0;
+            }
+
+            .workspace-copy strong,
+            .workspace-copy span {
+                display: block;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            .workspace-copy strong {
+                color: var(--primary);
+                font-size: 12px;
+            }
+
+            .workspace-copy span {
+                color: var(--muted-foreground);
+                font-size: 11px;
+            }
+
+            .sidebar-nav {
+                display: grid;
+                gap: 3px;
+            }
+
+            .sidebar-item {
+                min-height: 32px;
+                gap: 9px;
+                border-radius: 6px;
+                padding: 0 10px;
+                color: var(--foreground);
+                font-size: 13px;
+                transition: background-color 150ms var(--ease-standard);
+            }
+
+            .sidebar-item:hover,
+            .sidebar-item.is-hover {
+                background: var(--accent);
+            }
+
+            .sidebar-item.is-selected {
+                background: var(--sidebar-accent);
+                font-weight: 600;
+            }
+
+            .dot {
+                width: 12px;
+                height: 12px;
+                flex: 0 0 auto;
+                border: 1.5px solid currentcolor;
+                border-radius: 3px;
+                opacity: 0.8;
+            }
+
+            .content {
+                min-width: 0;
+            }
+
+            .content-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+                border-bottom: 1px solid var(--border);
+                background: var(--card);
+                padding: 12px 16px;
+            }
+
+            .crumb {
+                font-weight: 600;
+            }
+
+            .search {
+                width: min(360px, 45%);
+                border: 1px solid var(--input);
+                border-radius: 6px;
+                background: var(--background);
+                color: var(--muted-foreground);
+                padding: 7px 10px;
+                font-size: 12px;
+            }
+
+            .content-body {
+                padding: 20px;
+            }
+
+            .tabs {
+                display: flex;
+                margin: -20px -20px 20px;
+                border-bottom: 1px solid var(--border);
+                background: var(--card);
+                padding: 0 16px;
+            }
+
+            .tab {
+                border: 0;
+                border-bottom: 2px solid transparent;
+                background: var(--card);
+                padding: 12px 14px 10px;
+                color: var(--muted-foreground);
+                cursor: pointer;
+            }
+
+            .tab:hover {
+                background: var(--accent);
+                color: var(--foreground);
+            }
+
+            .tab.is-active {
+                border-bottom-color: var(--primary);
+                color: var(--primary);
+                font-weight: 650;
+            }
+
+            .mini-card {
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                background: var(--card);
+                padding: 16px;
+            }
+
+            .mini-card h3 {
+                margin-bottom: 4px;
+                font-size: 14px;
+            }
+
+            .mini-card p {
+                margin: 0;
+                color: var(--muted-foreground);
+                font-size: 12px;
+            }
+
+            .swatch-grid {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .swatch {
+                overflow: hidden;
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                background: var(--card);
+            }
+
+            .swatch-color {
+                height: 72px;
+            }
+
+            .semantic-pair-color {
+                display: grid;
+                background: var(--pair-background);
+                place-items: center;
+            }
+
+            .semantic-pair-mark {
+                display: block;
+                width: 32px;
+                height: 32px;
+                border-radius: 9px;
+                background: var(--pair-foreground);
+            }
+
+            .swatch-meta {
+                padding: 10px 12px 12px;
+            }
+
+            .swatch-name {
+                display: block;
+                margin-bottom: 2px;
+                font-weight: 650;
+            }
+
+            .swatch-token,
+            .swatch-hex {
+                color: var(--muted-foreground);
+                font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+                font-size: 11px;
+            }
+
+            .swatch-hex {
+                color: color-mix(in oklch, var(--muted-foreground) 70%, transparent);
+            }
+
+            .state-grid {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .state-card {
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                background: var(--card);
+                padding: 16px;
+            }
+
+            .state-card h3 {
+                margin-bottom: 12px;
+                font-size: 13px;
+            }
+
+            .button-stack {
+                display: grid;
+                gap: 8px;
+            }
+
+            .button {
+                min-height: 36px;
+                border: 1px solid transparent;
+                border-radius: 6px;
+                padding: 0 12px;
+                cursor: pointer;
+                font-weight: 600;
+                transition:
+                    background-color 150ms var(--ease-standard),
+                    color 150ms var(--ease-standard);
+            }
+
+            .button.primary {
+                background: var(--primary);
+                color: var(--primary-foreground);
+            }
+
+            .button.primary:hover,
+            .button.primary.is-hover {
+                background: var(--primary-hover);
+                color: var(--primary-hover-foreground);
+            }
+
+            .button.outline {
+                border-color: var(--border);
+                background: var(--card);
+                color: var(--foreground);
+            }
+
+            .button.outline:hover,
+            .button.outline.is-hover,
+            .button.ghost:hover,
+            .button.ghost.is-hover {
+                background: var(--accent);
+            }
+
+            .button.secondary {
+                background: var(--secondary);
+                color: var(--secondary-foreground);
+            }
+
+            .button.secondary:hover,
+            .button.secondary.is-hover {
+                background: var(--accent);
+            }
+
+            .button.ghost {
+                background: transparent;
+                color: var(--foreground);
+            }
+
+            .button.destructive {
+                background: var(--destructive);
+                color: var(--primary-foreground);
+            }
+
+            .button.destructive:hover,
+            .button.destructive.is-hover {
+                background: var(--destructive-hover);
+            }
+
+            .overlay-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .overlay-demo {
+                position: relative;
+                min-height: 148px;
+                overflow: hidden;
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                background: var(--background);
+            }
+
+            .overlay-demo::after {
+                position: absolute;
+                inset: 0;
+                content: '';
+                background: rgb(0 0 0 / var(--overlay-opacity));
+            }
+
+            .overlay-card {
+                position: absolute;
+                z-index: 1;
+                top: 50%;
+                left: 50%;
+                width: 180px;
+                border-radius: 6px;
+                background: var(--card);
+                padding: 12px;
+                box-shadow: var(--shadow-md);
+                transform: translate(-50%, -50%);
+            }
+
+            .overlay-card strong,
+            .overlay-card span {
+                display: block;
+            }
+
+            .overlay-card span {
+                margin-top: 3px;
+                color: var(--muted-foreground);
+                font-size: 11px;
+            }
+
+            .overlay-label {
+                position: absolute;
+                z-index: 2;
+                bottom: 10px;
+                left: 12px;
+                color: white;
+                font-size: 12px;
+                font-weight: 650;
+            }
+
+            .note {
+                margin-top: 20px;
+                border-left: 3px solid var(--primary);
+                border-radius: 0 6px 6px 0;
+                background: color-mix(in oklch, var(--primary) 6%, var(--card));
+                padding: 12px 14px;
+                color: var(--muted-foreground);
+                font-size: 13px;
+            }
+
+            .note strong {
+                color: var(--foreground);
+            }
+
+            @media (max-width: 760px) {
+                .page {
+                    width: min(100% - 32px, 1180px);
+                    padding-top: 32px;
+                }
+
+                .workbench {
+                    grid-template-columns: 164px minmax(0, 1fr);
+                }
+
+                .swatch-grid,
+                .state-grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+            }
+
+            @media (max-width: 520px) {
+                .workbench {
+                    grid-template-columns: 1fr;
+                }
+
+                .sidebar {
+                    display: none;
+                }
+
+                .swatch-grid,
+                .state-grid,
+                .overlay-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .content-header {
+                    align-items: start;
+                    flex-direction: column;
+                }
+
+                .search {
+                    width: 100%;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                * {
+                    transition-duration: 0.01ms !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main class="page">
+            <p class="eyebrow">TalosArk · Light Theme</p>
+            <h1>Color System Preview</h1>
+            <p class="lede">用于检查工作台表面层级，以及普通交互、选中状态与语义状态是否能被一眼区分。</p>
+
+            <section class="section" aria-labelledby="surface-heading">
+                <div class="section-heading">
+                    <div>
+                        <h2 id="surface-heading">App Shell Surface Hierarchy</h2>
+                        <p class="section-description">从暖灰系统标题栏、暖灰侧栏、主画布到暖白内容表面。</p>
+                    </div>
+                </div>
+
+                <div class="workbench">
+                    <div class="titlebar">
+                        <div class="brand">
+                            <span class="brand-mark" aria-hidden="true"></span>
+                            Talos Ark 璇玑云库
+                        </div>
+                        <div class="window-controls" aria-label="窗口控制示例">
+                            <button class="icon-button" aria-label="最小化">−</button>
+                            <button class="icon-button" aria-label="还原">□</button>
+                            <button class="icon-button" aria-label="关闭">×</button>
+                        </div>
+                    </div>
+
+                    <aside class="sidebar" aria-label="侧边栏示例">
+                        <div class="workspace-switcher">
+                            <span class="workspace-avatar">W</span>
+                            <div class="workspace-copy">
+                                <strong>孙教授课题组</strong>
+                                <span>广东医科大学</span>
+                            </div>
+                        </div>
+                        <nav class="sidebar-nav">
+                            <div class="sidebar-item is-selected">
+                                <span class="dot"></span>
+                                工作台
+                            </div>
+                            <div class="sidebar-item">
+                                <span class="dot"></span>
+                                材料
+                            </div>
+                            <div class="sidebar-item is-hover">
+                                <span class="dot"></span>
+                                库存 · Hover
+                            </div>
+                            <div class="sidebar-item">
+                                <span class="dot"></span>
+                                设备
+                            </div>
+                        </nav>
+                    </aside>
+
+                    <div class="content">
+                        <header class="content-header">
+                            <span class="crumb">工作台 / 总览</span>
+                            <div class="search">
+                                ⌕　搜索工作区或执行命令　
+                                <kbd>Ctrl + K</kbd>
+                            </div>
+                            <div class="utility-actions">
+                                <button class="icon-button" aria-label="通知">◦</button>
+                                <button class="icon-button is-hover" aria-label="设置示例">···</button>
+                            </div>
+                        </header>
+                        <div class="content-body">
+                            <div class="tabs" aria-label="二级导航示例">
+                                <button class="tab is-active">总览</button>
+                                <button class="tab">我的待办</button>
+                                <button class="tab">待审批</button>
+                            </div>
+                            <article class="mini-card">
+                                <h3>暖白 Card 表面</h3>
+                                <p>
+                                    其下方为
+                                    <code>background</code>
+                                    画布；二者靠背景、边框和轻阴影区分。
+                                </p>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" aria-labelledby="palette-heading">
+                <div class="section-heading">
+                    <div>
+                        <h2 id="palette-heading">Base Surface & Semantic Tokens</h2>
+                        <p class="section-description">同一 token 在应用内只承担一个稳定角色。</p>
+                    </div>
+                </div>
+
+                <div class="swatch-grid">
+                    <article class="swatch">
+                        <div class="swatch-color" style="background: var(--background)"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">Main canvas</span>
+                            <span class="swatch-token">--background</span>
+                            <br />
+                            <span class="swatch-hex">#FBFCF9</span>
+                        </div>
+                    </article>
+                    <article class="swatch">
+                        <div class="swatch-color" style="background: var(--card)"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">Card & Popover</span>
+                            <span class="swatch-token">--card / --popover</span>
+                            <br />
+                            <span class="swatch-hex">#FEFEFD</span>
+                        </div>
+                    </article>
+                    <article class="swatch">
+                        <div class="swatch-color" style="background: var(--muted)"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">App chrome</span>
+                            <span class="swatch-token">--muted</span>
+                            <br />
+                            <span class="swatch-hex">#F2F3F0</span>
+                        </div>
+                    </article>
+                    <article class="swatch">
+                        <div class="swatch-color" style="background: var(--accent)"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">Hover</span>
+                            <span class="swatch-token">--accent</span>
+                            <br />
+                            <span class="swatch-hex">#ECEDE9</span>
+                        </div>
+                    </article>
+                    <article class="swatch">
+                        <div class="swatch-color" style="background: var(--secondary)"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">Neutral selected</span>
+                            <span class="swatch-token">--neutral-selected / --secondary</span>
+                            <br />
+                            <span class="swatch-hex">#D9DCD5</span>
+                        </div>
+                    </article>
+                    <article class="swatch">
+                        <div
+                            class="swatch-color semantic-pair-color"
+                            style="
+                                --pair-background: var(--primary-soft);
+                                --pair-foreground: var(--primary-soft-foreground);
+                            "
+                        >
+                            <span class="semantic-pair-mark"></span>
+                        </div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">Primary pair</span>
+                            <span class="swatch-token">--primary-soft / --primary-soft-foreground</span>
+                            <br />
+                            <span class="swatch-hex">#E7EEFE / #0D6DFD</span>
+                        </div>
+                    </article>
+                    <article class="swatch">
+                        <div
+                            class="swatch-color semantic-pair-color"
+                            style="
+                                --pair-background: var(--success-soft);
+                                --pair-foreground: var(--success-soft-foreground);
+                            "
+                        >
+                            <span class="semantic-pair-mark"></span>
+                        </div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">Success pair</span>
+                            <span class="swatch-token">--success-soft / --success-soft-foreground</span>
+                            <br />
+                            <span class="swatch-hex">#E1F7EC / #14D289</span>
+                        </div>
+                    </article>
+                    <article class="swatch">
+                        <div
+                            class="swatch-color semantic-pair-color"
+                            style="
+                                --pair-background: var(--warning-soft);
+                                --pair-foreground: var(--warning-soft-foreground);
+                            "
+                        >
+                            <span class="semantic-pair-mark"></span>
+                        </div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">Warning pair</span>
+                            <span class="swatch-token">--warning-soft / --warning-soft-foreground</span>
+                            <br />
+                            <span class="swatch-hex">#FFEBD8 / #FDA821</span>
+                        </div>
+                    </article>
+                    <article class="swatch">
+                        <div
+                            class="swatch-color semantic-pair-color"
+                            style="
+                                --pair-background: var(--destructive-soft);
+                                --pair-foreground: var(--destructive-soft-foreground);
+                            "
+                        >
+                            <span class="semantic-pair-mark"></span>
+                        </div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">Destructive pair</span>
+                            <span class="swatch-token">--destructive-soft / --destructive-soft-foreground</span>
+                            <br />
+                            <span class="swatch-hex">#FDE8E7 / #FA473D</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="section" aria-labelledby="states-heading">
+                <div class="section-heading">
+                    <div>
+                        <h2 id="states-heading">Interactive States</h2>
+                        <p class="section-description">每列展示静止与 Hover 状态；按钮本身仍可实际 Hover。</p>
+                    </div>
+                </div>
+
+                <div class="state-grid">
+                    <article class="state-card">
+                        <h3>Primary</h3>
+                        <div class="button-stack">
+                            <button class="button primary">Rest</button>
+                            <button class="button primary is-hover">Hover</button>
+                        </div>
+                    </article>
+                    <article class="state-card">
+                        <h3>Outline</h3>
+                        <div class="button-stack">
+                            <button class="button outline">Rest</button>
+                            <button class="button outline is-hover">Hover</button>
+                        </div>
+                    </article>
+                    <article class="state-card">
+                        <h3>Secondary</h3>
+                        <div class="button-stack">
+                            <button class="button secondary">Rest</button>
+                            <button class="button secondary is-hover">Hover</button>
+                        </div>
+                    </article>
+                    <article class="state-card">
+                        <h3>Ghost</h3>
+                        <div class="button-stack">
+                            <button class="button ghost">Rest</button>
+                            <button class="button ghost is-hover">Hover</button>
+                        </div>
+                    </article>
+                    <article class="state-card">
+                        <h3>Destructive</h3>
+                        <div class="button-stack">
+                            <button class="button destructive">Rest</button>
+                            <button class="button destructive is-hover">Hover</button>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="section" aria-labelledby="overlay-heading">
+                <div class="section-heading">
+                    <div>
+                        <h2 id="overlay-heading">Overlay Variants</h2>
+                        <p class="section-description">普通 Dialog 与阻断式 Drawer / Sheet 使用不同遮罩强度。</p>
+                    </div>
+                </div>
+
+                <div class="overlay-grid">
+                    <div class="overlay-demo" style="--overlay-opacity: 0.3">
+                        <div class="overlay-card">
+                            <strong>Dialog</strong>
+                            <span>black / 30</span>
+                        </div>
+                        <span class="overlay-label">Standard overlay</span>
+                    </div>
+                    <div class="overlay-demo" style="--overlay-opacity: 0.8">
+                        <div class="overlay-card">
+                            <strong>Drawer / Sheet</strong>
+                            <span>black / 80</span>
+                        </div>
+                        <span class="overlay-label">Blocking overlay</span>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="note">
+                <strong>状态规则：</strong>
+                <code>accent</code>
+                是通用暖灰 Hover 表面；
+                <code>primary-hover</code>
+                则仅用于主按钮的蓝色 Hover；
+                <code>primary-active</code>
+                才使用蓝色，
+                <code>neutral-selected</code>
+                则用于非主强调的持久选中状态；默认控件不另设按住态。
+            </aside>
+        </main>
+    </body>
+</html>
