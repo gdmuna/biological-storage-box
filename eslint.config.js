@@ -89,6 +89,7 @@ export default [
             ...tsPlugin.configs.recommended.rules,
             ...vuePlugin.configs.recommended.rules,
             ...commonRules,
+            'no-console': 'off',
         },
     },
 
