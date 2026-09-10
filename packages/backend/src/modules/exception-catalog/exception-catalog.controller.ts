@@ -1,7 +1,7 @@
-import { ExceptionCatalogService } from './exception-catalog.service.js';
+import { ExceptionCatalogService } from './internal/exception-catalog.service.js';
 import { ExceptionCatalogExceptionCode } from './exception-catalog.exception.js';
 
-import { ApiRoute } from '@/common/decorators/index.js';
+import { ApiRoute } from '@/platform/http/decorators/index.js';
 
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';

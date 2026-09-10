@@ -1,4 +1,4 @@
-import { ClientException, RegisterException } from '@/common/exceptions/index.js';
+import { ClientException, RegisterException } from '@/platform/errors/index.js';
 
 export const ReagentExceptionCode = {
     NOT_FOUND: 'REAGENT_NOT_FOUND',

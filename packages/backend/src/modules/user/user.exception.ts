@@ -1,4 +1,4 @@
-import { AuthException, ClientException, RegisterException } from '@/common/exceptions/index.js';
+import { AuthException, ClientException, RegisterException } from '@/platform/errors/index.js';
 
 export const UserExceptionCode = {
     NOT_FOUND: 'USER_NOT_FOUND',

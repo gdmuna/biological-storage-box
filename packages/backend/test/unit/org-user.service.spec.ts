@@ -1,6 +1,6 @@
 import type { Mocked } from 'vitest';
-import { OrgUserService } from '@/modules/org/org-user.service.js';
-import { OrgRepository } from '@/modules/org/org.repository.js';
+import { OrgUserService } from '@/modules/org/internal/org-user.service.js';
+import { OrgRepository } from '@/modules/org/internal/org.repository.js';
 import {
     OrgNotFoundException,
     OrgNotAdminException,

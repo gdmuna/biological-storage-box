@@ -1,12 +1,10 @@
 import { AccessTokenDto, AuthResponseDto, LoginDto, RegisterDto } from './auth.dto.js';
-import AUTH_EXCEPTION from './auth.exception.js';
-import { AuthService } from './services/auth.service.js';
 
-import { ApiRoute, Cookie } from '@/common/decorators/index.js';
+import AUTH_EXCEPTION from '@/core/identity/identity.exception.js';
+import { IdentityKernel } from '@/core/identity/index.js';
+import { ApiRoute, Cookie } from '@/platform/http/decorators/index.js';
 
-import { REFRESH_TOKEN_COOKIE } from '@/constants/auth.constant.js';
-
-import { AlsService } from '@/infra/index.js';
+import { REFRESH_TOKEN_COOKIE } from '@/config/auth.config.js';
 
 import { Controller, Post, Body, Res, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -15,10 +13,7 @@ import type { FastifyReply } from 'fastify';
 @ApiTags('认证模块')
 @Controller('auth')
 export class AuthController {
-    constructor(
-        private readonly authService: AuthService,
-        private readonly alsService: AlsService
-    ) {}
+    constructor(private readonly identityKernel: IdentityKernel) {}
 
     @Post('register')
     @ApiRoute({
@@ -29,7 +24,7 @@ export class AuthController {
         errors: [AUTH_EXCEPTION.DuplicateUserException.code],
     })
     async register(@Body() body: RegisterDto, @Res({ passthrough: true }) response: FastifyReply) {
-        const authResult = await this.authService.register(body);
+        const authResult = await this.identityKernel.registerPassword(body);
 
         response.setCookie(REFRESH_TOKEN_COOKIE.NAME, authResult.refreshToken, {
             httpOnly: REFRESH_TOKEN_COOKIE.HTTP_ONLY,
@@ -55,7 +50,7 @@ export class AuthController {
     })
     async login(@Body() body: LoginDto, @Res({ passthrough: true }) response: FastifyReply) {
         console.log('Login request body:', body);
-        const authResult = await this.authService.login(body);
+        const authResult = await this.identityKernel.authenticatePassword(body);
 
         response.setCookie(REFRESH_TOKEN_COOKIE.NAME, authResult.refreshToken, {
             httpOnly: REFRESH_TOKEN_COOKIE.HTTP_ONLY,
@@ -84,7 +79,7 @@ export class AuthController {
         @Cookie('refresh_token') refreshToken: string,
         @Res({ passthrough: true }) response: FastifyReply
     ) {
-        const tokenPair = await this.authService.rotateRefreshToken(refreshToken);
+        const tokenPair = await this.identityKernel.rotateRefreshSession(refreshToken);
         response.setCookie(REFRESH_TOKEN_COOKIE.NAME, tokenPair.refreshToken, {
             httpOnly: REFRESH_TOKEN_COOKIE.HTTP_ONLY,
             sameSite: REFRESH_TOKEN_COOKIE.SAME_SITE,

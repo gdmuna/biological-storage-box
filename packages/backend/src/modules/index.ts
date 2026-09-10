@@ -3,6 +3,7 @@ export * from './exception-catalog/exception-catalog.module.js';
 export * from './feedback/feedback.module.js';
 export * from './file/file.module.js';
 export * from './node/node.module.js';
+export * from './operations/operations.module.js';
 export * from './org/org.module.js';
 export * from './reagent/reagent.module.js';
 export * from './reagent-type/reagent-type.module.js';

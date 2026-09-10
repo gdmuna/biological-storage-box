@@ -1,4 +1,4 @@
-import { AllConfig } from '@/constants/index.js';
+import { AllConfig } from '@/config/index.js';
 
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

@@ -1,49 +1,32 @@
 import { AuthController } from '@/modules/auth/auth.controller.js';
-import { AuthService } from '@/modules/auth/services/auth.service.js';
 
-import { REFRESH_TOKEN_COOKIE } from '@/constants/index.js';
+import { IdentityKernel } from '@/core/identity/index.js';
+import { REFRESH_TOKEN_COOKIE } from '@/config/index.js';
 
-import { AlsService } from '@/infra/index.js';
-
-const mockAuthService = {
-    register: vi.fn(),
-    login: vi.fn(),
-    rotateRefreshToken: vi.fn(),
+const identityKernel = {
+    registerPassword: vi.fn(),
+    authenticatePassword: vi.fn(),
+    rotateRefreshSession: vi.fn(),
 };
 
-const mockAlsService = {
-    get: vi.fn(),
-};
-
-describe('AuthController (unit)', () => {
+describe('AuthController', () => {
     let controller: AuthController;
 
     beforeEach(() => {
         vi.clearAllMocks();
-        controller = new AuthController(
-            mockAuthService as unknown as AuthService,
-            mockAlsService as unknown as AlsService
-        );
+        controller = new AuthController(identityKernel as unknown as IdentityKernel);
     });
 
-    it('register should set refresh cookie and return auth response', async () => {
+    it('registers, sets the refresh cookie, and returns the HTTP response', async () => {
         const response: any = { setCookie: vi.fn() };
-        mockAuthService.register.mockResolvedValue({
+        identityKernel.registerPassword.mockResolvedValue({
             accessToken: 'at-register',
             refreshToken: 'rt-register',
-            user: {
-                id: 'u1',
-                username: 'john',
-                email: 'john@example.com',
-            },
+            user: { id: 'u1', username: 'john', email: 'john@example.com' },
         });
 
         const result = await controller.register(
-            {
-                username: 'john',
-                email: 'john@example.com',
-                password: 'P@ssw0rd!',
-            } as any,
+            { username: 'john', email: 'john@example.com', password: 'P@ssw0rd!' } as never,
             response
         );
 
@@ -52,60 +35,49 @@ describe('AuthController (unit)', () => {
             'rt-register',
             expect.objectContaining({ httpOnly: true })
         );
-        expect(result.accessToken).toBe('at-register');
-        expect(result.user.username).toBe('john');
+        expect(result).toMatchObject({ accessToken: 'at-register', user: { username: 'john' } });
     });
 
-    it('login should set refresh cookie and return auth response', async () => {
+    it('logs in through the identity kernel', async () => {
         const response: any = { setCookie: vi.fn() };
-        mockAuthService.login.mockResolvedValue({
+        identityKernel.authenticatePassword.mockResolvedValue({
             accessToken: 'at-login',
             refreshToken: 'rt-login',
-            user: {
-                id: 'u2',
-                username: 'alice',
-                email: 'alice@example.com',
-            },
+            user: { id: 'u2', username: 'alice', email: 'alice@example.com' },
         });
 
         const result = await controller.login(
-            {
-                account: 'alice@example.com',
-                password: 'P@ssw0rd!',
-            } as any,
+            { account: 'alice@example.com', password: 'P@ssw0rd!' } as never,
             response
         );
 
-        expect(response.setCookie).toHaveBeenCalledTimes(1);
-        expect(result.accessToken).toBe('at-login');
-        expect(result.user.email).toBe('alice@example.com');
+        expect(identityKernel.authenticatePassword).toHaveBeenCalledOnce();
+        expect(result).toMatchObject({
+            accessToken: 'at-login',
+            user: { email: 'alice@example.com' },
+        });
     });
 
-    // Cookie 缺失时的验证由 CookieValidationPipe 负责，不在 controller 层测试
-
-    it('refresh-token should rotate tokens and set cookie', async () => {
+    it('rotates the session and sets the new refresh cookie', async () => {
         const response: any = { setCookie: vi.fn() };
-        mockAuthService.rotateRefreshToken.mockResolvedValue({
+        identityKernel.rotateRefreshSession.mockResolvedValue({
             accessToken: 'at-new',
             refreshToken: 'rt-new',
         });
 
-        // 单元测试中装饰器被绕过，直接传入 @Cookie('refresh_token') 提取后的字符串
         const result = await controller.refreshToken('rt-old', response);
 
-        expect(mockAuthService.rotateRefreshToken).toHaveBeenCalledWith('rt-old');
+        expect(identityKernel.rotateRefreshSession).toHaveBeenCalledWith('rt-old');
         expect(response.setCookie).toHaveBeenCalledTimes(1);
-        expect(result.accessToken).toBe('at-new');
+        expect(result).toEqual({ accessToken: 'at-new' });
     });
 
-    it('logout should clear cookie', async () => {
+    it('clears the refresh cookie on logout', async () => {
         const response: any = { clearCookie: vi.fn() };
 
-        const result = await controller.logout(response);
-
+        await expect(controller.logout(response)).resolves.toBe('ok');
         expect(response.clearCookie).toHaveBeenCalledWith(REFRESH_TOKEN_COOKIE.NAME, {
             path: REFRESH_TOKEN_COOKIE.PATH,
         });
-        expect(result).toBe('ok');
     });
 });

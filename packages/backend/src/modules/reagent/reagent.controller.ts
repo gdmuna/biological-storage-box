@@ -6,10 +6,10 @@ import {
     ReagentVo,
     DeleteReagentResultVo,
 } from './reagent.dto.js';
-import { ReagentService } from './reagent.service.js';
+import { ReagentService } from './internal/reagent.service.js';
 import REAGENT_EXCEPTION from './reagent.exception.js';
 
-import { ApiRoute } from '@/common/decorators/index.js';
+import { ApiRoute } from '@/platform/http/decorators/index.js';
 
 import { Controller, Get, Put, Post, Body, Query, Delete } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';

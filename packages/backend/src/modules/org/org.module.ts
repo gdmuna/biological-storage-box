@@ -1,14 +1,15 @@
 import { OrgController } from './org.controller.js';
 import { OrgUserController } from './org-user.controller.js';
-import { OrgService } from './org.service.js';
-import { OrgUserService } from './org-user.service.js';
-import { OrgRepository } from './org.repository.js';
+import { OrgKernel } from './org.kernel.js';
+import { OrgService } from './internal/org.service.js';
+import { OrgUserService } from './internal/org-user.service.js';
+import { OrgRepository } from './internal/org.repository.js';
 
 import { Module } from '@nestjs/common';
 
 @Module({
     controllers: [OrgController, OrgUserController],
-    providers: [OrgService, OrgUserService, OrgRepository],
-    exports: [OrgService, OrgUserService, OrgRepository],
+    providers: [OrgService, OrgUserService, OrgRepository, OrgKernel],
+    exports: [OrgKernel],
 })
 export class OrgModule {}

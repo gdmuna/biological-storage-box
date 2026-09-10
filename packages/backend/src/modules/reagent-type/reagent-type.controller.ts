@@ -5,11 +5,11 @@ import {
     ListReagentTypeDto,
     ReagentTypeVo,
 } from './reagent-type.dto.js';
-import { ReagentTypeService } from './reagent-type.service.js';
+import { ReagentTypeService } from './internal/reagent-type.service.js';
 import REAGENT_TYPE_EXCEPTION from './reagent-type.exception.js';
 
-import { ApiRoute, CurrentUser } from '@/common/decorators/index.js';
-import type { AccessTokenClaim } from '@/modules/auth/services/token.service.js';
+import { ApiRoute, CurrentUser } from '@/platform/http/decorators/index.js';
+import type { AccessTokenClaim } from '@/core/identity/index.js';
 
 import { Controller, Post, Delete, Get, Put, Body, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';

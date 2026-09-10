@@ -1,7 +1,7 @@
 import type { Mocked } from 'vitest';
-import { NodeService } from '../../src/modules/node/node.service.js';
-import { NodeRepository } from '../../src/modules/node/node.repository.js';
-import { OrgRepository } from '../../src/modules/org/org.repository.js';
+import { NodeService } from '@/modules/node/internal/node.service.js';
+import { NodeRepository } from '@/modules/node/internal/node.repository.js';
+import { OrgKernel } from '@/modules/org/org.kernel.js';
 import {
     NodeNotFoundException,
     NodeCircularReferenceException,
@@ -23,7 +23,7 @@ describe('NodeService', () => {
             | 'removeGridConfig'
         >
     >;
-    let orgRepo: Mocked<Pick<OrgRepository, 'findById' | 'findMembership'>>;
+    let orgKernel: Mocked<Pick<OrgKernel, 'assertAdmin'>>;
 
     const userId = 'user_01';
     const orgId = 'org_01';
@@ -40,17 +40,14 @@ describe('NodeService', () => {
             setGridConfig: vi.fn(),
             removeGridConfig: vi.fn(),
         };
-        orgRepo = {
-            findById: vi.fn(),
-            findMembership: vi.fn(),
+        orgKernel = {
+            assertAdmin: vi.fn(),
         };
-        service = new NodeService(nodeRepo as any, orgRepo as any);
+        service = new NodeService(nodeRepo as any, orgKernel as any);
     });
 
     describe('create', () => {
         it('should create a node when user is admin', async () => {
-            orgRepo.findById.mockResolvedValue({ id: orgId } as any);
-            orgRepo.findMembership.mockResolvedValue({ role: 'ADMIN' } as any);
             nodeRepo.create.mockResolvedValue({ id: nodeId, orgId, name: '冷冻室 A' } as any);
 
             const result = await service.create(userId, {
@@ -70,15 +67,14 @@ describe('NodeService', () => {
         });
 
         it('should throw OrgNotFoundException when org not found', async () => {
-            orgRepo.findById.mockResolvedValue(null);
+            orgKernel.assertAdmin.mockRejectedValue(new OrgNotFoundException());
             await expect(
                 service.create(userId, { orgId, name: 'X', type: 'CONTAINER' } as any)
             ).rejects.toThrow(OrgNotFoundException);
         });
 
         it('should throw OrgNotAdminException when user is member only', async () => {
-            orgRepo.findById.mockResolvedValue({ id: orgId } as any);
-            orgRepo.findMembership.mockResolvedValue({ role: 'MEMBER' } as any);
+            orgKernel.assertAdmin.mockRejectedValue(new OrgNotAdminException());
             await expect(
                 service.create(userId, { orgId, name: 'X', type: 'CONTAINER' } as any)
             ).rejects.toThrow(OrgNotAdminException);
@@ -93,8 +89,6 @@ describe('NodeService', () => {
 
         it('should delete node when user is admin', async () => {
             nodeRepo.findById.mockResolvedValue({ id: nodeId, orgId } as any);
-            orgRepo.findById.mockResolvedValue({ id: orgId } as any);
-            orgRepo.findMembership.mockResolvedValue({ role: 'ADMIN' } as any);
             nodeRepo.delete.mockResolvedValue(undefined as any);
 
             await service.delete(userId, nodeId);
@@ -119,8 +113,6 @@ describe('NodeService', () => {
         it('should throw NodeCircularReferenceException when moving to descendant', async () => {
             const node = { id: nodeId, orgId, parentId: null } as any;
             nodeRepo.findById.mockResolvedValue(node);
-            orgRepo.findById.mockResolvedValue({ id: orgId } as any);
-            orgRepo.findMembership.mockResolvedValue({ role: 'OWNER' } as any);
             nodeRepo.isDescendant.mockResolvedValue(true);
 
             await expect(
@@ -131,9 +123,6 @@ describe('NodeService', () => {
         it('should throw NodeCircularReferenceException when moving to self', async () => {
             const node = { id: nodeId, orgId, parentId: null } as any;
             nodeRepo.findById.mockResolvedValue(node);
-            orgRepo.findById.mockResolvedValue({ id: orgId } as any);
-            orgRepo.findMembership.mockResolvedValue({ role: 'OWNER' } as any);
-
             await expect(
                 service.update(userId, { id: nodeId, parentId: nodeId } as any)
             ).rejects.toThrow(NodeCircularReferenceException);
@@ -142,8 +131,6 @@ describe('NodeService', () => {
         it('should update node when no circular reference', async () => {
             const node = { id: nodeId, orgId, parentId: null } as any;
             nodeRepo.findById.mockResolvedValue(node);
-            orgRepo.findById.mockResolvedValue({ id: orgId } as any);
-            orgRepo.findMembership.mockResolvedValue({ role: 'OWNER' } as any);
             nodeRepo.isDescendant.mockResolvedValue(false);
             nodeRepo.update.mockResolvedValue({ id: nodeId, name: 'Updated' } as any);
 
@@ -166,8 +153,6 @@ describe('NodeService', () => {
 
         it('should set grid config when user is admin', async () => {
             nodeRepo.findById.mockResolvedValue({ id: nodeId, orgId } as any);
-            orgRepo.findById.mockResolvedValue({ id: orgId } as any);
-            orgRepo.findMembership.mockResolvedValue({ role: 'ADMIN' } as any);
             nodeRepo.setGridConfig.mockResolvedValue({ nodeId, rows: 9, cols: 9 } as any);
 
             const result = await service.setGridConfig(userId, { nodeId, rows: 9, cols: 9 });
@@ -178,8 +163,6 @@ describe('NodeService', () => {
     describe('removeGridConfig', () => {
         it('should remove grid config when user is admin', async () => {
             nodeRepo.findById.mockResolvedValue({ id: nodeId, orgId } as any);
-            orgRepo.findById.mockResolvedValue({ id: orgId } as any);
-            orgRepo.findMembership.mockResolvedValue({ role: 'OWNER' } as any);
             nodeRepo.removeGridConfig.mockResolvedValue(undefined as any);
 
             await service.removeGridConfig(userId, { nodeId });

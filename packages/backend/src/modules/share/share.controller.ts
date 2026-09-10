@@ -7,12 +7,12 @@ import {
     ShareOutboundItemVo,
     ShareInboundItemVo,
 } from './share.dto.js';
-import { ShareService } from './share.service.js';
+import { ShareService } from './internal/share.service.js';
 import SHARE_EXCEPTION from './share.exception.js';
 import ORG_EXCEPTION from '@/modules/org/org.exception.js';
 
-import { ApiRoute, CurrentUser } from '@/common/decorators/index.js';
-import type { AccessTokenClaim } from '@/modules/auth/services/token.service.js';
+import { ApiRoute, CurrentUser } from '@/platform/http/decorators/index.js';
+import type { AccessTokenClaim } from '@/core/identity/index.js';
 
 import { Controller, Post, Delete, Get, Put, Body, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';

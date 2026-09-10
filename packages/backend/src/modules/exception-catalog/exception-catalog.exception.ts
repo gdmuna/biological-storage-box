@@ -1,5 +1,5 @@
-import { ResourceException } from '@/common/exceptions/client.exception.js';
-import { RegisterException } from '@/common/exceptions/exception-registry.js';
+import { ResourceException } from '@/platform/errors/client.exception.js';
+import { RegisterException } from '@/platform/errors/exception-registry.js';
 
 export const ExceptionCatalogExceptionCode = {
     CODE_NOT_FOUND: 'EXCEPTION_CATALOG_CODE_NOT_FOUND',

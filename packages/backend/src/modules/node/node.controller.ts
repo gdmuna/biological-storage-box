@@ -11,12 +11,12 @@ import {
     RemoveNodeImageDto,
     NodeImageVo,
 } from './node.dto.js';
-import { NodeService } from './node.service.js';
+import { NodeService } from './internal/node.service.js';
 import NODE_EXCEPTION from './node.exception.js';
 import ORG_EXCEPTION from '@/modules/org/org.exception.js';
 
-import { ApiRoute, CurrentUser } from '@/common/decorators/index.js';
-import type { AccessTokenClaim } from '@/modules/auth/services/token.service.js';
+import { ApiRoute, CurrentUser } from '@/platform/http/decorators/index.js';
+import type { AccessTokenClaim } from '@/core/identity/index.js';
 
 import { Controller, Post, Delete, Get, Put, Body, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';

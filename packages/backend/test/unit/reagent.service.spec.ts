@@ -1,6 +1,6 @@
 import type { Mocked } from 'vitest';
-import { ReagentService } from '@/modules/reagent/reagent.service.js';
-import { ReagentRepository } from '@/modules/reagent/reagent.repository.js';
+import { ReagentService } from '@/modules/reagent/internal/reagent.service.js';
+import { ReagentRepository } from '@/modules/reagent/internal/reagent.repository.js';
 import { ReagentNotFoundException } from '@/modules/reagent/reagent.exception.js';
 
 const mockReagentRepository: Mocked<

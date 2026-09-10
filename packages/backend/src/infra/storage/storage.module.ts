@@ -2,7 +2,7 @@ import { S3_OPTIONS } from './storage.constant.js';
 import type { StorageModuleOptions, StorageModuleAsyncOptions } from './storage.interface.js';
 import { StorageService } from './storage.service.js';
 
-import { AllConfig } from '@/constants/index.js';
+import { AllConfig } from '@/config/index.js';
 
 import { ConfigService } from '@nestjs/config';
 import { Module, DynamicModule, Provider } from '@nestjs/common';

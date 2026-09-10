@@ -1,6 +1,6 @@
 import type { Mocked } from 'vitest';
 import { NodeController } from '../../src/modules/node/node.controller.js';
-import { NodeService } from '../../src/modules/node/node.service.js';
+import { NodeService } from '@/modules/node/internal/node.service.js';
 
 describe('NodeController', () => {
     let controller: NodeController;

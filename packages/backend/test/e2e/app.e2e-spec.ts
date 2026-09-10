@@ -1,4 +1,4 @@
-import { AppModule } from '@/app.module.js';
+import { AppModule } from '@/bootstrap/app.module.js';
 
 import { Test } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';

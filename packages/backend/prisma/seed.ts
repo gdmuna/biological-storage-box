@@ -1,7 +1,7 @@
 import { PrismaClient } from './generated/client.js';
 
-// import { DATABASE_URL } from '@/constants/index.js';
-import { generatePasswordHash } from '@/common/utils/index.js';
+// import { DATABASE_URL } from '@/config/index.js';
+import { generatePasswordHash } from '@/shared/utils/index.js';
 
 import { parseArgs } from 'node:util';
 import { PrismaPg } from '@prisma/adapter-pg';

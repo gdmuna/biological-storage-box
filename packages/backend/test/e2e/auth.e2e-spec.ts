@@ -1,6 +1,6 @@
-import { AppModule } from '@/app.module.js';
+import { AppModule } from '@/bootstrap/app.module.js';
 
-import { REFRESH_TOKEN_COOKIE } from '@/constants/index.js';
+import { REFRESH_TOKEN_COOKIE } from '@/config/index.js';
 
 import { Test } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';

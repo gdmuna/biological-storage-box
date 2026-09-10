@@ -1,4 +1,4 @@
-import { AppModule } from '@/app.module.js';
+import { AppModule } from '@/bootstrap/app.module.js';
 import { DatabaseService } from '@/infra/database/database.service.js';
 
 import { Test } from '@nestjs/testing';

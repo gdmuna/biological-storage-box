@@ -10,7 +10,7 @@ import {
 import { S3_OPTIONS } from './storage.constant.js';
 import type { StorageModuleOptions } from './storage.interface.js';
 
-import { Logger } from '@/common/services/index.js';
+import { Logger } from '@/platform/observability/index.js';
 
 import { Inject, Injectable } from '@nestjs/common';
 import { Readable, PassThrough } from 'stream';

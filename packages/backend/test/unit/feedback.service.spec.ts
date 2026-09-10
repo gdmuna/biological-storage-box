@@ -1,6 +1,6 @@
 import type { Mocked } from 'vitest';
-import { FeedbackService } from '@/modules/feedback/feedback.service.js';
-import { FeedbackRepository } from '@/modules/feedback/feedback.repository.js';
+import { FeedbackService } from '@/modules/feedback/internal/feedback.service.js';
+import { FeedbackRepository } from '@/modules/feedback/internal/feedback.repository.js';
 
 const mockFeedbackRepository: Mocked<
     Pick<FeedbackRepository, 'listBoxLogs' | 'listReagentLogs' | 'createFeedback'>

@@ -1,4 +1,4 @@
-import { ClientException, AuthException, RegisterException } from '@/common/exceptions/index.js';
+import { ClientException, AuthException, RegisterException } from '@/platform/errors/index.js';
 
 export const ShareExceptionCode = {
     NOT_FOUND: 'SHARE_NOT_FOUND',

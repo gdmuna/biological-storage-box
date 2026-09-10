@@ -1,8 +1,8 @@
-import { Logger } from '@/common/services/index.js';
+import { Logger } from '@/platform/observability/index.js';
 
-import { AllConfig } from '@/constants/index.js';
+import { AllConfig } from '@/config/index.js';
 
-import { AlsService } from '@/infra/als/als.service.js';
+import { RequestContextService } from '@/core/context/request-context.service.js';
 
 import { PrismaClient } from '@root/prisma/generated/client.js';
 
@@ -22,7 +22,7 @@ export class DatabaseService extends PrismaClient implements OnModuleDestroy, On
 
     constructor(
         private readonly configService: ConfigService<AllConfig, true>,
-        private readonly alsService: AlsService
+        private readonly requestContextService: RequestContextService
     ) {
         const DATABASE_URL = configService.get('database.databaseUrl', { infer: true });
         if (!DATABASE_URL) {
@@ -59,7 +59,7 @@ export class DatabaseService extends PrismaClient implements OnModuleDestroy, On
 
         // 订阅错误事件
         this.$on('error' as never, (event: any) => {
-            const requestContext = this.alsService.get();
+            const requestContext = this.requestContextService.get();
             this.logger.error(
                 {
                     requestId: requestContext?.requestId || 'unknown',
@@ -78,7 +78,7 @@ export class DatabaseService extends PrismaClient implements OnModuleDestroy, On
 
         // 订阅警告事件
         this.$on('warn' as never, (event: any) => {
-            const requestContext = this.alsService.get();
+            const requestContext = this.requestContextService.get();
             this.logger.warn(
                 {
                     requestId: requestContext?.requestId || 'unknown',
@@ -95,7 +95,7 @@ export class DatabaseService extends PrismaClient implements OnModuleDestroy, On
 
     // 处理查询事件，检测慢查询并记录日志
     private handleQueryEvent(event: { timestamp: Date; query: string; duration: number }) {
-        const requestContext = this.alsService.get();
+        const requestContext = this.requestContextService.get();
         const { timestamp, query } = event;
         const duration = Math.round(event.duration);
 

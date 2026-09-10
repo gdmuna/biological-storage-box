@@ -11,12 +11,12 @@ import {
     SearchUserResultVo,
 } from './user.dto.js';
 import { AuthResponseDto } from '@/modules/auth/auth.dto.js';
-import { UserService } from './user.service.js';
+import { UserService } from './internal/user.service.js';
 import USER_EXCEPTION from './user.exception.js';
 
-import { ApiRoute, CurrentUser } from '@/common/decorators/index.js';
-import type { AccessTokenClaim } from '@/modules/auth/services/token.service.js';
-import { REFRESH_TOKEN_COOKIE } from '@/constants/auth.constant.js';
+import { ApiRoute, CurrentUser } from '@/platform/http/decorators/index.js';
+import type { AccessTokenClaim } from '@/core/identity/index.js';
+import { REFRESH_TOKEN_COOKIE } from '@/config/auth.config.js';
 
 import { Controller, Get, Put, Post, Body, Query, Res } from '@nestjs/common';
 import type { FastifyReply } from 'fastify';

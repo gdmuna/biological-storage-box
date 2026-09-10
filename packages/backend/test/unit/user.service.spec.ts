@@ -1,7 +1,7 @@
 import type { Mocked } from 'vitest';
-import { UserService } from '@/modules/user/user.service.js';
-import { UserRepository } from '@/modules/user/user.repository.js';
-import { EmailVerificationRepository } from '@/modules/user/email-verification.repository.js';
+import { UserService } from '@/modules/user/internal/user.service.js';
+import { UserRepository } from '@/modules/user/internal/user.repository.js';
+import { EmailVerificationRepository } from '@/modules/user/internal/email-verification.repository.js';
 import {
     UserNotFoundException,
     OldPasswordWrongException,
@@ -10,7 +10,7 @@ import {
     VerificationCodeExpiredException,
 } from '@/modules/user/user.exception.js';
 import { MailService } from '@/infra/mail/mail.service.js';
-import { TokenService } from '@/modules/auth/services/index.js';
+import { IdentityKernel } from '@/core/identity/index.js';
 
 import bcrypt from 'bcryptjs';
 
@@ -42,8 +42,8 @@ describe('UserService', () => {
         get: vi.fn().mockReturnValue(10),
     };
 
-    const mockTokenService: Mocked<Pick<TokenService, 'issueTokenPair'>> = {
-        issueTokenPair: vi
+    const mockIdentityKernel: Mocked<Pick<IdentityKernel, 'issueSession'>> = {
+        issueSession: vi
             .fn()
             .mockReturnValue({ accessToken: 'access_tok', refreshToken: 'refresh_tok' }),
     };
@@ -52,7 +52,7 @@ describe('UserService', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockTokenService.issueTokenPair.mockReturnValue({
+        mockIdentityKernel.issueSession.mockReturnValue({
             accessToken: 'access_tok',
             refreshToken: 'refresh_tok',
         });
@@ -61,7 +61,7 @@ describe('UserService', () => {
             mockEvRepository as unknown as EmailVerificationRepository,
             mockMailService as unknown as MailService,
             mockConfigService,
-            mockTokenService as unknown as TokenService
+            mockIdentityKernel as unknown as IdentityKernel
         );
     });
 
@@ -239,7 +239,7 @@ describe('UserService', () => {
             expect(result.accessToken).toBe('access_tok');
             expect(result.refreshToken).toBe('refresh_tok');
             expect(result.user.id).toBe('u_01');
-            expect(mockTokenService.issueTokenPair).toHaveBeenCalledWith({
+            expect(mockIdentityKernel.issueSession).toHaveBeenCalledWith({
                 userId: 'u_01',
                 username: 'test',
             });

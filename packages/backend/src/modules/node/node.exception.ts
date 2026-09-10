@@ -1,4 +1,4 @@
-import { ClientException, RegisterException } from '@/common/exceptions/index.js';
+import { ClientException, RegisterException } from '@/platform/errors/index.js';
 
 export const NodeExceptionCode = {
     NOT_FOUND: 'NODE_NOT_FOUND',

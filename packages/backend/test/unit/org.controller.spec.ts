@@ -1,6 +1,6 @@
 import type { Mocked } from 'vitest';
 import { OrgController } from '@/modules/org/org.controller.js';
-import { OrgService } from '@/modules/org/org.service.js';
+import { OrgService } from '@/modules/org/internal/org.service.js';
 
 const mockOrgService: Mocked<
     Pick<OrgService, 'create' | 'delete' | 'getOne' | 'list' | 'search' | 'update'>

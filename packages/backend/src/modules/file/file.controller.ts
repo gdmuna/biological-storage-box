@@ -1,4 +1,4 @@
-import { FileService } from './file.service.js';
+import { MultipartRequestHandlerFactory } from './internal/multipart-request-handler.js';
 import {
     PresignUploadDto,
     ConfirmUploadDto,
@@ -9,11 +9,10 @@ import {
     // ResumablePartUrlsDto,
     // CompleteMultipartDto,
     // AbortMultipartDto,
-    ServerUploadDto,
-    ServerUploadDtoSchema,
 } from './file.dto.js';
 
-import { ApiRoute } from '@/common/decorators/index.js';
+import { FileKernel } from '@/core/file/index.js';
+import { ApiRoute } from '@/platform/http/decorators/index.js';
 
 import {
     Body,
@@ -29,20 +28,17 @@ import {
     Req,
     Res,
     StreamableFile,
-    BadRequestException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import type { FastifyRequest, FastifyReply } from 'fastify';
 
-import { NewVideoStrategy } from './strategies/video.strategy.js';
-
 @Controller('files')
 @ApiTags('文件模块')
 export class FileController {
     constructor(
-        private readonly fileService: FileService,
-        private readonly newVideoStrategy: NewVideoStrategy
+        private readonly fileKernel: FileKernel,
+        private readonly multipartRequestHandlerFactory: MultipartRequestHandlerFactory
     ) {}
 
     // ─── 预签名 URL ────────────────────────────────────────────────────────────
@@ -55,7 +51,7 @@ export class FileController {
             '根据提供的文件信息生成预签名 URL 和文件记录 ID（fileId）。客户端使用该 URL 直接上传文件到存储服务后，需调用 PATCH /files/:fileId/confirm 确认上传完成。',
     })
     presignUpload(@Body() dto: PresignUploadDto, @Req() req: FastifyRequest) {
-        return this.fileService.getPresignedUploadUrl(req.jwtClaim!.sub, dto);
+        return this.fileKernel.createUploadSession(req.jwtClaim!.sub, dto);
     }
 
     @Post('presign/download')
@@ -65,7 +61,7 @@ export class FileController {
         description: '为私有存储桶中的文件生成限时预签名下载 URL。',
     })
     presignDownload(@Body() dto: PresignDownloadDto) {
-        return this.fileService.getPresignedDownloadUrl(dto);
+        return this.fileKernel.createDownloadUrl(dto);
     }
 
     @Get(':fileId/public-url')
@@ -75,7 +71,7 @@ export class FileController {
         description: '拼接公开存储桶中文件的直接访问 URL（无签名，依赖 CDN 公开访问配置）。',
     })
     publicUrl(@Param('fileId') fileId: string) {
-        return this.fileService.getPublicUrl(fileId);
+        return this.fileKernel.getPublicUrl(fileId);
     }
 
     // ─── 确认上传 ──────────────────────────────────────────────────────────────
@@ -88,7 +84,7 @@ export class FileController {
     })
     confirmUpload(@Param('fileId') fileId: string) {
         const dto: ConfirmUploadDto = { fileId };
-        return this.fileService.confirmUpload(dto);
+        return this.fileKernel.confirmUpload(dto);
     }
 
     // ─── 服务端直接操作 ────────────────────────────────────────────────────────
@@ -101,7 +97,8 @@ export class FileController {
             '由服务端接收文件后直接写入对象存储，适用于服务端生成的文件或需要服务端处理的场景。返回文件记录 ID（fileId）。',
         consumes: ['multipart/form-data'],
     })
-    async serverUpload(@Req() req: FastifyRequest, @Body() body: any) {
+    async serverUpload(@Req() req: FastifyRequest, @Body() _body: unknown) {
+        // TODO: Bind multipart data to ServerUploadDto and delegate to FileKernel.serverUpload.
         // let fileBuffer: Buffer | null = null;
         // let fileMimetype = '';
         // let domain: string | undefined;
@@ -134,14 +131,16 @@ export class FileController {
         //     fileMimetype
         // );
 
-        const handler = await this.newVideoStrategy.getHandler(req, { resolveType: 'stream' });
+        const handler = await this.multipartRequestHandlerFactory.getHandler(req, {
+            resolveType: 'stream',
+        });
         const data = handler.getData();
-        const strategy = handler.getStrategy();
+        const factory = handler.getFactory();
         const files = handler.getFiles();
 
         console.log('Received data:', data);
         console.log('Received files:', files);
-        console.log('Strategy:', strategy);
+        console.log('Multipart handler factory:', factory);
         return { message: '666' };
     }
 
@@ -156,7 +155,7 @@ export class FileController {
         @Param('fileId') fileId: string,
         @Res({ passthrough: true }) res: FastifyReply
     ): Promise<StreamableFile> {
-        const { data, filename } = await this.fileService.proxyDownload(fileId);
+        const { data, filename } = await this.fileKernel.proxyDownload(fileId);
         res.header('Content-Type', 'application/octet-stream');
         res.header('Content-Disposition', `attachment; filename="${filename}"`);
         return new StreamableFile(data as any);
@@ -184,7 +183,7 @@ export class FileController {
             '从对象存储删除文件并软删除数据库记录。fileIds 传入一个时删除单个文件，传入多个时批量删除（最多 1000 个）。',
     })
     deleteFiles(@Body() dto: DeleteFilesDto): Promise<void> {
-        return this.fileService.deleteFiles(dto);
+        return this.fileKernel.deleteFiles(dto);
     }
 
     // @Post('copy')

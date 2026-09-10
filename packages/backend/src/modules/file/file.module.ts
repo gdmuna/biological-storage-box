@@ -1,25 +1,13 @@
 import { FileController } from './file.controller.js';
-import { FileService } from './file.service.js';
-import { FileRepository } from './file.repository.js';
-import {
-    DocumentStrategy,
-    ImageStrategy,
-    VideoStrategy,
-    NewVideoStrategy,
-} from './strategies/index.js';
+import { MultipartRequestHandlerFactory } from './internal/multipart-request-handler.js';
+
+import { FileKernelModule } from '@/core/file/file-kernel.module.js';
 
 import { Module } from '@nestjs/common';
 
 @Module({
+    imports: [FileKernelModule],
     controllers: [FileController],
-    providers: [
-        FileService,
-        FileRepository,
-        DocumentStrategy,
-        ImageStrategy,
-        VideoStrategy,
-        NewVideoStrategy,
-    ],
-    exports: [FileService, FileRepository],
+    providers: [MultipartRequestHandlerFactory],
 })
 export class FileModule {}

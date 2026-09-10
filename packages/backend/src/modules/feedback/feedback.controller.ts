@@ -6,10 +6,10 @@ import {
     ReagentLogPaginatedVo,
     FeedbackVo,
 } from './feedback.dto.js';
-import { FeedbackService } from './feedback.service.js';
+import { FeedbackService } from './internal/feedback.service.js';
 
-import { ApiRoute, CurrentUser } from '@/common/decorators/index.js';
-import type { AccessTokenClaim } from '@/modules/auth/services/token.service.js';
+import { ApiRoute, CurrentUser } from '@/platform/http/decorators/index.js';
+import type { AccessTokenClaim } from '@/core/identity/index.js';
 
 import { Controller, Post, Get, Body, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';

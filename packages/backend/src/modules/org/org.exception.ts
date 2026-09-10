@@ -1,4 +1,4 @@
-import { ClientException, AuthException, RegisterException } from '@/common/exceptions/index.js';
+import { ClientException, AuthException, RegisterException } from '@/platform/errors/index.js';
 
 export const OrgExceptionCode = {
     NOT_FOUND: 'ORG_NOT_FOUND',

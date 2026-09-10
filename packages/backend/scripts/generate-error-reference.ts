@@ -19,9 +19,9 @@ import 'reflect-metadata';
 
 // 一次 import 触发所有域的 @RegisterException 装饰器
 // index.ts 内部已链式导入 database / auth / exception-catalog 等模块
-import '@/common/exceptions/index.js';
+import '@/platform/errors/index.js';
 
-import { ErrorRegistry, type StaticMeta } from '@/common/exceptions/exception-registry.js';
+import { ErrorRegistry, type StaticMeta } from '@/platform/errors/exception-registry.js';
 import { writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
