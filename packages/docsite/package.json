@@ -16,10 +16,10 @@
     "preview": "vitepress preview"
   },
   "dependencies": {
-    "@mdit/plugin-tasklist": "^1.1.0",
+    "@mdit/plugin-tasklist": "^1.1.1",
     "markdown-it-mathjax3": "^4.3.2",
     "vitepress": "^1.6.4",
-    "vitepress-mermaid-renderer": "^1.2.0",
+    "vitepress-mermaid-renderer": "^1.2.1",
     "vue": "^3.5.42"
   },
   "devDependencies": {
