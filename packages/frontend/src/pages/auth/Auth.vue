@@ -1,5 +1,5 @@
 <template>
-    <main class="flex min-h-full w-full items-center justify-center bg-card p-4 sm:p-8">
+    <main class="flex min-h-full w-full items-center justify-center bg-card px-4 sm:p-8">
         <section class="w-full max-w-md rounded-xl p-6 sm:p-8" aria-labelledby="auth-title">
             <header class="flex flex-col items-center text-center">
                 <h1 id="auth-title" class="mt-5 text-xl font-semibold tracking-tight">登录璇玑云库</h1>
