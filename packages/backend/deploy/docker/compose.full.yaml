@@ -2,18 +2,20 @@ name: talos-ark-full
 
 services:
   postgres:
-    image: postgres:18.6-bookworm
+    image: ${POSTGRES_IMAGE:?Set POSTGRES_IMAGE in env/full.env.}
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-talosark}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in env/full.env.}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in env/full.env.}
-      POSTGRES_DB: ${POSTGRES_DB:-talosark}
-      POSTGRES_SHADOW_DB: ${POSTGRES_SHADOW_DB:-talosark_shadow}
-      CASDOOR_DB: ${CASDOOR_DB:-casdoor}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in env/full.env.}
+      POSTGRES_SHADOW_DB: ${POSTGRES_SHADOW_DB:?Set POSTGRES_SHADOW_DB in env/full.env.}
+      CASDOOR_DB: ${CASDOOR_DB:?Set CASDOOR_DB in env/full.env.}
     volumes:
       # PostgreSQL 18 declares /var/lib/postgresql as its persistent volume.
       - postgres-data:/var/lib/postgresql
       - ./postgres/init-databases.sh:/docker-entrypoint-initdb.d/10-init-databases.sh:ro
+    ports:
+      - '127.0.0.1:${POSTGRES_PORT:?Set POSTGRES_PORT in env/full.env.}:5432'
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
       interval: 10s
@@ -22,7 +24,7 @@ services:
       start_period: 20s
 
   valkey:
-    image: valkey/valkey:9.1-trixie
+    image: ${VALKEY_IMAGE:?Set VALKEY_IMAGE in env/full.env.}
     restart: unless-stopped
     command: ['valkey-server', '--appendonly', 'yes']
     volumes:
@@ -34,7 +36,7 @@ services:
       retries: 10
 
   rustfs:
-    image: rustfs/rustfs:latest
+    image: ${RUSTFS_IMAGE:?Set RUSTFS_IMAGE in env/full.env.}
     restart: unless-stopped
     environment:
       RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY:?Set RUSTFS_ACCESS_KEY in env/full.env.}
@@ -57,32 +59,20 @@ services:
       retries: 10
       start_period: 20s
 
-  casdoor-volume-init:
-    image: casbin/casdoor:4.3.0
-    user: '0:0'
-    entrypoint: ['/bin/sh', '-ec']
-    command: ['mkdir -p /logs && chown -R 1000:1000 /logs']
-    restart: 'no'
-    volumes:
-      - casdoor-logs:/logs
-
   casdoor:
-    image: casbin/casdoor:4.3.0
+    image: ${CASDOOR_IMAGE:?Set CASDOOR_IMAGE in env/full.env.}
     restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
-      casdoor-volume-init:
-        condition: service_completed_successfully
-    environment:
-      driverName: postgres
-      dataSourceName: user=${POSTGRES_USER:-talosark} password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in env/full.env.} host=postgres port=5432 dbname=${CASDOOR_DB:-casdoor} sslmode=disable
-      dbName: ${CASDOOR_DB:-casdoor}
-      runmode: prod
-      origin: ${CASDOOR_ORIGIN:-http://localhost:8000}
-      logConfig: '{"adapter":"file","filename":"/logs/casdoor.log","maxdays":30,"perm":"0770"}'
+    command: ['-config', '/conf/app.conf']
     volumes:
-      - casdoor-logs:/logs
+      - type: bind
+        source: ./casdoor/full/app.conf
+        target: /conf/app.conf
+        read_only: true
+        bind:
+          create_host_path: false
     ports:
       - '${CASDOOR_PORT:-8000}:8000'
     healthcheck:
@@ -106,8 +96,8 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: ${NODE_ENV:-production}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-talosark}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in env/full.env.}@postgres:5432/${POSTGRES_DB:-talosark}?schema=public
-      SHADOW_DATABASE_URL: postgresql://${POSTGRES_USER:-talosark}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in env/full.env.}@postgres:5432/${POSTGRES_SHADOW_DB:-talosark_shadow}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:?Set POSTGRES_USER in env/full.env.}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in env/full.env.}@postgres:5432/${POSTGRES_DB:?Set POSTGRES_DB in env/full.env.}?schema=public
+      SHADOW_DATABASE_URL: postgresql://${POSTGRES_USER:?Set POSTGRES_USER in env/full.env.}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in env/full.env.}@postgres:5432/${POSTGRES_SHADOW_DB:?Set POSTGRES_SHADOW_DB in env/full.env.}?schema=public
       KVS_URL: redis://valkey:6379
       S3_ENDPOINT: http://rustfs:9000
       S3_REGION: ${S3_REGION:-us-east-1}
@@ -140,4 +130,3 @@ volumes:
   valkey-data:
   rustfs-data:
   rustfs-logs:
-  casdoor-logs:

@@ -2,45 +2,33 @@ name: talos-ark-dev
 
 services:
   valkey:
-    image: valkey/valkey:9.1-trixie
+    image: ${VALKEY_IMAGE:?Set VALKEY_IMAGE in env/dev.env.}
     command: ['valkey-server', '--appendonly', 'yes']
     volumes:
       - valkey-data:/data
     ports:
-      - '${VALKEY_PORT:-6379}:6379'
+      - '${VALKEY_PORT:?Set VALKEY_PORT in env/dev.env.}:6379'
     healthcheck:
       test: ['CMD', 'valkey-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 10
 
-  casdoor-volume-init:
-    image: casbin/casdoor:4.3.0
-    user: '0:0'
-    entrypoint: ['/bin/sh', '-ec']
-    command: ['mkdir -p /data /logs && chown -R 1000:1000 /data /logs']
-    restart: 'no'
-    volumes:
-      - casdoor-data:/data
-      - casdoor-logs:/logs
-
   casdoor:
-    image: casbin/casdoor:4.3.0
-    depends_on:
-      casdoor-volume-init:
-        condition: service_completed_successfully
-    environment:
-      driverName: sqlite
-      dataSourceName: /data/casdoor.db
-      dbName: casdoor
-      runmode: dev
-      origin: http://localhost:${CASDOOR_PORT:-8000}
-      logConfig: '{"adapter":"file","filename":"/logs/casdoor.log","maxdays":30,"perm":"0770"}'
+    image: ${CASDOOR_IMAGE:?Set CASDOOR_IMAGE in env/dev.env.}
+    command: ['-config', '/conf/app.conf']
     volumes:
-      - casdoor-data:/data
-      - casdoor-logs:/logs
+      - type: bind
+        source: ./casdoor/dev/app.conf
+        target: /conf/app.conf
+        read_only: true
+        bind:
+          create_host_path: false
     ports:
-      - '${CASDOOR_PORT:-8000}:8000'
+      - '${CASDOOR_PORT:?Set CASDOOR_PORT in env/dev.env.}:8000'
+    networks:
+      - default
+      - dev-infra
     healthcheck:
       test: ['CMD-SHELL', 'curl --fail http://localhost:8000/']
       interval: 10s
@@ -50,5 +38,8 @@ services:
 
 volumes:
   valkey-data:
-  casdoor-data:
-  casdoor-logs:
+
+networks:
+  dev-infra:
+    external: true
+    name: ${POSTGRES_NETWORK:?Set POSTGRES_NETWORK in env/dev.env.}
