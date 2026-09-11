@@ -1,6 +1,6 @@
 import { AuthController } from './auth.controller.js';
 
-import { IdentityKernelModule } from '@/core/identity/identity-kernel.module.js';
+import { IdentityKernelModule } from '@/core/identity/identity.module.js';
 import { AuthGuard } from '@/platform/http/guards/auth.guard.js';
 
 import { Module } from '@nestjs/common';

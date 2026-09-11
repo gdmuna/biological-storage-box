@@ -2,7 +2,7 @@ import { UserController } from './user.controller.js';
 import { UserService } from './internal/user.service.js';
 import { UserRepository } from './internal/user.repository.js';
 import { EmailVerificationRepository } from './internal/email-verification.repository.js';
-import { IdentityKernelModule } from '@/core/identity/identity-kernel.module.js';
+import { IdentityKernelModule } from '@/core/identity/identity.module.js';
 
 import { Module } from '@nestjs/common';
 

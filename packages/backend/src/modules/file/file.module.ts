@@ -1,7 +1,7 @@
 import { FileController } from './file.controller.js';
 import { MultipartRequestHandlerFactory } from './internal/multipart-request-handler.js';
 
-import { FileKernelModule } from '@/core/file/file-kernel.module.js';
+import { FileKernelModule } from '@/core/file/file.module.js';
 
 import { Module } from '@nestjs/common';
 

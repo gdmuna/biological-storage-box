@@ -36,12 +36,12 @@ packages/backend/
 |   |-- core/
 |   |   |-- context/                       # RequestContext service/module
 |   |   |-- identity/                      # Password/JWT kernel; only IdentityKernel is public
-|   |   |   |-- identity-kernel.module.ts
+|   |   |   |-- identity.module.ts
 |   |   |   |-- identity.kernel.ts
 |   |   |   |-- identity.types.ts
 |   |   |   `-- internal/                  # local-account repo, token service, session TODO
 |   |   |-- file/                          # Object-storage kernel; only FileKernel is public
-|   |   |   |-- file-kernel.module.ts
+|   |   |   |-- file.module.ts
 |   |   |   |-- file.kernel.ts
 |   |   |   |-- file.types.ts
 |   |   |   `-- internal/                  # repo, upload strategies, relation-registry TODO
