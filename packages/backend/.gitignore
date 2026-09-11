@@ -70,6 +70,9 @@ web_modules/
 # dotenv environment variable files
 .env.keys
 
+# Local Docker credentials for the self-contained backend environment
+deploy/docker/env/full.env
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache

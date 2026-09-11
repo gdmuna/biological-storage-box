@@ -71,7 +71,7 @@ packages/backend/
 |   |   `-- iam/casdoor/                   # TODO: platform-level Casdoor OIDC adapter
 |   `-- shared/utils/                      # framework-independent helpers
 |-- prisma/                                # schema, migrations, seed
-|-- deploy/docker/                         # Dockerfile, entrypoint, Compose, apt source
+|-- deploy/docker/                         # Dockerfile, entrypoint, full/dev Compose, PostgreSQL init
 |-- secrets/                               # encrypted/non-committed runtime configuration
 |-- test/
 |   |-- unit/                              # isolated tests with mocked collaborators
