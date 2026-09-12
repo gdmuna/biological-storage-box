@@ -70,11 +70,13 @@ web_modules/
 # dotenv environment variable files
 .env.keys
 
+# Prisma CLI connection profiles (only the template is versioned).
+ops/prisma/env/.env.*
+!ops/prisma/env/.env.example
+
 # Local Docker credentials for the self-contained backend environment
-deploy/docker/env/full.env
-deploy/docker/env/dev.env
-deploy/docker/casdoor/full/app.conf
-deploy/docker/casdoor/dev/app.conf
+ops/docker/compose/*/.env
+ops/docker/compose/*/casdoor/app.conf
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

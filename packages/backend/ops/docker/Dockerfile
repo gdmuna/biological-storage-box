@@ -1,13 +1,17 @@
 # ===== 构建阶段 =====
-FROM node:22.22-slim AS builder
+ARG DEBIAN_SUITE=trixie
 
-WORKDIR /talos-ark
+FROM node:24.20-${DEBIAN_SUITE}-slim AS builder
 
-# 替换为国内镜像源（阿里云），避免官方源在国内网络不稳定
-COPY packages/backend/deploy/docker/apt/debian.sources /etc/apt/sources.list.d/debian.sources
+ARG DEBIAN_SUITE
+
+WORKDIR /talosArk
+
+# 替换为中科大（USTC）镜像源，避免官方源在国内网络不稳定
+COPY packages/backend/ops/docker/apt/debian.${DEBIAN_SUITE}.sources /etc/apt/sources.list.d/debian.sources
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends openssl \
+    && apt-get install -y --no-install-recommends libatomic1 openssl \
     && npm install -g pnpm
 
 COPY pnpm-workspace.yaml pnpm-lock.yaml .npmrc package.json ./
@@ -24,31 +28,33 @@ ARG SHADOW_DATABASE_URL="postgresql://username:password@host:5432/dbName?schema=
 
 RUN pnpm --filter @talos-ark/backend exec prisma generate \
     && pnpm --filter @talos-ark/backend build \
-    && pnpm --filter @talos-ark/backend deploy --prod --legacy /talos-ark/deploy
+    && pnpm --filter @talos-ark/backend deploy --prod --legacy /talosArk/deploy
 
 # ===== 运行阶段 =====
-FROM node:22.22-slim AS runner
+FROM node:24.20-${DEBIAN_SUITE}-slim AS runner
 
-WORKDIR /talos-ark
+ARG DEBIAN_SUITE
+
+WORKDIR /talosArk
 
 # 从构建阶段复制 deploy 产物
-COPY --from=builder /talos-ark/deploy/node_modules ./node_modules
-COPY --from=builder /talos-ark/packages/backend/dist ./dist
+COPY --from=builder /talosArk/deploy/node_modules ./node_modules
+COPY --from=builder /talosArk/packages/backend/dist ./dist
 
 # .env.* 文件在构建时从 service 目录复制（含加密的 dotenvx 文件）
 COPY packages/backend/secrets/env/* ./secrets/env/
 
 COPY packages/backend/secrets/keys/* ./secrets/keys/
 
-# 替换为国内镜像源（阿里云），避免官方源在国内网络不稳定
-COPY packages/backend/deploy/docker/apt/debian.sources /etc/apt/sources.list.d/debian.sources
+# 替换为中科大（USTC）镜像源，避免官方源在国内网络不稳定
+COPY packages/backend/ops/docker/apt/debian.${DEBIAN_SUITE}.sources /etc/apt/sources.list.d/debian.sources
 
-COPY packages/backend/deploy/docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY packages/backend/ops/docker/compose/full/backend/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 RUN apt-get update \
-    && apt-get install -y openssl curl \
+    && apt-get install -y libatomic1 openssl curl \
     && curl -sfS https://dotenvx.sh/install.sh | sh \
-    && chown -R node:node /talos-ark \
+    && chown -R node:node /talosArk \
     && chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENV APP_VERSION='' \

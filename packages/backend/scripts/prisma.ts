@@ -1,37 +1,54 @@
+import { spawn } from 'node:child_process';
+import { createRequire } from 'node:module';
+import { relative } from 'node:path';
+
+import {
+    createPrismaProcessEnvironment,
+    loadPrismaEnvironment,
+    parsePrismaCommand,
+    redactDatabaseUrl,
+} from './prisma-environment.js';
+
 /**
- * Prisma CLI wrapper
+ * Prisma CLI entrypoint.
  *
- * 在真正调用 Prisma 之前拦截 --env / --env-file 参数，将其转换为
- * PRISMA_ENV 环境变量后再透传给 Prisma，从而避免 Prisma 报 unknown option。
- *
- * 用法（与直接用 prisma 完全相同，额外支持 --env / --env-file）：
  *   pnpm prisma migrate status --env test
  *   pnpm prisma migrate status --env=production
- *   pnpm prisma migrate status --env-file ./secrets/env/.env.staging
- *   pnpm prisma migrate dev           # 无 --env 时行为不变
+ *   pnpm prisma migrate status --env-file ./ops/prisma/env/.env.staging
  */
-import { spawn } from 'child_process';
+const requireFromHere = createRequire(import.meta.url);
+const prismaCliPath = requireFromHere.resolve('prisma/build/index.js');
 
-const raw = process.argv.slice(2);
-let prismaEnv: string | undefined;
-const filtered: string[] = [];
+try {
+    const command = parsePrismaCommand(process.argv.slice(2));
+    const environment = loadPrismaEnvironment(command.source);
+    const displayPath = relative(process.cwd(), environment.filePath) || '.';
+    const sourceLabel =
+        environment.source.kind === 'profile'
+            ? `profile "${environment.source.name}"`
+            : 'explicit env file';
 
-for (let i = 0; i < raw.length; i++) {
-    // --env=<value> 或 --env-file=<value>
-    const inline = raw[i].match(/^--env(?:-file)?=(.+)$/);
-    if (inline) {
-        prismaEnv = inline[1];
-        continue;
-    }
-    // --env <value> 或 --env-file <value>
-    if ((raw[i] === '--env' || raw[i] === '--env-file') && i + 1 < raw.length) {
-        prismaEnv = raw[++i];
-        continue;
-    }
-    filtered.push(raw[i]);
+    console.info(`[prisma] Using ${sourceLabel}: ${displayPath}`);
+    console.info(
+        `[prisma] Injected DATABASE_URL=${redactDatabaseUrl(environment.values.DATABASE_URL)}`
+    );
+    console.info(
+        `[prisma] Injected SHADOW_DATABASE_URL=${redactDatabaseUrl(environment.values.SHADOW_DATABASE_URL)}`
+    );
+
+    const child = spawn(process.execPath, [prismaCliPath, ...command.prismaArguments], {
+        env: createPrismaProcessEnvironment(process.env, environment.values),
+        stdio: 'inherit',
+    });
+
+    child.on('error', (error) => {
+        console.error(`[prisma] Unable to start Prisma CLI: ${error.message}`);
+        process.exit(1);
+    });
+
+    child.on('exit', (code) => process.exit(code ?? 1));
+} catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`[prisma] ${message}`);
+    process.exit(1);
 }
-
-const env = prismaEnv ? { ...process.env, PRISMA_ENV: prismaEnv } : process.env;
-
-const child = spawn('prisma', filtered, { stdio: 'inherit', env, shell: true });
-child.on('exit', (code) => process.exit(code ?? 0));

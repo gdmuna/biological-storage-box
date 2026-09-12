@@ -1,13 +1,14 @@
-name: talos-ark-dev
+name: talos-ark_dev
 
 services:
   valkey:
-    image: ${VALKEY_IMAGE:?Set VALKEY_IMAGE in env/dev.env.}
+    image: ${VALKEY_IMAGE:?Set VALKEY_IMAGE in .env.}
+    container_name: talos-ark_dev-valkey
     command: ['valkey-server', '--appendonly', 'yes']
     volumes:
       - valkey-data:/data
     ports:
-      - '${VALKEY_PORT:?Set VALKEY_PORT in env/dev.env.}:6379'
+      - '${VALKEY_PORT:?Set VALKEY_PORT in .env.}:6379'
     healthcheck:
       test: ['CMD', 'valkey-cli', 'ping']
       interval: 10s
@@ -15,17 +16,18 @@ services:
       retries: 10
 
   casdoor:
-    image: ${CASDOOR_IMAGE:?Set CASDOOR_IMAGE in env/dev.env.}
+    image: ${CASDOOR_IMAGE:?Set CASDOOR_IMAGE in .env.}
+    container_name: talos-ark_dev-casdoor
     command: ['-config', '/conf/app.conf']
     volumes:
       - type: bind
-        source: ./casdoor/dev/app.conf
+        source: ./casdoor/app.conf
         target: /conf/app.conf
         read_only: true
         bind:
           create_host_path: false
     ports:
-      - '${CASDOOR_PORT:?Set CASDOOR_PORT in env/dev.env.}:8000'
+      - '${CASDOOR_PORT:?Set CASDOOR_PORT in .env.}:8000'
     networks:
       - default
       - dev-infra
@@ -42,4 +44,4 @@ volumes:
 networks:
   dev-infra:
     external: true
-    name: ${POSTGRES_NETWORK:?Set POSTGRES_NETWORK in env/dev.env.}
+    name: ${POSTGRES_NETWORK:?Set POSTGRES_NETWORK in .env.}

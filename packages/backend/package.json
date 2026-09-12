@@ -10,12 +10,12 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "db:gen-client": "prisma generate",
-    "db:studio": "prisma studio -b none",
-    "db:pull": "prisma db pull",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:seed": "prisma db seed",
+    "db:gen-client": "pnpm prisma generate",
+    "db:studio": "pnpm prisma studio -b none",
+    "db:pull": "pnpm prisma db pull",
+    "db:push": "pnpm prisma db push",
+    "db:migrate": "pnpm prisma migrate dev",
+    "db:seed": "pnpm prisma db seed",
     "build": "nest build && tsc-alias -v",
     "start:local": "dotenvx run -f secrets/env/.env.development.local -f secrets/env/.env.development -- nest start --watch --exec \"pnpm tsc-alias -v && node dist/src/bootstrap/main.js\"",
     "start:dev": "dotenvx run -f secrets/env/.env.development -- nest start --watch --exec \"pnpm tsc-alias -v && node dist/src/bootstrap/main.js\"",

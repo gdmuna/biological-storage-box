@@ -71,7 +71,14 @@ packages/backend/
 |   |   `-- iam/casdoor/                   # TODO: platform-level Casdoor OIDC adapter
 |   `-- shared/utils/                      # framework-independent helpers
 |-- prisma/                                # schema, migrations, seed
-|-- deploy/docker/                         # Dockerfile, full/dev Compose, Casdoor conf, PostgreSQL init
+|-- ops/
+|   |-- prisma/                            # Prisma CLI-only DATABASE_URL profiles
+|   `-- docker/
+|       |-- Dockerfile                     # shared backend image build
+|       |-- apt/                           # Debian source definitions for the image build
+|       `-- compose/
+|           |-- full/                      # self-contained Compose: .env, Casdoor, PostgreSQL init, entrypoint
+|           `-- dev/                       # local dependency Compose: .env and Casdoor
 |-- secrets/                               # encrypted/non-committed runtime configuration
 |-- test/
 |   |-- unit/                              # isolated tests with mocked collaborators

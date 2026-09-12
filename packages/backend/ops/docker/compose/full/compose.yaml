@@ -1,21 +1,22 @@
-name: talos-ark-full
+name: talos-ark_full
 
 services:
   postgres:
-    image: ${POSTGRES_IMAGE:?Set POSTGRES_IMAGE in env/full.env.}
+    image: ${POSTGRES_IMAGE:?Set POSTGRES_IMAGE in .env.}
+    container_name: talos-ark_full-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in env/full.env.}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in env/full.env.}
-      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in env/full.env.}
-      POSTGRES_SHADOW_DB: ${POSTGRES_SHADOW_DB:?Set POSTGRES_SHADOW_DB in env/full.env.}
-      CASDOOR_DB: ${CASDOOR_DB:?Set CASDOOR_DB in env/full.env.}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env.}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in .env.}
+      POSTGRES_SHADOW_DB: ${POSTGRES_SHADOW_DB:?Set POSTGRES_SHADOW_DB in .env.}
+      CASDOOR_DB: ${CASDOOR_DB:?Set CASDOOR_DB in .env.}
     volumes:
       # PostgreSQL 18 declares /var/lib/postgresql as its persistent volume.
       - postgres-data:/var/lib/postgresql
       - ./postgres/init-databases.sh:/docker-entrypoint-initdb.d/10-init-databases.sh:ro
     ports:
-      - '127.0.0.1:${POSTGRES_PORT:?Set POSTGRES_PORT in env/full.env.}:5432'
+      - '127.0.0.1:${POSTGRES_PORT:?Set POSTGRES_PORT in .env.}:5432'
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
       interval: 10s
@@ -24,7 +25,8 @@ services:
       start_period: 20s
 
   valkey:
-    image: ${VALKEY_IMAGE:?Set VALKEY_IMAGE in env/full.env.}
+    image: ${VALKEY_IMAGE:?Set VALKEY_IMAGE in .env.}
+    container_name: talos-ark_full-valkey
     restart: unless-stopped
     command: ['valkey-server', '--appendonly', 'yes']
     volumes:
@@ -36,11 +38,12 @@ services:
       retries: 10
 
   rustfs:
-    image: ${RUSTFS_IMAGE:?Set RUSTFS_IMAGE in env/full.env.}
+    image: ${RUSTFS_IMAGE:?Set RUSTFS_IMAGE in .env.}
+    container_name: talos-ark_full-rustfs
     restart: unless-stopped
     environment:
-      RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY:?Set RUSTFS_ACCESS_KEY in env/full.env.}
-      RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY:?Set RUSTFS_SECRET_KEY in env/full.env.}
+      RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY:?Set RUSTFS_ACCESS_KEY in .env.}
+      RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY:?Set RUSTFS_SECRET_KEY in .env.}
       RUSTFS_ADDRESS: ':9000'
       RUSTFS_CONSOLE_ADDRESS: ':9001'
       RUSTFS_CONSOLE_ENABLE: 'true'
@@ -60,7 +63,8 @@ services:
       start_period: 20s
 
   casdoor:
-    image: ${CASDOOR_IMAGE:?Set CASDOOR_IMAGE in env/full.env.}
+    image: ${CASDOOR_IMAGE:?Set CASDOOR_IMAGE in .env.}
+    container_name: talos-ark_full-casdoor
     restart: unless-stopped
     depends_on:
       postgres:
@@ -68,13 +72,13 @@ services:
     command: ['-config', '/conf/app.conf']
     volumes:
       - type: bind
-        source: ./casdoor/full/app.conf
+        source: ./casdoor/app.conf
         target: /conf/app.conf
         read_only: true
         bind:
           create_host_path: false
     ports:
-      - '${CASDOOR_PORT:-8000}:8000'
+      - '${CASDOOR_PORT:-8000}:8001'
     healthcheck:
       test: ['CMD-SHELL', 'curl --fail http://localhost:8000/']
       interval: 10s
@@ -84,8 +88,11 @@ services:
 
   backend:
     build:
-      context: ../../../..
-      dockerfile: packages/backend/deploy/docker/Dockerfile
+      context: ../../../../../..
+      dockerfile: packages/backend/ops/docker/Dockerfile
+      args:
+        DEBIAN_SUITE: ${DEBIAN_SUITE:-trixie}
+    container_name: talos-ark_full-backend
     restart: unless-stopped
     depends_on:
       postgres:
@@ -96,13 +103,13 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: ${NODE_ENV:-production}
-      DATABASE_URL: postgresql://${POSTGRES_USER:?Set POSTGRES_USER in env/full.env.}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in env/full.env.}@postgres:5432/${POSTGRES_DB:?Set POSTGRES_DB in env/full.env.}?schema=public
-      SHADOW_DATABASE_URL: postgresql://${POSTGRES_USER:?Set POSTGRES_USER in env/full.env.}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in env/full.env.}@postgres:5432/${POSTGRES_SHADOW_DB:?Set POSTGRES_SHADOW_DB in env/full.env.}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:?Set POSTGRES_USER in .env.}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.}@postgres:5432/${POSTGRES_DB:?Set POSTGRES_DB in .env.}?schema=public
+      SHADOW_DATABASE_URL: postgresql://${POSTGRES_USER:?Set POSTGRES_USER in .env.}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.}@postgres:5432/${POSTGRES_SHADOW_DB:?Set POSTGRES_SHADOW_DB in .env.}?schema=public
       KVS_URL: redis://valkey:6379
       S3_ENDPOINT: http://rustfs:9000
       S3_REGION: ${S3_REGION:-us-east-1}
-      S3_ACCESS_KEY_ID: ${RUSTFS_ACCESS_KEY:?Set RUSTFS_ACCESS_KEY in env/full.env.}
-      S3_SECRET_ACCESS_KEY: ${RUSTFS_SECRET_KEY:?Set RUSTFS_SECRET_KEY in env/full.env.}
+      S3_ACCESS_KEY_ID: ${RUSTFS_ACCESS_KEY:?Set RUSTFS_ACCESS_KEY in .env.}
+      S3_SECRET_ACCESS_KEY: ${RUSTFS_SECRET_KEY:?Set RUSTFS_SECRET_KEY in .env.}
       S3_BUCKET_PUBLIC: ${S3_BUCKET_PUBLIC:-talos-ark-public}
       S3_BUCKET_PRIVATE: ${S3_BUCKET_PRIVATE:-talos-ark-private}
       S3_BUCKET_STAGING: ${S3_BUCKET_STAGING:-talos-ark-staging}
@@ -110,11 +117,11 @@ services:
       S3_PUBLIC_BASE_URL: ${S3_PUBLIC_BASE_URL:-http://localhost:9000}
     volumes:
       - type: bind
-        source: ../../secrets/env/.env.keys
+        source: ../../../../secrets/env/.env.keys
         target: /talos-ark/.env.keys
         read_only: true
       - type: bind
-        source: ../../data
+        source: ../../../../data
         target: /talos-ark/data
     ports:
       - '${BACKEND_PORT:-3000}:3000'
