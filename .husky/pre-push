@@ -10,6 +10,18 @@
 # # 按工作区分别触发测试（新分支无上游时回退到初始提交，避免漏测）
 # base=$(git rev-parse --verify @{u} 2>/dev/null || git rev-list --max-parents=0 HEAD)
 # changed_backend=$(git diff --name-only "$base" HEAD | grep -E '^packages/backend/.*\.(js|ts|d\.ts)$' || true)
+#
+# # 加密 backend env 变更同样应触发 backend 测试；pre-push 读取已提交范围，
+# # 而不是像 pre-commit 一样读取暂存区。
+# ENV_PATH_PREFIX='packages/backend/secrets'
+# changed_backend_envs=$(git diff --name-only "$base" HEAD -- \
+#     ":(glob)$ENV_PATH_PREFIX/**/.env.*" \
+#     ":(exclude,glob)$ENV_PATH_PREFIX/**/.env.example" \
+#     ":(exclude,glob)$ENV_PATH_PREFIX/**/.env.*.local" || true)
+# if [ -n "$changed_backend_envs" ]; then
+#     changed_backend=1
+# fi
+
 # changed_frontend=$(git diff --name-only "$base" HEAD | grep -E '^packages/frontend/.*\.(js|ts|d\.ts|vue)$' || true)
 
 # if [ -n "$changed_backend" ]; then
