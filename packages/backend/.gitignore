@@ -73,6 +73,7 @@ web_modules/
 # Prisma CLI connection profiles (only the template is versioned).
 ops/prisma/env/.env.*
 !ops/prisma/env/.env.example
+!ops/prisma/env/.env.*.local
 
 # Local Docker credentials for the self-contained backend environment
 ops/docker/compose/*/.env
